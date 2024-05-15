@@ -1,0 +1,23 @@
+<div class="flex align-items-center justify-content-center min-h-screen">
+    <div class="surface-card p-4 shadow-2 border-round w-full md:w-8 ">
+        <div class="grid">
+            <div class="col-12 md:col-6 md:flex hidden justify-content-center align-items-center">
+                <img src="../../../assets/images/login/login.png" alt="Login" class="w-full" title="Login">
+            </div>
+            <div class="col-12 md:col-6 flex flex-column justify-content-center">
+                <p class="text-4xl font-bold text-center md:text-left mb-5">Hi, Welcome back!</p>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4">
+                    <div class="field">
+                        <label for="loginEmail" class="block">Email</label>
+                        <input title="Email" pInputText id="loginEmail" aria-describedby="username-help" formControlName="email" type="email" class="p-inputtext w-full" />
+                    </div>
+                    <div class="field">
+                        <label for="loginPassword" class="block">Password</label>
+                        <input title="Password" pInputText id="loginPassword" aria-describedby="password-help" formControlName="password" type="password" class="p-inputtext w-full" />
+                    </div>
+                    <button pButton label="Login" title="Login" routerLink="/class" [disabled]="loginForm.invalid" class="p-button w-full mt-4" type="submit"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
