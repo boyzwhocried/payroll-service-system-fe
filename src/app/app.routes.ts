@@ -11,7 +11,7 @@ export const routes: Routes = [
         path: 'login',
         title: 'Login',
         // component: NavbarComponent,
-        loadComponent:() => import('./pages/login/login.component').then(m => m.LoginComponent),
+        loadComponent:() => import('./pages/login/login.component').then(c => c.LoginComponent),
     },
 ];
 
