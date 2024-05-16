@@ -5,17 +5,23 @@
                 <img src="../../../assets/images/login/login.png" alt="Login" class="w-full" title="Login">
             </div>
             <div class="col-12 md:col-6 flex flex-column justify-content-center">
+                <pre>
+                    {{ loginForm.value | json }}
+                </pre>
                 <p class="text-4xl font-bold text-center md:text-left mb-5">Hi, Welcome back!</p>
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4">
                     <div class="field">
                         <label for="loginEmail" class="block">Email</label>
-                        <input title="Email" pInputText id="loginEmail" aria-describedby="username-help" formControlName="email" type="email" class="p-inputtext w-full" />
+                        <input title="Email" pInputText id="loginEmail" aria-describedby="username-help"
+                            formControlName="email" type="email" class="p-inputtext w-full" />
                     </div>
                     <div class="field">
                         <label for="loginPassword" class="block">Password</label>
-                        <input title="Password" pInputText id="loginPassword" aria-describedby="password-help" formControlName="password" type="password" class="p-inputtext w-full" />
+                        <input title="Password" pInputText id="loginPassword" aria-describedby="password-help"
+                            formControlName="password" type="password" class="p-inputtext w-full" />
                     </div>
-                    <button pButton label="Login" title="Login" routerLink="/class" [disabled]="loginForm.invalid" class="p-button w-full mt-4" type="submit"></button>
+                    <button pButton label="Login" title="Login" [disabled]="loginForm.invalid"
+                        class="p-button w-full mt-4" type="submit"></button>
                 </form>
             </div>
         </div>
