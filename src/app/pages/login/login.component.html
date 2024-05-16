@@ -5,11 +5,11 @@
                 <img src="../../../assets/images/login/login.png" alt="Login" class="w-full" title="Login">
             </div>
             <div class="col-12 md:col-6 flex flex-column justify-content-center">
-                <pre>
+                <!-- <pre>
                     {{ loginForm.value | json }}
-                </pre>
+                </pre> -->
                 <p class="text-4xl font-bold text-center md:text-left mb-5">Hi, Welcome back!</p>
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-2">
                     <div class="field">
                         <label for="loginEmail" class="block">Email</label>
                         <input title="Email" pInputText id="loginEmail" aria-describedby="username-help"
