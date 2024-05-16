@@ -10,8 +10,13 @@ export const routes: Routes = [
     {
         path: 'login',
         title: 'Login',
-        // component: NavbarComponent,
         loadComponent:() => import('./pages/login/login.component').then(c => c.LoginComponent),
+    },
+    {
+        path: 'users',
+        title: 'Users',
+        // component: NavbarComponent,
+        loadComponent:() => import('./pages/users/users.component').then(c => c.UsersComponent),
     },
 ];
 

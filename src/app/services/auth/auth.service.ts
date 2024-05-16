@@ -2,16 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginReqDto } from '../../models/dto/login/login.req.dto';
 import { LoginResDto } from '../../models/dto/login/login.res.dto';
+import { BaseService } from '../base/base.service';
+import { environment } from '../../../env/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+  ) { }
 
   login(loginReqDto: LoginReqDto) {
-    return this.http.post<LoginResDto>(`http://localhost:8080/users/login`, loginReqDto)
+    return this.http.post<LoginResDto>(`${environment.backEndBaseUrl}:${environment.port}/users/login`, loginReqDto)
   }
 
   saveLoginData(loginResDto: LoginResDto | undefined) {

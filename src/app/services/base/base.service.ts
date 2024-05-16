@@ -50,14 +50,14 @@ export class BaseService {
 
 
   get<T>(path: string, withToken: boolean = true) {
-    return this.http.get<T>(`${environment.backEndBaseUrl}/${path}`, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http.get<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
 
   post<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.post<T>(`${environment.backEndBaseUrl}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
 
   put<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.put<T>(`${environment.backEndBaseUrl}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
 }
