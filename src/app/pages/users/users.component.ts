@@ -13,6 +13,7 @@ import { Validators, NonNullableFormBuilder } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
 import { RoleType } from '../../constants/role.const';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterOutlet } from '@angular/router';
 
 
 @Component({
@@ -28,6 +29,7 @@ import { FormsModule } from '@angular/forms';
     InputTextModule,
     RippleModule,
     FormsModule,
+    RouterOutlet,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css',
@@ -82,7 +84,6 @@ export class UsersComponent {
   constructor(
     private messageService: MessageService,
     private formBuilder: NonNullableFormBuilder,
-    private authService: AuthService,
   ) { }
 
   ngOnInit() {
@@ -100,13 +101,7 @@ export class UsersComponent {
   }
 
   onRowEditSave(user: UsersResDto) {
-    // if (user.price > 0) {
-    //     delete this.clonedUsers[user.id as string];
-    // const userReqDto: UserReqDto = this.userForm.getRawValue()
     this.messageService.add({ severity: 'success', summary: 'Success', detail: `User is updated` });
-    // } else {
-    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Price' });
-    // }
   }
 
   onRowEditCancel(user: UsersResDto, index: number) {
