@@ -14,15 +14,19 @@ export const routes: Routes = [
     },
     {
         path: 'users',
-        title: 'Users',
         // component: NavbarComponent,
-        loadComponent: () => import('./pages/users/users.component').then(c => c.UsersComponent),
-    },
-    {
-        path: 'users',
-        title: 'User',
-        // component: NavbarComponent,
-        loadChildren:() => import('./pages/users/user.module').then(u => u.UserModule),
+        children: [
+            {
+                path: '',
+                title: 'Users',
+                loadComponent: () => import('./pages/users/users.component').then(c => c.UsersComponent),
+            },
+            {
+                path: 'new',
+                title: 'Create User',
+                loadComponent: () => import('./pages/users/new/new.users.component').then(c => c.UserNew),
+            },
+        ]
     },
 ];
 
