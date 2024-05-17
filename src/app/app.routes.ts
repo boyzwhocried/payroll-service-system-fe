@@ -10,13 +10,13 @@ export const routes: Routes = [
     {
         path: 'login',
         title: 'Login',
-        loadComponent:() => import('./pages/login/login.component').then(c => c.LoginComponent),
+        loadComponent: () => import('./pages/login/login.component').then(c => c.LoginComponent),
     },
     {
         path: 'users',
         title: 'Users',
         // component: NavbarComponent,
-        loadComponent:() => import('./pages/users/users.component').then(c => c.UsersComponent),
+        loadComponent: () => import('./pages/users/users.component').then(c => c.UsersComponent),
     },
 ];
 
