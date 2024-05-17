@@ -10,8 +10,19 @@ export const routes: Routes = [
     {
         path: 'login',
         title: 'Login',
+        loadComponent: () => import('./pages/login/login.component').then(c => c.LoginComponent),
+    },
+    {
+        path: 'users',
+        title: 'Users',
         // component: NavbarComponent,
-        loadComponent:() => import('./pages/login/login.component').then(c => c.LoginComponent),
+        loadComponent: () => import('./pages/users/users.component').then(c => c.UsersComponent),
+    },
+    {
+        path: 'users',
+        title: 'User',
+        // component: NavbarComponent,
+        loadChildren:() => import('./pages/users/user.module').then(u => u.UserModule),
     },
 ];
 
