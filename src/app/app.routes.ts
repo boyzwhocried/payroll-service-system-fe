@@ -18,6 +18,12 @@ export const routes: Routes = [
         // component: NavbarComponent,
         loadComponent: () => import('./pages/users/users.component').then(c => c.UsersComponent),
     },
+    {
+        path: 'users',
+        title: 'User',
+        // component: NavbarComponent,
+        loadChildren:() => import('./pages/users/user.module').then(u => u.UserModule),
+    },
 ];
 
 @NgModule({
