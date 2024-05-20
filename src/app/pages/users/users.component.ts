@@ -6,10 +6,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
-import { MessageService, PrimeIcons, SelectItem } from 'primeng/api';
+import { MessageService, SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth/auth.service';
 import { RoleType } from '../../constants/role.const';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -165,10 +164,10 @@ export class UsersComponent {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       const reader = new FileReader();
-      
+
       reader.onload = () => {
         const base64 = (reader.result as string).split(',')[1];
-        this.userForm.patchValue({ fileContent:base64, fileExtension:file.type.split('/')[1]})
+        this.userForm.patchValue({ fileContent: base64, fileExtension: file.type.split('/')[1] })
         // this.fileContent = base64;
         // this.fileExtension = file.type.split('/')[1];
       };

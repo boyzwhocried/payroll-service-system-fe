@@ -1,0 +1,83 @@
+<div class="flex align-items-center justify-content-center min-h-screen mx-5">
+    <div class="surface-card p-4 shadow-2 border-round w-full">
+        <div class="flex flex-row justify-content-between align-content-center">
+            <h3>Companies</h3>
+        </div>
+        <div class="card">
+            <p-toast></p-toast>
+            <pre>{{ companyForm.value | json }}</pre>
+            <p-table [value]="companies" dataKey="id" editMode="row" [paginator]="companies.length > 10" [rows]="10"
+                [globalFilterFields]="['logo', 'companyName']">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="text-center">Logo</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th><p-columnFilter type="text" field="companyName" /></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-company let-editing="editing" let-ri="rowIndex">
+                    <tr [pEditableRow]="company" [formGroup]="companyForm" (ngSubmit)="onSubmit()">
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <div class="avatar-container" (mouseover)="isHovered = true"
+                                        (mouseout)="isHovered = false">
+                                        <p-avatar
+                                            [image]="generateImage(company.companyLogoContent, company.companyLogoExtension)"
+                                            shape="circle" class="flex justify-content-center" title="Edit Avatar"
+                                            role="button" (click)="onAvatarClick()"
+                                            [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
+                                        <p-badge
+                                            [ngStyle]="{ 'position': 'absolute', 'bottom': '0', 'right': '0', 'transform': 'translate(50%, 50%)' }"
+                                            value="" styleClass="badge-icon">
+                                            <i class="pi pi-pencil"></i>
+                                        </p-badge>
+                                        <input type="file" #fileInput (change)="onFileSelected($event)"
+                                            [ngStyle]="{'display': 'none'}" title="File Input" />
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <p-avatar
+                                        [image]='generateImage(company.companyLogoContent, company.companyLogoExtension)'
+                                        shape="circle" class="flex justify-content-center" />
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input title="Name" pInputText type="text" class="p-inputtext w-full" required
+                                        [(ngModel)]="company.companyName" formControlName="companyName" />
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{company.companyName}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button title="Edit Init" *ngIf="!editing" pButton pRipple type="button"
+                                    pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(company)"
+                                    class="p-button-rounded p-button-text" [disabled]="isEditingCompany">
+                                </button>
+                                <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit" pSaveEditableRow
+                                    icon="pi pi-check" (click)="onRowEditSave(company)"
+                                    class="p-button-rounded p-button-text p-button-success mr-2">
+                                </button>
+                                <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"
+                                    pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(company, ri)"
+                                    class="p-button-rounded p-button-text p-button-danger">
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
