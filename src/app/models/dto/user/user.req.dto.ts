@@ -1,4 +1,4 @@
-export interface UsersResDto {
+export interface UserReqDto{
     id: string
     userName: string
     email: string
