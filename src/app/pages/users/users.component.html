@@ -2,20 +2,20 @@
     <div class="surface-card p-4 shadow-2 border-round w-full">
         <div class="flex flex-row justify-content-between align-content-center">
             <h3>Users</h3>
-            <p-button label="+ Create" [routerLink]="'new'" />
+            <p-button icon="pi pi-plus" label="Create" [routerLink]="'new'" />
         </div>
         <div class="card">
             <p-toast></p-toast>
             <pre>{{ userForm.value | json }}</pre>
-            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="true" [rows]="10"
+            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 10" [rows]="10"
                 [globalFilterFields]="['avatar', 'userName', 'roleName', 'email', 'phoneNumber']">
                 <ng-template pTemplate="header">
                     <tr>
                         <th class="text-center">Avatar</th>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Email</th>
-                        <th>Phone</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Role</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
                         <th class="text-center">Actions</th>
                     </tr>
                     <tr>

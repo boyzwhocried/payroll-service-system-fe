@@ -6,7 +6,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
-import { MessageService, SelectItem } from 'primeng/api';
+import { MessageService, PrimeIcons, SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
@@ -17,7 +17,7 @@ import { UserResDto } from '../../models/dto/user/user.res.dto';
 import { UserReqDto } from '../../models/dto/user/user.req.dto';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
-import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-users',
