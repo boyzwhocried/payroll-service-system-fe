@@ -30,6 +30,17 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'companies',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Companies',
+                loadComponent: () => import('./pages/companies/companies.component').then(c => c.CompaniesComponent),
+            },
+        ]
+    },
+    {
       path: 'schedules',
       // component: NavbarComponent,
       children: [
