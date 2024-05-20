@@ -40,6 +40,17 @@ export const routes: Routes = [
             },
         ]
     },
+    {
+      path: 'schedules',
+      // component: NavbarComponent,
+      children: [
+        {
+          path: '',
+          title: 'Schedule',
+          loadComponent: () => import('./pages/schedules/schedules.component').then(s => s.Schedules),
+        },
+      ]
+    },
 ];
 
 @NgModule({
