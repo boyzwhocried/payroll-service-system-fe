@@ -9,7 +9,7 @@ import { TagModule } from 'primeng/tag';
 import { MessageService, SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RoleType } from '../../constants/role.const';
+import { RoleType } from '../../constants/roles.constant';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';

@@ -8,7 +8,7 @@ import { RippleModule } from 'primeng/ripple';
 import { AuthService } from '../../services/auth/auth.service';
 import { LoginReqDto } from '../../dto/user/login.req.dto';
 import { Router } from '@angular/router';
-import { RoleType } from '../../constants/role.const';
+import { RoleType } from '../../constants/roles.constant';
 
 @Component({
   selector: 'app-login',
