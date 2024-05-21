@@ -1,5 +1,5 @@
 export enum RoleType{
-    RL001 = 'Super Admin',
-    RL002 = 'Payroll Service',
-    RL003 = 'Client',
+    SUPER_ADMIN = 'RL001',
+    PS = 'RL002',
+    CLIENT = 'RL003'
 }
