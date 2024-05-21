@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { UserResDto } from '../../dto/user/user.res.dto';
-import { InsertResDto } from '../../dto/insert.res.dto';
+import { InsertResDto } from '../../dto/general-response/insert.res.dto';
 import { UserReqDto } from '../../dto/user/user.req.dto';
 
 @Injectable({
