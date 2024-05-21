@@ -1,7 +1,11 @@
+import { CompanyReqDto } from "../company/company.req.dto"
+
 export interface UserReqDto{
-    id: string
     userName: string
     email: string
     phoneNumber: string
-    roleName: string
+    roleId: string
+    fileContent: string
+    fileExtension: string
+    companyReq: CompanyReqDto
 }
