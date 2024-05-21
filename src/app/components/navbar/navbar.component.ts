@@ -19,6 +19,7 @@ import { AvatarModule } from 'primeng/avatar';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  AllItems: MenuItem[] | undefined;
   SAItems: MenuItem[] | undefined;
   clientItems: MenuItem[] | undefined;
   PSItems: MenuItem[] | undefined;
@@ -50,6 +51,63 @@ export class NavbarComponent {
   constructor() { }
 
   ngOnInit() {
+    this.AllItems = [
+      {
+        label: 'Users',
+        icon: PrimeIcons.USERS,
+        items: [
+          {
+            label: 'List',
+            route: '/users',
+            icon: PrimeIcons.LIST,
+          },
+          {
+            label: 'Create',
+            route: '/users/new',
+            icon: PrimeIcons.PLUS,
+          },
+        ]
+      },
+      {
+        label: 'Companies',
+        icon: PrimeIcons.BUILDING,
+        items: [
+          {
+            label: 'List',
+            route: '/companies',
+            icon: PrimeIcons.LIST,
+          },
+          {
+            label: 'Create',
+            route: '/companies/new',
+            icon: PrimeIcons.PLUS,
+          },
+        ]
+      },
+      {
+        label: 'Assign',
+        route: '/assign',
+        icon: PrimeIcons.BOOK,
+      },
+      {
+        label: 'Schedule',
+        route: '/schedule',
+        icon: PrimeIcons.CALENDAR_CLOCK,
+      },
+      {
+        label: 'Chat',
+        route: '/chat',
+        icon: PrimeIcons.COMMENTS,
+      },
+      {
+        label: 'Schedules',
+        route: '/schedules',
+        icon: PrimeIcons.CALENDAR_CLOCK,
+      },
+      { separator: true },
+      this.profileItem
+    ]
+
     this.SAItems = [
       {
         label: 'Users',
@@ -110,8 +168,8 @@ export class NavbarComponent {
 
     this.PSItems = [
       {
-        label: 'Schedule',
-        route: '/schedule',
+        label: 'Schedules',
+        route: '/schedules',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       { separator: true },
