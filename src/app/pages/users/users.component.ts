@@ -129,9 +129,9 @@ export class UsersComponent {
 
   ngOnInit() {
     this.roles = [
-      { label: RoleType.RL001, value: RoleType.RL001 },
-      { label: RoleType.RL002, value: RoleType.RL002 },
-      { label: RoleType.RL003, value: RoleType.RL003 }
+      { label: RoleType.SUPER_ADMIN, value: RoleType.SUPER_ADMIN },
+      { label: RoleType.PS, value: RoleType.PS },
+      { label: RoleType.CLIENT, value: RoleType.CLIENT }
     ];
   }
 
