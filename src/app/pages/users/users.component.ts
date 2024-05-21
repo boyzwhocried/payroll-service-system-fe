@@ -12,10 +12,10 @@ import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angula
 import { RoleType } from '../../constants/role.const';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UserResDto } from '../../models/dto/user/user.res.dto';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { UserService } from '../../services/user/user.service';
+import { UserResDto } from '../../dto/user/user.res.dto';
 
 
 @Component({

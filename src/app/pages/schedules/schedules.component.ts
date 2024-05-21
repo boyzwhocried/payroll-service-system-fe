@@ -12,7 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
-import { PayrollsResDto } from "../../models/dto/payrolls/payrolls.res.dto";
+import { PayrollsResDto } from "../../dto/payrolls/payrolls.res.dto";
 
 @Component({
   selector: 'app-schedules',
