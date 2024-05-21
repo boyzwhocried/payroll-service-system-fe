@@ -41,15 +41,20 @@ export const routes: Routes = [
         ]
     },
     {
-      path: 'schedules',
-      // component: NavbarComponent,
-      children: [
-        {
-          path: '',
-          title: 'Schedule',
-          loadComponent: () => import('./pages/schedules/schedules.component').then(s => s.Schedules),
-        },
-      ]
+        path: 'schedules',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Schedule',
+                loadComponent: () => import('./pages/schedules/schedules.component').then(s => s.Schedules),
+            },
+            {
+                path: 'create',
+                title: 'Create Schedule',
+                loadComponent: () => import('./pages/schedules/create-schedule/create-schedule.component').then(s => s.CreateScheduleComponent),
+            },
+        ]
     },
 ];
 
