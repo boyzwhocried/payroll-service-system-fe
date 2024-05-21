@@ -28,7 +28,7 @@
                                     <div class="avatar-container" (mouseover)="isHovered = true"
                                         (mouseout)="isHovered = false">
                                         <p-avatar
-                                            [image]="generateImage(company.companyLogoContent, company.companyLogoExtension)"
+                                            image="{{generateImage(company.companyLogoId)}}"
                                             shape="circle" class="flex justify-content-center" title="Edit Avatar"
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
@@ -43,7 +43,7 @@
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     <p-avatar
-                                        [image]='generateImage(company.companyLogoContent, company.companyLogoExtension)'
+                                        image="{{generateImage(company.companyLogoId)}}"
                                         shape="circle" class="flex justify-content-center" />
                                 </ng-template>
                             </p-cellEditor>

@@ -12,8 +12,9 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { CompanyReqDto } from '../../dto/company/company.req.dto';
 import { CompanyResDto } from '../../dto/company/company.res.dto';
+import { CompanyService } from '../../services/company/company.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-companies',
@@ -51,36 +52,34 @@ export class CompaniesComponent {
     companyLogoExtension: ['', [Validators.required]],
   });
 
-  get isEditingCompany() { return this.isEditing }
+  get isEditingCompany() {
+    return this.isEditing
+  }
 
-  companies: CompanyResDto[] = [
-    {
-      id: "3b9f47cf-2748-4632-b384-eb0c62b74f21",
-      companyName: "Lisa",
-      companyLogoId: 'logo id'
-    },
-    {
-      id: "3b9f47cf-2748-4632-b384-eb0c62b74f22",
-      companyName: "Lita",
-      companyLogoId: 'logo id'
-    },
-    {
-      id: "3b9f47cf-2748-4632-b384-eb0c62b74f23",
-      companyName: "Lila",
-      companyLogoId: 'logo id'
-    },
-  ]
+  companies: CompanyResDto[] = []
 
   constructor(
     private messageService: MessageService,
+    private companyService: CompanyService,
     private formBuilder: NonNullableFormBuilder,
   ) { }
 
   ngOnInit() {
+    this.init()
   }
 
-  generateImage(contentData: string, extension: string): string {
-    return `data:image/${extension};base64,${contentData}`;
+  init() {
+    firstValueFrom(this.companyService.getCompanies()).then(
+      res => {
+        this.companies = res
+        console.log(res)
+      }
+    )
+  }
+
+  generateImage(id: string) {
+    
+    return this.companyService.getImageUrl(id)
   }
 
   onCreateClick() {
@@ -120,7 +119,9 @@ export class CompaniesComponent {
   }
 
   onSubmit() {
-    // Handle form submission
+    if(this.companyForm.valid) {
+      
+    }
   }
 
   onAlert() {
