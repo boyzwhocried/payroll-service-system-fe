@@ -9,13 +9,13 @@ import { TagModule } from 'primeng/tag';
 import { MessageService, SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RoleType } from '../../constants/role.const';
+import { RoleType } from '../../constants/roles.constant';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UserResDto } from '../../models/dto/user/user.res.dto';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { UserService } from '../../services/user/user.service';
+import { UserResDto } from '../../dto/user/user.res.dto';
 
 
 @Component({

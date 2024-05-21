@@ -1,0 +1,6 @@
+export enum ScheduleStatusType {
+    PENDING_SCHEDULE = 'SQT01',
+    PENDING_CLIENT_DOCUMENT = 'SQT02',
+    PENDING_FEEDBACK = 'SQT03',
+    COMPLETED = 'SQT04'
+}

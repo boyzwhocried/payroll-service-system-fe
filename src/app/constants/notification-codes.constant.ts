@@ -1,0 +1,5 @@
+export enum NotificationCodes {
+    NEW_MONTHLY_PAYROLL = 'NT001',
+    NEW_CLIENT_DOCUMENT_HAS_BEEN_UPLOADED = 'NT002',
+    DOCUMENTS_REQUIRED = 'NT003'
+}
