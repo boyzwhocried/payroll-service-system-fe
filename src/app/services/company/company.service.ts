@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { BaseService } from "../base/base.service";
 import { CompanyResDto } from "../../dto/company/company.res.dto";
 import { environment } from "../../../env/environment.prod";
+import { UpdateCompanyReqDto } from "../../dto/company/update-company.req.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -20,5 +21,9 @@ export class CompanyService {
 
     getImageUrl(id: string) {
         return `${environment.backEndBaseUrl}:${environment.port}/files/${id}`
+    }
+
+    updateCompanyData(data: UpdateCompanyReqDto) {
+        return this.baseService.patch<UpdateCompanyReqDto>('companies', data)
     }
 }
