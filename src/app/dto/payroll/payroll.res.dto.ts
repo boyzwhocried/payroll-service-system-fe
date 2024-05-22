@@ -4,3 +4,4 @@ export interface PayrollResDto{
     scheduleStatus: string,
     payrollDate: string
   }
+

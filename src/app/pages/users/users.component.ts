@@ -22,6 +22,7 @@ import { RoleService } from '../../services/role/role.service';
 import { RoleResDto } from '../../dto/role/role.res.dto';
 
 
+
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -83,6 +84,7 @@ export class UsersComponent {
   }
 
   generateImage(contentData?: string | undefined, extension?: string | undefined): string {
+
     return `data:image/${extension};base64,${contentData}`;
   }
 
