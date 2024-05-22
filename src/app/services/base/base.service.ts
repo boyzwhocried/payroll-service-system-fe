@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../env/environment.prod';
 import { ToastrService } from 'ngx-toastr';
+import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,7 @@ export class BaseService {
     private authService: AuthService,
     private toastr: ToastrService,
     private router: Router,
+
   ) { }
 
   private get headers() {
@@ -60,6 +61,7 @@ export class BaseService {
   put<T>(path: string, body: any, withToken: boolean = true) {
     return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
+  
   patch<T>(path: string, body: any, withToken: boolean = true) {
     return this.http.patch<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
