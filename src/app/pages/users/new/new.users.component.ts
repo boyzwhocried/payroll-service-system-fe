@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RoleService } from "../../../services/role/role.service";
-import { RoleResDto } from "../../../models/dto/role/role.res.dto";
+import { RoleResDto } from "../../../dto/role/role.res.dto";
 import { RoleType } from "../../../constants/role.const";
 import { CommonModule } from "@angular/common";
 import { ButtonModule } from "primeng/button";
@@ -12,8 +12,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { UserService } from "../../../services/user/user.service";
 import { MessageService } from "primeng/api";
 import { ToastModule } from "primeng/toast";
-import { CompanyReqDto } from "../../../models/dto/company/company.req.dto";
-import { UserReqDto } from "../../../models/dto/user/user.req.dto";
+import { CompanyReqDto } from "../../../dto/company/company.req.dto";
+import { UserReqDto } from "../../../dto/user/user.req.dto";
 
 @Component({
   selector: 'user-new',

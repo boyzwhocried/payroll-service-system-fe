@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { PayrollsResDto } from "../../models/dto/payrolls/payrolls.res.dto";
+import { PayrollsResDto } from "../../dto/payrolls/payrolls.res.dto";
 import { BaseService } from "../base/base.service";
 
 @Injectable({
@@ -8,7 +8,7 @@ import { BaseService } from "../base/base.service";
 
 export class PayrollService {
 
-  constructor(private baseService : BaseService) {}
+  constructor(private baseService: BaseService) { }
 
   getAllClients() {
     return this.baseService.get<PayrollsResDto[]>(

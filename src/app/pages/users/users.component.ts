@@ -11,15 +11,15 @@ import { RippleModule } from 'primeng/ripple';
 import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { UserResDto } from '../../models/dto/user/user.res.dto';
+import { UserResDto } from '../../dto/user/user.res.dto';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { UserService } from '../../services/user/user.service';
-import { ImageResDto } from '../../models/dto/file/image.res.dto';
+import { ImageResDto } from '../../dto/file/image.res.dto';
 import { environment } from '../../../env/environment.prod';
-import { UserReqDto } from '../../models/dto/user/user.req.dto';
+import { UserReqDto } from '../../dto/user/user.req.dto';
 import { RoleService } from '../../services/role/role.service';
-import { RoleResDto } from '../../models/dto/role/role.res.dto';
+import { RoleResDto } from '../../dto/role/role.res.dto';
 
 
 @Component({

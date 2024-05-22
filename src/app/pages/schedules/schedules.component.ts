@@ -11,7 +11,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
-import { PayrollsResDto } from "../../models/dto/payrolls/payrolls.res.dto";
+import { PayrollsResDto } from "../../dto/payrolls/payrolls.res.dto";
 import { PayrollService } from "../../services/payroll/payroll.service";
 
 @Component({
@@ -35,11 +35,11 @@ import { PayrollService } from "../../services/payroll/payroll.service";
   providers: [MessageService],
 })
 export class Schedules implements OnInit {
-  roleCode : boolean = true
+  roleCode: boolean = true
   status: string = 'Pending'
   dataLogin = this.authService.getLoginData()
   visible: boolean = false;
-  schedules : PayrollsResDto[] = [
+  schedules: PayrollsResDto[] = [
     {
       clientAssignmentId: 'asd12',
       clientName: 'PT Sejahtera',
@@ -85,16 +85,16 @@ export class Schedules implements OnInit {
   ]
 
   rescheduleReqDtoFg = this.fb.group({
-      clientAssignmentId: ['', Validators.required],
-      payrollDate: ['', [Validators.required]]
+    clientAssignmentId: ['', Validators.required],
+    payrollDate: ['', [Validators.required]]
   })
 
   constructor(
-    private authService : AuthService,
-    private payrollService : PayrollService,
-    private fb : NonNullableFormBuilder,
+    private authService: AuthService,
+    private payrollService: PayrollService,
+    private fb: NonNullableFormBuilder,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.init
@@ -111,13 +111,13 @@ export class Schedules implements OnInit {
     return true
   }
 
-  showDialog(schedule : PayrollsResDto) {
+  showDialog(schedule: PayrollsResDto) {
     this.rescheduleReqDtoFg.reset()
     this.visible = true;
     this.rescheduleReqDtoFg.patchValue(schedule)
   }
 
-  statusColor(i : number) : string {
+  statusColor(i: number): string {
     if (this.schedules.at(i)?.scheduleStatus) {
       return 'orange'
     } else {
@@ -125,14 +125,14 @@ export class Schedules implements OnInit {
     }
   }
 
-  isPendingSchedule(i : number) {
+  isPendingSchedule(i: number) {
     if (this.schedules.at(i)?.scheduleStatus == 'Pending Schedule') {
       return true
     }
     return false
   }
 
-  isCompleted(i : number) {
+  isCompleted(i: number) {
     if (this.schedules.at(i)?.scheduleStatus == 'Completed') {
       return true
     }

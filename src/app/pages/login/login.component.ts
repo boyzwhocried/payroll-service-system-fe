@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { RippleModule } from 'primeng/ripple';
 import { AuthService } from '../../services/auth/auth.service';
-import { LoginReqDto } from '../../models/dto/login/login.req.dto';
+import { LoginReqDto } from '../../dto/login/login.req.dto';
 
 @Component({
   selector: 'app-login',

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
-import { UserResDto } from '../../models/dto/user/user.res.dto';
-import { UserReqDto } from '../../models/dto/user/user.req.dto';
-import { InsertResDto } from '../../models/dto/insert.res.dto';
-import { UpdateResDto } from '../../models/dto/update.res.dto';
+import { UserResDto } from '../../dto/user/user.res.dto';
+import { UserReqDto } from '../../dto/user/user.req.dto';
+import { InsertResDto } from '../../dto/insert.res.dto';
+import { UpdateResDto } from '../../dto/update.res.dto';
 
 @Injectable({
   providedIn: 'root'

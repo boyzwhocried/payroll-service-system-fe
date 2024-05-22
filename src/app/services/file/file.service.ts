@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
-import { ImageResDto } from '../../models/dto/file/image.res.dto';
+import { ImageResDto } from '../../dto/file/image.res.dto';
 
 @Injectable({
   providedIn: 'root'
