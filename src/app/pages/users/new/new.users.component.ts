@@ -12,6 +12,8 @@ import { UserService } from "../../../services/user/user.service";
 import { MessageService } from "primeng/api";
 import { ToastModule } from "primeng/toast";
 import { RoleResDto } from "../../../dto/role/role.res.dto";
+import { UserReqDto } from "../../../dto/user/user.req.dto";
+import { CompanyReqDto } from "../../../dto/company/company.req.dto";
 
 @Component({
   selector: 'user-new',
