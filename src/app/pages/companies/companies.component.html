@@ -27,8 +27,13 @@
                                 <ng-template pTemplate="input">
                                     <div class="avatar-container" (mouseover)="isHovered = true"
                                         (mouseout)="isHovered = false">
-                                        <p-avatar
-                                            image="{{generateImage(company.companyLogoId)}}"
+                                        <p-avatar *ngIf="isNewLogo"
+                                            [image]="generatePreviewImage(companyForm.value.companyLogoContent, companyForm.value.companyLogoExtension)"
+                                            shape="circle" class="flex justify-content-center" title="Edit Avatar"
+                                            role="button" (click)="onAvatarClick()"
+                                            [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
+                                        <p-avatar *ngIf="!isNewLogo"
+                                            [image]="generateImage(company.companyLogoId)"
                                             shape="circle" class="flex justify-content-center" title="Edit Avatar"
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
