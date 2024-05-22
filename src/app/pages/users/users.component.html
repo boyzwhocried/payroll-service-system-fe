@@ -5,9 +5,8 @@
             <p-button icon="pi pi-plus" label="Create" [routerLink]="'new'" />
         </div>
         <div class="card">
-            <p-toast></p-toast>
             <pre>{{ userForm.value | json }}</pre>
-            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 10" [rows]="10"
+            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 8" [rows]="8"
                 [globalFilterFields]="['avatar', 'userName', 'roleName', 'email', 'phoneNumber']">
                 <ng-template pTemplate="header">
                     <tr>
@@ -28,13 +27,18 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-user let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="user" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+                    <tr [pEditableRow]="user" [formGroup]="userForm" (ngSubmit)="onRowEditSave()">
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <div class="avatar-container" (mouseover)="isHovered = true"
                                         (mouseout)="isHovered = false">
-                                        <p-avatar [image]="generateImage(user.fileContent, user.fileExtension)"
+                                        <p-avatar *ngIf="userForm.value.fileContent && userForm.value.fileExtension"
+                                            [image]="generateImage(userForm.value.fileContent, userForm.value.fileExtension)"
+                                            shape="circle" class="flex justify-content-center" title="Edit Avatar"
+                                            role="button" (click)="onAvatarClick()"
+                                            [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
+                                        <p-avatar *ngIf="!userForm.value.fileContent && !userForm.value.fileExtension" [image]="getImage(user.profilePictureId)"
                                             shape="circle" class="flex justify-content-center" title="Edit Avatar"
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
@@ -48,8 +52,8 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-                                    <p-avatar [image]='generateImage(user.fileContent, user.fileExtension)'
-                                        shape="circle" class="flex justify-content-center" />
+                                    <p-avatar [image]='getImage(user.profilePictureId)' shape="circle"
+                                        class="flex justify-content-center" />
                                 </ng-template>
                             </p-cellEditor>
                         </td>
@@ -67,8 +71,8 @@
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <p-dropdown [options]="roles" appendTo="body" [(ngModel)]="user.roleName"
-                                        formControlName="roleName" />
+                                    <p-dropdown [options]="roles" appendTo="body" formControlName="roleId">
+                                    </p-dropdown>
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{user.roleName}}
@@ -101,10 +105,10 @@
                             <div class="flex align-items-center justify-content-center gap-2">
                                 <button title="Edit Init" *ngIf="!editing" pButton pRipple type="button"
                                     pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(user)"
-                                    class="p-button-rounded p-button-text" [disabled]="isEditingUser">
+                                    class="p-button-rounded p-button-text" [disabled]="isEditing">
                                 </button>
                                 <button title="Edit Save" *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                                    icon="pi pi-check" (click)="onRowEditSave(user)"
+                                    icon="pi pi-check" (click)="onRowEditSave()"
                                     class="p-button-rounded p-button-text p-button-success mr-2">
                                 </button>
                                 <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"

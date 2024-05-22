@@ -3,6 +3,7 @@ import { BaseService } from '../base/base.service';
 import { UserResDto } from '../../models/dto/user/user.res.dto';
 import { UserReqDto } from '../../models/dto/user/user.req.dto';
 import { InsertResDto } from '../../models/dto/insert.res.dto';
+import { UpdateResDto } from '../../models/dto/update.res.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,6 @@ import { InsertResDto } from '../../models/dto/insert.res.dto';
 export class UserService {
 
   constructor(private baseService: BaseService) { }
-
 
   getAll() {
     return this.baseService.get<UserResDto[]>(`users`)
@@ -26,5 +26,9 @@ export class UserService {
 
   addUser(user: UserReqDto) {
     return this.baseService.post<InsertResDto>(`users`, user)
+  }
+
+  editUser(user: UserReqDto) {
+    return this.baseService.patch<UpdateResDto>(`users`, user)
   }
 }
