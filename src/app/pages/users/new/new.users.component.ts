@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RoleService } from "../../../services/role/role.service";
-import { RoleType } from "../../../constants/role.const";
+import { RoleType } from "../../../constants/roles.constant";
 import { CommonModule } from "@angular/common";
 import { ButtonModule } from "primeng/button";
 import { CalendarModule } from "primeng/calendar";

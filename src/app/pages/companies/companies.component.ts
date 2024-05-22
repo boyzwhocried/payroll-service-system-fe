@@ -12,7 +12,9 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
+import { CompanyReqDto } from '../../dto/company/company.req.dto';
 import { CompanyResDto } from '../../dto/company/company.res.dto';
+
 @Component({
   selector: 'app-companies',
   standalone: true,
@@ -94,18 +96,18 @@ export class CompaniesComponent {
   onRowEditSave(company: CompanyResDto) {
     // const editedCompany: CompanyReqDto = this.companyForm.getRawValue() as CompanyReqDto;
 
-    // Update the original data with the edited data
-    const index = this.companies.findIndex(c => c.id === company.id);
-    if (index !== -1) {
-      // this.companies[index] = { ...this.companies[index], ...editedCompany };
-    }
+    // // Update the original data with the edited data
+    // const index = this.companies.findIndex(c => c.id === company.id);
+    // if (index !== -1) {
+    //   this.companies[index] = { ...this.companies[index], ...editedCompany };
+    // }
 
-    // Clear the form group
-    this.companyForm.reset();
-    this.isEditing = false;
-    this.originalCompanyData = null;
+    // // Clear the form group
+    // this.companyForm.reset();
+    // this.isEditing = false;
+    // this.originalCompanyData = null;
 
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: `User is updated` });
+    // this.messageService.add({ severity: 'success', summary: 'Success', detail: `User is updated` });
   }
 
   onRowEditCancel(company: CompanyResDto, index: number) {
