@@ -12,9 +12,6 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { CompanyReqDto } from '../../dto/company/company.req.dto';
-import { CompanyResDto } from '../../dto/company/company.res.dto';
-
 @Component({
   selector: 'app-companies',
   standalone: true,

@@ -11,6 +11,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { UserService } from "../../../services/user/user.service";
 import { MessageService } from "primeng/api";
 import { ToastModule } from "primeng/toast";
+import { RoleResDto } from "../../../dto/role/role.res.dto";
 
 @Component({
   selector: 'user-new',
