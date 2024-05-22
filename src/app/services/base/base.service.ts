@@ -7,23 +7,22 @@ import { environment } from '../../../env/environment.prod';
 import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BaseService {
-
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   private get headers() {
     return {
       headers: {
-        Authorization: `Bearer ${this.authService.getToken()}`
-      }
-    }
+        Authorization: `Bearer ${this.authService.getToken()}`,
+      },
+    };
   }
 
   private response<T>() {
@@ -44,20 +43,46 @@ export class BaseService {
         } else {
           console.error('An unexpected error occurred:', error);
         }
-      }
+      },
     });
   }
 
-
   get<T>(path: string, withToken: boolean = true) {
-    return this.http.get<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .get<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 
   post<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .post<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 
   put<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .put<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
+  }
+
+  patch<T>(path: string, body: any, withToken: boolean = true) {
+    return this.http
+      .patch<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 }
