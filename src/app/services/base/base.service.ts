@@ -61,7 +61,7 @@ export class BaseService {
   put<T>(path: string, body: any, withToken: boolean = true) {
     return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }
-
+  
   patch<T>(path: string, body: any, withToken: boolean = true) {
     return this.http.patch<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
   }

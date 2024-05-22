@@ -71,18 +71,7 @@ export class NavbarComponent {
       {
         label: 'Companies',
         icon: PrimeIcons.BUILDING,
-        items: [
-          {
-            label: 'List',
-            route: '/companies',
-            icon: PrimeIcons.LIST,
-          },
-          {
-            label: 'Create',
-            route: '/companies/new',
-            icon: PrimeIcons.PLUS,
-          },
-        ]
+        route: '/companies'
       },
       {
         label: 'Assign',
