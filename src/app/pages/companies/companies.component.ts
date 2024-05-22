@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
@@ -12,10 +12,10 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { firstValueFrom } from 'rxjs';
 import { CompanyResDto } from '../../dto/company/company.res.dto';
 import { UpdateCompanyReqDto } from '../../dto/company/update-company.req.dto';
 import { CompanyService } from '../../services/company/company.service';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-companies',
@@ -34,6 +34,7 @@ import { CompanyService } from '../../services/company/company.service';
     ReactiveFormsModule,
     AvatarModule,
     AvatarGroupModule,
+    CheckboxModule,
   ],
   templateUrl: './companies.component.html',
   styleUrl: './companies.component.css',
@@ -44,100 +45,70 @@ export class CompaniesComponent {
 
   isEditing = false;
   isHovered = false;
-  isNewLogo = false;
-  originalCompanyData: CompanyResDto | null = null;
+  clonedCompany: { [s: string]: CompanyResDto } = {}
+  companies: CompanyResDto[] = []
+  originalFormValues: any;
+  isFormUnchanged = true;
+  showFilterRow = false;
 
   companyForm = this.formBuilder.group({
     id: ['', [Validators.required]],
     companyName: ['', [Validators.required]],
-    companyLogoContent: ['', [Validators.required]],
-    companyLogoExtension: ['', [Validators.required]],
+    companyLogoContent: [''],
+    companyLogoExtension: [''],
   });
 
-  get isEditingCompany() {
-    return this.isEditing
-  }
-
-  companies: CompanyResDto[] = []
-
   constructor(
-    private messageService: MessageService,
     private companyService: CompanyService,
     private formBuilder: NonNullableFormBuilder
-  ) { }
-
-  ngOnInit() {
-    this.init()
-  }
-
-  init() {
-    firstValueFrom(this.companyService.getCompanies()).then(
-      res => {
-        this.companies = res
-        console.log(res)
-      }
-    )
+  ) {
+    this.companyService.getCompanies().subscribe(response => { this.companies = response })
   }
 
   generateImage(id: string) {
     return this.companyService.getImageUrl(id)
   }
-  
+
   generatePreviewImage(contentData: string | undefined, extension: string | undefined) {
     return `data:image/${extension};base64,${contentData}`;
   }
 
-  onCreateClick() {
-    // Handle create click
-  }
-
   onRowEditInit(company: CompanyResDto) {
+    this.clonedCompany[company.id as string] = { ...company };
     this.isEditing = true;
-    this.originalCompanyData = { ...company };
-    this.companyForm.patchValue(company);
+    this.companyForm.patchValue({ ...company });
+    this.originalFormValues = this.companyForm.getRawValue();
+    this.companyForm.valueChanges.subscribe(() => {
+      this.checkFormUnchanged();
+    });
   }
 
-  onRowEditSave(company: CompanyResDto) {
-    if(this.companyForm.valid) {
+  checkFormUnchanged() {
+    this.isFormUnchanged = JSON.stringify(this.companyForm.getRawValue()) === JSON.stringify(this.originalFormValues);
+  }
+
+  onRowEditSave() {
+    this.isEditing = false
+    if (this.companyForm.valid) {
       const editedCompany: UpdateCompanyReqDto = this.companyForm.getRawValue()
-      
-      // // Clear the form group
-      this.companyForm.reset();
-      this.isEditing = false;
-      this.originalCompanyData = null;
-      
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Company data is updated`
-      });
-      firstValueFrom(this.companyService.updateCompanyData(editedCompany)).then(
-        () => {
-          // // Update the original data with the edited data
-          const index = this.companies.findIndex(c => c.id === company.id)
-          if (index !== -1) {
-            this.companies[index] = { ...this.companies[index], ...editedCompany }
-          }
+      this.companyService.updateCompanyData(editedCompany).subscribe({
+        next: (response) => {
+          this.companyForm.reset()
+        },
+        error: (error) => console.error('Update failed:', error),
+        complete: () => {
+          console.log('Update company complete')
+          this.companyForm.reset()
         }
-      )
+      })
     }
   }
-  
+
   onRowEditCancel(company: CompanyResDto, index: number) {
-    if (this.originalCompanyData) {
-      this.companies[index] = { ...this.originalCompanyData };
-      this.originalCompanyData = null;
-    }
+    this.companies[index] = this.clonedCompany[company.id as string]
+    delete this.clonedCompany[company.id as string]
     this.companyForm.reset();
     this.isEditing = false;
-  }
-  
-  onSubmit() {
-    if(this.companyForm.valid) {
-    }
-  }
-
-  onAlert() {
   }
 
   onAvatarClick(): void {
@@ -151,16 +122,11 @@ export class CompaniesComponent {
       const reader = new FileReader();
 
       reader.onload = () => {
-        if (this.companyForm.value.companyLogoContent) {
-          this.isNewLogo = true
-        }
         const base64 = (reader.result as string).split(',')[1];
         this.companyForm.patchValue({
-          companyLogoContent: base64,
-          companyLogoExtension: file.type.split('/')[1]
+          companyLogoContent: base64, companyLogoExtension: file.type.split('/')[1]
         })
       };
-
       reader.readAsDataURL(file);
     }
   }

@@ -3,13 +3,13 @@ import { BaseService } from "../base/base.service";
 import { CompanyResDto } from "../../dto/company/company.res.dto";
 import { environment } from "../../../env/environment.prod";
 import { UpdateCompanyReqDto } from "../../dto/company/update-company.req.dto";
+import { UpdateResDto } from "../../dto/general-response/update.res.dto";
 
 @Injectable({
     providedIn: 'root'
 })
 
 export class CompanyService {
-
 
     constructor(
         private baseService: BaseService
@@ -24,6 +24,6 @@ export class CompanyService {
     }
 
     updateCompanyData(data: UpdateCompanyReqDto) {
-        return this.baseService.patch<UpdateCompanyReqDto>('companies', data)
+        return this.baseService.patch<UpdateResDto>('companies', data)
     }
 }

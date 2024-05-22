@@ -4,9 +4,12 @@
             <h3>Users</h3>
             <p-button icon="pi pi-plus" label="Create" [routerLink]="'new'" />
         </div>
+        <small class="flex align-content-center m-2">
+            <p-checkbox binary="true" [(ngModel)]="showFilterRow" label="Show Filters"></p-checkbox>
+        </small>
         <div class="card">
-            <pre>{{ userForm.value | json }}</pre>
-            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 8" [rows]="8"
+            <!-- <pre>{{ userForm.value | json }}</pre> -->
+            <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 5" [rows]="5"
                 [globalFilterFields]="['avatar', 'userName', 'roleName', 'email', 'phoneNumber']">
                 <ng-template pTemplate="header">
                     <tr>
@@ -17,7 +20,7 @@
                         <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
                         <th class="text-center">Actions</th>
                     </tr>
-                    <tr>
+                    <tr *ngIf="showFilterRow">
                         <th></th>
                         <th><p-columnFilter type="text" field="userName" /></th>
                         <th><p-columnFilter type="text" field="roleName" /></th>
@@ -27,8 +30,8 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-user let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="user" [formGroup]="userForm" (ngSubmit)="onRowEditSave()">
-                        <td>
+                    <tr [pEditableRow]="user" [formGroup]="userForm">
+                        <td class="text-center">
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <div class="avatar-container" (mouseover)="isHovered = true"
@@ -38,9 +41,10 @@
                                             shape="circle" class="flex justify-content-center" title="Edit Avatar"
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
-                                        <p-avatar *ngIf="!userForm.value.fileContent && !userForm.value.fileExtension" [image]="getImage(user.profilePictureId)"
-                                            shape="circle" class="flex justify-content-center" title="Edit Avatar"
-                                            role="button" (click)="onAvatarClick()"
+                                        <p-avatar *ngIf="!userForm.value.fileContent && !userForm.value.fileExtension"
+                                            [image]="getImage(user.profilePictureId)" shape="circle"
+                                            class="flex justify-content-center" title="Edit Avatar" role="button"
+                                            (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
                                         <p-badge
                                             [ngStyle]="{ 'position': 'absolute', 'bottom': '0', 'right': '0', 'transform': 'translate(50%, 50%)' }"
@@ -61,7 +65,7 @@
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <input title="Name" pInputText type="text" class="p-inputtext w-full" required
-                                        [(ngModel)]="user.userName" formControlName="userName" />
+                                        formControlName="userName" />
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{user.userName}}
@@ -83,7 +87,7 @@
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <input title="Email" pInputText type="email" class="p-inputtext w-full" required
-                                        [(ngModel)]="user.email" formControlName="email" />
+                                        formControlName="email" />
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{user.email}}
@@ -94,7 +98,7 @@
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <input title="Phone" pInputText type="tel" class="p-inputtext w-full"
-                                        [(ngModel)]="user.phoneNumber" formControlName="phoneNumber" />
+                                        formControlName="phoneNumber" />
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{user.phoneNumber}}
@@ -107,8 +111,8 @@
                                     pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(user)"
                                     class="p-button-rounded p-button-text" [disabled]="isEditing">
                                 </button>
-                                <button title="Edit Save" *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                                    icon="pi pi-check" (click)="onRowEditSave()"
+                                <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit" pSaveEditableRow
+                                    icon="pi pi-check" (click)="onRowEditSave()" [disabled]="isFormUnchanged || userForm.invalid"
                                     class="p-button-rounded p-button-text p-button-success mr-2">
                                 </button>
                                 <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"
