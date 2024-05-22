@@ -7,5 +7,5 @@ export interface UserReqDto{
     roleId: string
     fileContent: string
     fileExtension: string
-    companyReq: CompanyReqDto
+    companyReq?: CompanyReqDto
 }

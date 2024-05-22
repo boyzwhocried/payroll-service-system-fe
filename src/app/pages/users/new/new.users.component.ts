@@ -72,7 +72,7 @@ export class UserNew implements OnInit {
   }
 
   changeRoleOption(): void {
-    this.isClient = this.roles.some(role => role.id === this.userForm.value.roleId && role.roleName === RoleType.RL003);
+    this.isClient = this.roles.some(role => role.id === this.userForm.value.roleId && role.roleCode === RoleType.CLIENT);
 
     const companyNameControl = this.userForm.get('companyName');
     const payrollDateControl = this.userForm.get('payrollDate');
