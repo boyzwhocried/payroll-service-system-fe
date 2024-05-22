@@ -7,12 +7,12 @@ import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { AuthService } from "../../services/auth/auth.service";
 import { RouterModule } from "@angular/router";
-import { PayrollService } from "../../services/payroll.service";
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
 import { PayrollsResDto } from "../../models/dto/payrolls/payrolls.res.dto";
+import { PayrollService } from "../../services/payroll/payroll.service";
 
 @Component({
   selector: 'app-schedules',

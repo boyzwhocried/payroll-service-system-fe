@@ -94,12 +94,12 @@ export class CompaniesComponent {
   }
 
   onRowEditSave(company: CompanyResDto) {
-    const editedCompany: CompanyReqDto = this.companyForm.getRawValue() as CompanyReqDto;
+    // const editedCompany: CompanyReqDto = this.companyForm.getRawValue() as CompanyReqDto;
 
     // Update the original data with the edited data
     const index = this.companies.findIndex(c => c.id === company.id);
     if (index !== -1) {
-      this.companies[index] = { ...this.companies[index], ...editedCompany };
+      // this.companies[index] = { ...this.companies[index], ...editedCompany };
     }
 
     // Clear the form group
