@@ -13,14 +13,12 @@ import { RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { UserService } from '../../services/user/user.service';
-import { ImageResDto } from '../../dto/file/image.res.dto';
 import { environment } from '../../../env/environment.prod';
 import { UserReqDto } from '../../dto/user/user.req.dto';
 import { RoleService } from '../../services/role/role.service';
 import { RoleResDto } from '../../dto/role/role.res.dto';
 import { UserResDto } from '../../dto/user/user.res.dto';
-
-
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-users',
@@ -38,6 +36,7 @@ import { UserResDto } from '../../dto/user/user.res.dto';
     ReactiveFormsModule,
     AvatarModule,
     AvatarGroupModule,
+    CheckboxModule,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
@@ -47,8 +46,13 @@ export class UsersComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   isEditing = false;
-
   isHovered = false;
+  users: UserResDto[] = []
+  clonedUsers: { [s: string]: UserResDto } = {};
+  roles?: SelectItem[];
+  originalFormValues: any;
+  isFormUnchanged = true;
+  showFilterRow = false
 
   userForm = this.formBuilder.group({
     id: ['', [Validators.required]],
@@ -60,30 +64,22 @@ export class UsersComponent {
     fileExtension: [''],
   });
 
-  users: UserResDto[] = []
-
-  imageUrl: ImageResDto | undefined = undefined
-
-  clonedUsers: { [s: string]: UserResDto } = {};
-
-  roles!: SelectItem[];
-
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private userService: UserService,
     private roleService: RoleService,
   ) {
-    const users = this.userService.getAll().subscribe(response => { this.users = response })
+    this.userService.getAll().subscribe(response => { this.users = response })
     this.roleService.getAll().subscribe((response: RoleResDto[]) => {
       this.roles = response.map(role => ({
         label: role.roleName,
         value: role.id
       }));
     });
+
   }
 
   generateImage(contentData?: string | undefined, extension?: string | undefined): string {
-
     return `data:image/${extension};base64,${contentData}`;
   }
 
@@ -92,26 +88,37 @@ export class UsersComponent {
   }
 
   onRowEditInit(user: UserResDto) {
-    const role = this.roles.find(r => r.label === user.roleName);
+    const role = this.roles?.find(r => r.label === user.roleName);
     this.clonedUsers[user.id as string] = { ...user };
     this.isEditing = true;
     this.userForm.patchValue({
       ...user,
       roleId: role?.value
     });
+    this.originalFormValues = this.userForm.getRawValue();
+    this.userForm.valueChanges.subscribe(() => {
+      this.checkFormUnchanged();
+    });
+  }
+
+  checkFormUnchanged() {
+    this.isFormUnchanged = JSON.stringify(this.userForm.getRawValue()) === JSON.stringify(this.originalFormValues);
   }
 
   onRowEditSave() {
+    this.isEditing = false;
     if (this.userForm.valid) {
       const userReqDto: UserReqDto = this.userForm.getRawValue();
       this.userService.editUser(userReqDto).subscribe({
         next: (response) => {
           // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
-          this.isEditing = false;
           this.userForm.reset();
         },
-        error: (error) => console.error('Login failed:', error),
-        complete: () => console.log('Login request complete')
+        error: (error) => console.error('Update failed:', error),
+        complete: () => {
+          console.log('Update user complete')
+          this.userForm.reset();
+        }
       });
     } else {
       // this.messageService.add({ severity: 'warning', summary: 'Failed', detail: `Form is not valid` });
