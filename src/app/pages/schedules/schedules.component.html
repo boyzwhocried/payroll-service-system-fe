@@ -14,7 +14,7 @@
       <ng-template class="col" pTemplate="subtitle">
         <div *ngIf="!isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'orange'}"></span>
-          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatus }}</small></p>
+          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatusName }}</small></p>
           <p class="col-12 ml-2"><small>{{ schedule.payrollDate }}</small></p>
         </div>
         <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
@@ -28,8 +28,8 @@
       <ng-template pTemplate="footer">
         <div class="grid mt-1 justify-content-between">
           <div class="md:col-5 col-6">
-            <p-button routerLink="/schedules/{{schedule.clientAssignmentId}}" size="small" label="View" class="w-full"
-              styleClass="w-full" />
+            <p-button [disabled]="isNoSchedule(i)" routerLink="/schedules/{{schedule.clientAssignmentId}}" size="small"
+              label="View" class="w-full" styleClass="w-full" />
           </div>
         </div>
       </ng-template>
@@ -41,7 +41,7 @@
       <ng-template class="col" pTemplate="subtitle">
         <div *ngIf="!isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'orange'}"></span>
-          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatus }}</small></p>
+          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatusName }}</small></p>
         </div>
         <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'green'}"></span>

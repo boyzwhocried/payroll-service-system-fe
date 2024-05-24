@@ -14,6 +14,7 @@ import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
 import { PayrollResDto } from "../../dto/payroll/payroll.res.dto";
 import { RoleType } from "../../constants/roles.constant";
+import { ScheduleStatusType } from "../../constants/schedule-request-types.constant";
 
 @Component({
   selector: 'app-schedules',
@@ -78,7 +79,7 @@ export class Schedules implements OnInit {
   }
 
   statusColor(i : number) : string {
-    if (this.schedules.at(i)?.scheduleStatus) {
+    if (this.schedules.at(i)?.scheduleStatusCode) {
       return 'orange'
     } else {
       return 'green'
@@ -86,14 +87,21 @@ export class Schedules implements OnInit {
   }
 
   isPendingSchedule(i : number) {
-    if (this.schedules.at(i)?.scheduleStatus == 'Pending Schedule') {
+    if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.PENDING_SCHEDULE) {
       return true
     }
     return false
   }
 
   isCompleted(i : number) {
-    if (this.schedules.at(i)?.scheduleStatus == 'Completed') {
+    if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.COMPLETED) {
+      return true
+    }
+    return false
+  }
+
+  isNoSchedule(i : number) {
+    if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.NO_SCHEDULE) {
       return true
     }
     return false
