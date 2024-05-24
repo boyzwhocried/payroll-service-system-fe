@@ -1,6 +1,6 @@
-<div class="grid mt-5 col-12 row-gap-3">
+<div class="grid mt-5 row-gap-3">
   <div *ngFor="let schedule of schedules; let i = index" class="md:col-4 lg:col-3 col-12">
-    <p-card *ngIf="Role" class="grid justify-content-center" [style]="{ width: '20rem' }">
+    <p-card *ngIf="rolePS" class="grid justify-content-center" [style]="{ width: '20rem' }">
       <ng-template class="col align-self-center" pTemplate="title">
         <div class="grid mx-1 justify-content-between align-items-center">
           <p class="text-base">{{ schedule.clientName }}</p>
@@ -27,17 +27,14 @@
       </ng-template>
       <ng-template pTemplate="footer">
         <div class="grid mt-1 justify-content-between">
-          <div class="md:col-4 col-6">
-            <p-button *ngIf="!isPendingSchedule(i)" size="small" label="View" class="w-full" styleClass="w-full" />
-          </div>
-          <div class="col-6">
-            <p-button *ngIf="isPendingSchedule(i) || isCompleted(i)" severity="secondary" size="small" icon="pi pi-plus"
-              label="Schedule" class="w-full" styleClass="w-full" />
+          <div class="md:col-5 col-6">
+            <p-button routerLink="/schedules/{{schedule.clientAssignmentId}}" size="small" label="View" class="w-full"
+              styleClass="w-full" />
           </div>
         </div>
       </ng-template>
     </p-card>
-    <p-card *ngIf="!Role" class="grid justify-content-center" [style]="{ width: '20rem' }">
+    <p-card *ngIf="roleClient" class="grid justify-content-center" [style]="{ width: '20rem' }">
       <ng-template class="grid justify-content-end" pTemplate="title">
         <p class="text-base font-medium ml-2 text-right"><small>{{ schedule.payrollDate }}</small></p>
       </ng-template>

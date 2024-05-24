@@ -13,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from "primeng/toast";
 import { MessageService } from "primeng/api";
 import { PayrollResDto } from "../../dto/payroll/payroll.res.dto";
+import { RoleType } from "../../constants/roles.constant";
 
 @Component({
   selector: 'app-schedules',
@@ -39,50 +40,7 @@ export class Schedules implements OnInit {
   status: string = 'Pending'
   dataLogin = this.authService.getLoginData()
   visible: boolean = false;
-  schedules : PayrollResDto[] = [
-    {
-      id: 'asd12',
-      clientName: 'PT Sejahtera',
-      scheduleStatus: "Pending Schedule",
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'asasd12d12',
-      clientName: 'PT Rebahan Maju',
-      scheduleStatus: 'Completed',
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'as1231asdd12',
-      clientName: 'PT Hore Selalu',
-      scheduleStatus: "Pending Client's Document",
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'as1231d12',
-      clientName: 'PT Haha Hihi',
-      scheduleStatus: "Pending Client's Document",
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'asd1231212',
-      clientName: 'PT Aurora',
-      scheduleStatus: "Pending Schedule",
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'as123d12',
-      clientName: 'PT Damedame',
-      scheduleStatus: "Pending Client's Document",
-      payrollDate: '2024-05-20'
-    },
-    {
-      id: 'asd11232',
-      clientName: 'PT Ooyama Taesan',
-      scheduleStatus: "Pending Feedback",
-      payrollDate: '2024-05-20'
-    },
-  ]
+  schedules : PayrollResDto[] = []
 
   rescheduleReqDtoFg = this.fb.group({
       id: ['', Validators.required],
@@ -97,7 +55,7 @@ export class Schedules implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.init
+    this.init()
   }
 
   init() {
@@ -106,9 +64,11 @@ export class Schedules implements OnInit {
     })
   }
 
-  get Role() {
-    // return this.dataLogin?.roleCode == RoleType.RL002
-    return true
+  get rolePS() {
+    return this.dataLogin?.roleCode == RoleType.PS
+  }
+  get roleClient() {
+    return this.dataLogin?.roleCode == RoleType.CLIENT
   }
 
   showDialog(schedule : PayrollResDto) {
