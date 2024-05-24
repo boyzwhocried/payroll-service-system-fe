@@ -20,6 +20,8 @@ import { firstValueFrom } from 'rxjs';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DocumentReqDto } from '../../models/dto/stepper/document.req.dto';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../services/auth/auth.service';
+import { RoleType } from '../../constants/role.const';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -51,6 +53,7 @@ export class Stepper implements OnInit {
   stepperDocuments!: StepperResDto;
   documentIndex!: number;
   allClientDocumentsComplete: boolean = false;
+  loginData = this.authService.getLoginData();
 
   documentReqDtoFg = this.fb.group({
     documentId: ['', [Validators.required]],
@@ -58,14 +61,24 @@ export class Stepper implements OnInit {
     base64: ['', [Validators.required]],
     clientAssignmentId: ['', [Validators.required]],
     isSignedByPS: [false, [Validators.required]],
+    isSignedByClient: [false, [Validators.required]],
   });
 
-  scheduleId: string = '01a346c2-8a00-44a3-b80b-337d27963628';
+  scheduleId: string = '990094b8-9255-428b-a907-65adec574a4b';
 
   constructor(
     private stepperService: StepperService,
-    private fb: NonNullableFormBuilder
+    private fb: NonNullableFormBuilder,
+    private authService: AuthService
   ) {}
+
+  get isClient() {
+    return this.loginData?.roleCode == RoleType.CLIENT;
+  }
+
+  get isPS() {
+    return this.loginData?.roleCode == RoleType.PAYROLL_SERVICE;
+  }
 
   fileUpload(event: any, documentId: string, documentIndex: number) {
     const toBase64 = (file: File) =>
@@ -90,8 +103,17 @@ export class Stepper implements OnInit {
           base64: resultBase64,
           documentName: file.name,
           clientAssignmentId: this.stepperDocuments.clientAssignmentId,
-          isSignedByPS: true,
         });
+        if (this.isPS) {
+          this.documentReqDtoFg.patchValue({
+            isSignedByPS: true,
+            isSignedByClient: true,
+          });
+        } else {
+          this.documentReqDtoFg.patchValue({
+            isSignedByClient: true,
+          });
+        }
 
         this.documentIndex = documentIndex;
       });
@@ -107,7 +129,13 @@ export class Stepper implements OnInit {
         () => {
           this.stepperDocuments.documentsRes.forEach((item, index) => {
             if (index == this.documentIndex) {
-              item.isSignedByPs = true;
+              if (this.isPS) {
+                item.isSignedByPs = true;
+              } else {
+                if (!item.isSignedByClient) {
+                  item.isSignedByClient = true;
+                }
+              }
             }
           });
 
@@ -115,6 +143,12 @@ export class Stepper implements OnInit {
         }
       );
     }
+  }
+
+  pingClient() {
+    firstValueFrom(
+      this.stepperService.pingClient(this.stepperDocuments.clientAssignmentId)
+    );
   }
 
   ngOnInit(): void {

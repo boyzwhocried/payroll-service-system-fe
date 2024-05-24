@@ -56,11 +56,11 @@ export class BaseService {
       .pipe(this.response<T>());
   }
 
-  post<T>(path: string, body: any, withToken: boolean = true) {
+  post<T>(path: string, body?: any, withToken: boolean = true) {
     return this.http
       .post<T>(
         `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        body,
+        body ? body : null,
         withToken ? this.headers : undefined
       )
       .pipe(this.response<T>());

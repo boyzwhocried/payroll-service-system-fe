@@ -18,4 +18,10 @@ export class StepperService {
   saveDocument(body: DocumentReqDto) {
     return this.baseService.patch<UpdateResDto>('documents', body);
   }
+
+  pingClient(clientAssignmentId: string) {
+    return this.baseService.post<InsertResDto>(
+      `payrolls/ping/${clientAssignmentId}`
+    );
+  }
 }
