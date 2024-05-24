@@ -19,7 +19,7 @@ import { AvatarModule } from 'primeng/avatar';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
-  AllItems: MenuItem[] | undefined;
+  allItems: MenuItem[] | undefined;
   SAItems: MenuItem[] | undefined;
   clientItems: MenuItem[] | undefined;
   PSItems: MenuItem[] | undefined;
@@ -51,7 +51,7 @@ export class NavbarComponent {
   constructor() { }
 
   ngOnInit() {
-    this.AllItems = [
+    this.allItems = [
       {
         label: 'Users',
         icon: PrimeIcons.USERS,

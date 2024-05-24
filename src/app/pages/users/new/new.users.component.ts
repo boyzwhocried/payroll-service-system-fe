@@ -118,11 +118,13 @@ export class UserNew implements OnInit {
   }
 
   formatPayrollDate(date: string): string {
-    const parsedDate = new Date(date);
-    if (!isNaN(parsedDate.getTime())) {
-      return String(parsedDate.getDate());
-    }
-    return '';
+    // const parsedDate = new Date(date);
+    // if (!isNaN(parsedDate.getTime())) {
+    //   return String(parsedDate.getDate());
+    // }
+    // return '';
+    const dateString = new Date(date);
+    return dateString.getUTCDate().toString();
   }
 
   onSubmit(): void {
@@ -145,6 +147,9 @@ export class UserNew implements OnInit {
         fileExtension: this.userForm.value.profileExtension as string,
         companyReq: company
       };
+
+      // console.log(user);
+      // console.log(company);
 
       this.userService.addUser(user).subscribe(
         response => {

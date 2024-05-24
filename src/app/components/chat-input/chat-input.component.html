@@ -1,0 +1,4 @@
+<div class="chat-input">
+    <input type="text" pInputText [(ngModel)]="message" placeholder="Type a message..." (keyup.enter)="emitMessage()" />
+    <button pButton type="button" label="Send" icon="pi pi-send" title="Send Message" (click)="emitMessage()"></button>
+</div>

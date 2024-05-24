@@ -71,7 +71,18 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/assign/assign-client/assign-client.component').then(acc => acc.AssignClientComponent)
             }
         ]
-    }
+    },
+    {
+        path: 'chat',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Chat',
+                loadComponent: () => import('./pages/chat/chat.component').then(s => s.ChatComponent),
+            },
+        ]
+    },
 ];
 
 @NgModule({
