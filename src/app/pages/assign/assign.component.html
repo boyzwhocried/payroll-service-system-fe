@@ -1,0 +1,88 @@
+<div class="flex align-items-center justify-content-center min-h-screen mx-5">
+    
+    <div class="surface-card p-4 shadow-2 border-round w-full">
+        
+        <div class="flex flex-row justify-content-between align-content-center">
+            <h3>Payroll Services</h3>
+        </div>
+
+        <div class="card">
+
+            <p-table [value]="psList" dataKey="id" [paginator]="psList.length > 8" [rows]="8">
+                
+                <ng-template pTemplate="header">
+                    
+                    <tr>
+                        <th class="text-center">Avatar</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }" class="text-center">Client(s)</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-ps let-ri="rowIndex">
+                    
+                    <tr>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    <p-avatar [image]="generateImage(ps.profilePictureId)" shape="circle"
+                                        class="flex justify-content-center" />
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    {{ps.userName}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    {{ps.email}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    {{ps.phoneNo}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    <div class="text-center">
+                                        {{ps.totalClients}}
+                                    </div>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <p-button label="Assign" (click)="click(ps.psId)" />
+                            </div>
+                        </td>
+
+                    </tr>
+
+                </ng-template>
+
+            </p-table>
+
+        </div>
+
+    </div>
+
+</div>

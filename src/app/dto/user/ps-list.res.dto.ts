@@ -3,5 +3,6 @@ export interface PsListResDto {
     userName: string,
     email: string,
     phoneNo: string,
-    totalClients: number
+    totalClients: number,
+    profilePictureId: string
 }
