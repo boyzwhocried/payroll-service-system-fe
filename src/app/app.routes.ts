@@ -56,6 +56,22 @@ export const routes: Routes = [
             },
         ]
     },
+    {
+        path: 'assign',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Assign',
+                loadComponent: () => import('./pages/assign/assign.component').then(ac => ac.AssignComponent)
+            },
+            {
+                path: ':id',
+                title: 'Assign Client',
+                loadComponent: () => import('./pages/assign/assign-client/assign-client.component').then(acc => acc.AssignClientComponent)
+            }
+        ]
+    }
 ];
 
 @NgModule({
