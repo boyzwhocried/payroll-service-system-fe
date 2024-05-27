@@ -1,7 +1,8 @@
 export interface PayrollResDto{
-    id: string,
+    clientAssignmentId: string,
     clientName: string,
-    scheduleStatus: string,
+    scheduleStatusName: string,
+    scheduleStatusCode: string,
     payrollDate: string
   }
 

@@ -33,8 +33,8 @@ import { CompanyReqDto } from "../../../dto/company/company.req.dto";
   providers: [MessageService],
 })
 export class UserNew implements OnInit {
-  roles: RoleResDto[] = []
-  isClient: boolean = false
+  roles: RoleResDto[] = [];
+  isClient: boolean = false;
 
   constructor(
     // private messageService: MessageService,
@@ -42,11 +42,6 @@ export class UserNew implements OnInit {
     private roleService: RoleService,
     private userService: UserService,
   ) { }
-
-  ngOnInit(): void {
-    this.initForm();
-    this.loadRoles();
-  }
 
   userForm = this.formBuilder.group({
     username: ['', Validators.required],
@@ -61,9 +56,13 @@ export class UserNew implements OnInit {
     companyLogoExtension: ['']
   });
 
-  initForm(): void {
-
+  ngOnInit(): void {
+    this.initForm();
+    this.loadRoles();
+    this.handlePayrollDateChanges();
   }
+
+  initForm(): void {}
 
   loadRoles(): void {
     this.roleService.getAll().subscribe(response => {
@@ -125,9 +124,18 @@ export class UserNew implements OnInit {
     return '';
   }
 
+  handlePayrollDateChanges(): void {
+    this.userForm.get('payrollDate')?.valueChanges.subscribe(date => {
+      if (date) {
+        const formattedDate = this.formatPayrollDate(date);
+        this.userForm.patchValue({ payrollDate: formattedDate }, { emitEvent: false });
+      }
+    });
+  }
+
   onSubmit(): void {
     if (this.userForm.valid) {
-      const formattedPayrollDate = this.formatPayrollDate(this.userForm.value.payrollDate as string);
+      const formattedPayrollDate = this.userForm.value.payrollDate as string;
 
       const company: CompanyReqDto = {
         companyName: this.userForm.value.companyName as string,

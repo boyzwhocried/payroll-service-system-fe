@@ -54,6 +54,11 @@ export const routes: Routes = [
                 title: 'Create Schedule',
                 loadComponent: () => import('./pages/schedules/create-schedule/create-schedule.component').then(s => s.CreateScheduleComponent),
             },
+            {
+                path: ':id',
+                title: 'Client Schedule',
+                loadComponent: () => import('./pages/schedules/client-schedules/client-schedules.component').then(c => c.ClientSchedules)
+            }
         ]
     },
     {
