@@ -2,121 +2,192 @@
   {{ documentReqDtoFg.value | json }}
 </pre>
 
-<div class="card">
-  <h1 class="text-center">Upload Required Payroll Documents</h1>
-  <p-stepper orientation="vertical" [linear]="true">
-    <p-stepperPanel
-      *ngFor="let data of stepperDocuments.documentsRes; let i = index"
-      [header]="data.activity + ' - ' + data.documentDeadline"
-    >
-      <p-tag severity="success" value="Success" />
-
-      <ng-template
-        pTemplate="content"
-        let-nextCallback="nextCallback"
-        let-prevCallback="prevCallback"
-        let-index="index"
+<div class="flex justify-content-center">
+  <div class="md:w-8 lg:w-6">
+    <h1 class="text-center">Upload Required Payroll Documents</h1>
+    <p-stepper orientation="vertical" [linear]="true">
+      <p-stepperPanel
+        *ngFor="let data of stepperDocuments.documentsRes; let i = index"
+        [header]="data.activity + ' - ' + data.documentDeadline"
       >
-        <div class="border-2 surface-ground surface-border border-round p-4">
-          <div class="grid">
-            <div class="col-6 flex gap-4 flex-column md:flex-row">
-              <p-fileUpload
-                mode="basic"
-                chooseLabel="Choose"
-                chooseIcon="pi pi-upload"
-                name="demo[]"
-                accept=".doc, .docx, .xls, .xlsx, .pdf"
-                maxFileSize="3000000"
-                (onSelect)="fileUpload($event, data.documentId, i)"
-                [auto]="true"
-                [disabled]="
-                  (isClient && data.isSignedByPs) ||
-                  (isPS && !data.isSignedByClient) ||
-                  data.isSignedByPs
-                "
-              /><p-button
-                label="Submit"
-                icon="pi pi-check"
-                (onClick)="submitDocument()"
-                [disabled]="!documentReqDtoFg.valid"
-              />
-            </div>
+        <p-tag severity="success" value="Success" />
 
-            <div class="col-6 flex justify-content-end">
-              <p-tag
-                *ngIf="!data.isSignedByPs && !data.isSignedByClient"
-                severity="contrast"
-                icon="pi pi-times"
-                value="Pending Document"
-              />
-              <p-tag
-                *ngIf="data.isSignedByClient && !data.isSignedByPs"
-                severity="warning"
-                icon="pi pi-hourglass"
-                value="Pending Approval"
-              />
-              <p-tag
-                *ngIf="data.isSignedByClient && data.isSignedByPs"
+        <ng-template
+          pTemplate="content"
+          let-nextCallback="nextCallback"
+          let-prevCallback="prevCallback"
+          let-index="index"
+        >
+          <div class="border-2 surface-ground surface-border border-round p-4">
+            <div class="grid">
+              <div class="col-6 flex gap-4 flex-column md:flex-row">
+                <p-fileUpload
+                  mode="basic"
+                  chooseLabel="Choose"
+                  chooseIcon="pi pi-upload"
+                  name="demo[]"
+                  accept=".doc, .docx, .xls, .xlsx, .pdf"
+                  maxFileSize="3000000"
+                  (onSelect)="fileUpload($event, data.documentId, i)"
+                  [auto]="true"
+                  [disabled]="
+                    (isClient && data.isSignedByPs) ||
+                    (isPS && !data.isSignedByClient) ||
+                    data.isSignedByPs
+                  "
+                /><p-button
+                  label="Submit"
+                  icon="pi pi-check"
+                  (onClick)="submitDocument()"
+                  [disabled]="!documentReqDtoFg.valid"
+                />
+              </div>
+
+              <div class="col-6 flex justify-content-end">
+                <p-tag
+                  *ngIf="!data.isSignedByPs && !data.isSignedByClient"
+                  severity="contrast"
+                  icon="pi pi-times"
+                  value="Pending Document"
+                />
+                <p-tag
+                  *ngIf="data.isSignedByClient && !data.isSignedByPs"
+                  severity="warning"
+                  icon="pi pi-hourglass"
+                  value="Pending Approval"
+                />
+                <p-tag
+                  *ngIf="data.isSignedByClient && data.isSignedByPs"
+                  severity="success"
+                  icon="pi pi-check"
+                  value="Approved"
+                />
+              </div>
+
+              <div class="col-12 md:col-6">
+                <p-button
+                  *ngIf="data.isSignedByClient"
+                  label="Preview Document"
+                  icon="pi pi-eye"
+                />
+              </div>
+              <div class="col-12 md:col-6 flex md:justify-content-end">
+                <p-button
+                  *ngIf="isPS"
+                  label="Ping Client"
+                  icon="pi pi-bell"
+                  severity="danger"
+                  (onClick)="pingClient()"
+                  [disabled]="data.isSignedByClient"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="flex py-4 gap-2">
+            <p-button
+              *ngIf="i != 0"
+              label="Back"
+              severity="secondary"
+              (onClick)="prevCallback.emit()"
+            />
+            <p-button
+              label="Next"
+              [disabled]="!data.isSignedByPs"
+              (onClick)="nextCallback.emit()"
+            />
+          </div>
+        </ng-template>
+      </p-stepperPanel>
+      <p-stepperPanel header="Download Payroll Documents">
+        <p-tag severity="success" value="Success" />
+
+        <ng-template
+          pTemplate="content"
+          let-nextCallback="nextCallback"
+          let-prevCallback="prevCallback"
+          let-index="index"
+        >
+          <div
+            class="flex flex-column gap-4 order-2 surface-ground surface-border border-round p-4"
+          >
+            <div>
+              <p class="font-bold text-lg">Calculated Salary Document</p>
+              <div class="flex gap-4">
+                <p-fileUpload
+                  *ngIf="isPS"
+                  mode="basic"
+                  chooseLabel="Choose"
+                  chooseIcon="pi pi-upload"
+                  name="demo[]"
+                  accept=".doc, .docx, .xls, .xlsx, .pdf"
+                  maxFileSize="3000000"
+                  [auto]="true"
+                /><p-button
+                  label="Submit"
+                  *ngIf="isPS"
+                  icon="pi pi-check"
+                  (onClick)="submitDocument()"
+                  [disabled]="!documentReqDtoFg.valid"
+                />
+
+                <p-button
+                  label="Download"
+                  icon="pi pi-download"
+                  severity="success"
+                />
+              </div>
+            </div>
+            <div>
+              <p class="font-bold text-lg">Paycheck Document</p>
+              <div class="flex gap-4">
+                <p-fileUpload
+                  *ngIf="isPS"
+                  mode="basic"
+                  chooseLabel="Choose"
+                  chooseIcon="pi pi-upload"
+                  name="demo[]"
+                  accept=".doc, .docx, .xls, .xlsx, .pdf"
+                  maxFileSize="3000000"
+                  [auto]="true"
+                /><p-button
+                  *ngIf="isPS"
+                  label="Submit"
+                  icon="pi pi-check"
+                  (onClick)="submitDocument()"
+                  [disabled]="!documentReqDtoFg.valid"
+                />
+                <p-button
+                  label="Download"
+                  icon="pi pi-download"
+                  severity="success"
+                />
+              </div>
+            </div>
+            <div>
+              <p class="font-bold text-lg">Payroll Documents Report</p>
+              <p-button
+                label="Download"
+                icon="pi pi-download"
                 severity="success"
-                icon="pi pi-check"
-                value="Approved"
-              />
-            </div>
-
-            <div class="col-12 md:col-6">
-              <p-button
-                *ngIf="data.isSignedByClient"
-                label="Preview Document"
-                icon="pi pi-eye"
-              />
-            </div>
-            <div class="col-12 md:col-6 flex md:justify-content-end">
-              <p-button
-                *ngIf="isPS"
-                label="Ping Client"
-                icon="pi pi-bell"
-                severity="danger"
-                (onClick)="pingClient()"
-                [disabled]="data.isSignedByClient"
               />
             </div>
           </div>
-        </div>
-        <div class="flex py-4 gap-2">
-          <p-button
-            *ngIf="i != 0"
-            label="Back"
-            severity="secondary"
-            (onClick)="prevCallback.emit()"
-          />
-          <p-button
-            label="Next"
-            [disabled]="!data.isSignedByPs"
-            (onClick)="nextCallback.emit()"
-          />
-        </div>
-      </ng-template>
-    </p-stepperPanel>
-    <p-stepperPanel header="Download Payroll Documents">
-      <p-tag severity="success" value="Success" />
-
-      <ng-template
-        pTemplate="content"
-        let-nextCallback="nextCallback"
-        let-prevCallback="prevCallback"
-        let-index="index"
-      >
-        <div class="border-2 surface-ground surface-border border-round p-4">
-          <h1>Finish</h1>
-        </div>
-        <div class="flex py-4 gap-2">
-          <p-button
-            label="Back"
-            severity="secondary"
-            (onClick)="prevCallback.emit()"
-          />
-        </div>
-      </ng-template>
-    </p-stepperPanel>
-  </p-stepper>
+          <div class="flex py-4 gap-2">
+            <p-button
+              label="Back"
+              severity="secondary"
+              (onClick)="prevCallback.emit()"
+            />
+          </div>
+        </ng-template>
+      </p-stepperPanel>
+    </p-stepper>
+  </div>
 </div>
+<ngx-doc-viewer
+  [url]="
+    'https://drive.google.com/file/d/0B5ImRpiNhCfGZDVhMGEyYmUtZTdmMy00YWEyLWEyMTQtN2E2YzM3MDg3MTZh/preview'
+  "
+  viewer="google"
+  style="width: 100%; height: 50vh"
+></ngx-doc-viewer>

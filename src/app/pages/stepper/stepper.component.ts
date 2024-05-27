@@ -7,12 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { ToastModule } from 'primeng/toast';
 import { StepperModule } from 'primeng/stepper';
 import { StepperResDto } from '../../models/dto/stepper/stepper.res.dto';
 import { StepperService } from '../../services/stepper.service';
@@ -35,21 +30,17 @@ interface UploadEvent {
   styleUrl: './stepper.component.css',
   imports: [
     CommonModule,
-    FormsModule,
     ButtonModule,
     ReactiveFormsModule,
-    CardModule,
-    BadgeModule,
     RouterModule,
-    DialogModule,
     FileUploadModule,
-    InputTextModule,
-    ToastModule,
     StepperModule,
     TagModule,
+    NgxDocViewerModule,
   ],
 })
 export class Stepper implements OnInit {
+  date: Date | undefined;
   stepperDocuments!: StepperResDto;
   documentIndex!: number;
   allClientDocumentsComplete: boolean = false;
