@@ -63,14 +63,14 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'stepper',
+    path: 'payrolls',
     component: NavbarComponent,
     children: [
       {
         path: ':scheduleId',
-        title: 'Stepper',
+        title: 'Payrolls',
         loadComponent: () =>
-          import('./pages/stepper/stepper.component').then((s) => s.Stepper),
+          import('./pages/payrolls/payrolls.component').then((s) => s.Payrolls),
       },
     ],
   },

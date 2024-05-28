@@ -9,7 +9,7 @@ import { UpdateCalculatedDocumentReqDto } from '../models/dto/stepper/update-cal
 @Injectable({
   providedIn: 'root',
 })
-export class StepperService {
+export class PayrollStepperService {
   constructor(private baseService: BaseService) {}
 
   getDocuments(scheduleId: string) {
@@ -24,9 +24,7 @@ export class StepperService {
     return this.baseService.patch<UpdateResDto>('documents/final', body);
   }
 
-  pingClient(clientAssignmentId: string) {
-    return this.baseService.post<InsertResDto>(
-      `payrolls/ping/${clientAssignmentId}`
-    );
+  pingClient(scheduleId: string) {
+    return this.baseService.post<InsertResDto>(`payrolls/ping/${scheduleId}`);
   }
 }

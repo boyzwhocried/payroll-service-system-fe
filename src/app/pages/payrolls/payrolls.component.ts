@@ -12,7 +12,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { StepperModule } from 'primeng/stepper';
 import { StepperResDto } from '../../models/dto/stepper/stepper.res.dto';
-import { StepperService } from '../../services/stepper.service';
+import { PayrollStepperService } from '../../services/payroll-stepper.service';
 import { firstValueFrom } from 'rxjs';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DocumentReqDto } from '../../models/dto/stepper/document.req.dto';
@@ -30,8 +30,8 @@ interface UploadEvent {
 @Component({
   selector: 'app-stepper',
   standalone: true,
-  templateUrl: './stepper.component.html',
-  styleUrl: './stepper.component.css',
+  templateUrl: './payrolls.component.html',
+  styleUrl: './payrolls.component.css',
   imports: [
     CommonModule,
     ButtonModule,
@@ -43,7 +43,7 @@ interface UploadEvent {
     NgxDocViewerModule,
   ],
 })
-export class Stepper implements OnInit {
+export class Payrolls implements OnInit {
   date: Date | undefined;
   stepperDocuments!: StepperResDto;
   documentIndex!: number;
@@ -70,7 +70,7 @@ export class Stepper implements OnInit {
 
   constructor(
     private activeRoute: ActivatedRoute,
-    private stepperService: StepperService,
+    private stepperService: PayrollStepperService,
     private fb: NonNullableFormBuilder,
     private authService: AuthService
   ) {}
@@ -180,9 +180,7 @@ export class Stepper implements OnInit {
   }
 
   pingClient() {
-    firstValueFrom(
-      this.stepperService.pingClient(this.stepperDocuments.clientAssignmentId)
-    );
+    firstValueFrom(this.stepperService.pingClient(this.scheduleId));
   }
 
   downloadDocument(documentId: string) {
