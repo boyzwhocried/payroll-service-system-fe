@@ -22,27 +22,30 @@
         >
           <div class="border-2 surface-ground surface-border border-round p-4">
             <div class="grid">
-              <div class="col-6 flex gap-4 flex-column md:flex-row">
-                <p-fileUpload
-                  mode="basic"
-                  chooseLabel="Choose"
-                  chooseIcon="pi pi-upload"
-                  name="demo[]"
-                  accept=".doc, .docx, .xls, .xlsx, .pdf"
-                  maxFileSize="3000000"
-                  (onSelect)="fileUpload($event, data.documentId, i, false)"
-                  [auto]="true"
-                  [disabled]="
-                    (isClient && data.isSignedByPs) ||
-                    (isPS && !data.isSignedByClient) ||
-                    data.isSignedByPs
-                  "
-                /><p-button
-                  label="Submit"
-                  icon="pi pi-check"
-                  (onClick)="submitDocument()"
-                  [disabled]="!documentReqDtoFg.valid"
-                />
+              <div class="col-6">
+                <p class="font-bold m-0 mb-3">Upload Signed Document</p>
+                <div class="flex gap-4 flex-column md:flex-row">
+                  <p-fileUpload
+                    mode="basic"
+                    chooseLabel="Choose"
+                    chooseIcon="pi pi-upload"
+                    name="demo[]"
+                    accept=".doc, .docx, .xls, .xlsx, .pdf"
+                    maxFileSize="3000000"
+                    (onSelect)="fileUpload($event, data.documentId, i, false)"
+                    [auto]="true"
+                    [disabled]="
+                      (isClient && data.isSignedByPs) ||
+                      (isPS && !data.isSignedByClient) ||
+                      data.isSignedByPs
+                    "
+                  /><p-button
+                    label="Submit"
+                    icon="pi pi-check"
+                    (onClick)="submitDocument()"
+                    [disabled]="!documentReqDtoFg.valid"
+                  />
+                </div>
               </div>
 
               <div class="col-6 flex justify-content-end">
@@ -66,31 +69,35 @@
                 />
               </div>
 
-              <div class="col-12 md:col-6">
-                <p-button
-                  *ngIf="data.isSignedByClient"
-                  label="Preview Document"
-                  icon="pi pi-eye"
-                />
+              <div class="col-12" *ngIf="data.isSignedByClient">
+                <p class="font-bold m-0 mb-3">Preview Signed Document</p>
+                <p-button label="Preview" icon="pi pi-eye" />
               </div>
-              <div class="col-12 md:col-6 flex md:justify-content-end">
-                <p-button
-                  *ngIf="isPS"
-                  label="Ping Client"
-                  icon="pi pi-bell"
-                  severity="danger"
-                  (onClick)="pingClient()"
-                  [disabled]="data.isSignedByClient"
-                />
-              </div>
-              <div class="col-12" *ngIf="data.documentDirectory">
-                <p-button
-                  label="Download"
-                  icon="pi pi-download"
-                  severity="success"
-                  [disabled]="!data.documentDirectory"
-                  (onClick)="downloadDocument(data.documentId)"
-                />
+              <div
+                class="col-12 flex flex-column md:flex-row justify-content-between"
+              >
+                <div *ngIf="data.documentDirectory">
+                  <p class="font-bold m-0 mb-3">Download Signed Document</p>
+                  <div>
+                    <p-button
+                      label="Download"
+                      icon="pi pi-download"
+                      severity="success"
+                      [disabled]="!data.documentDirectory"
+                      (onClick)="downloadDocument(data.documentId)"
+                    />
+                  </div>
+                </div>
+                <div class="flex align-items-end align-self-end">
+                  <p-button
+                    *ngIf="isPS"
+                    label="Ping Client"
+                    icon="pi pi-bell"
+                    severity="danger"
+                    (onClick)="pingClient()"
+                    [disabled]="data.isSignedByClient"
+                  />
+                </div>
               </div>
             </div>
           </div>
