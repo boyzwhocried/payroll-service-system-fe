@@ -1,0 +1,89 @@
+<div class="flex align-items-center justify-content-center min-h-screen mx-5">
+    <div class="surface-card p-4 shadow-2 border-round w-full">
+        <div class="flex flex-row justify-content-between align-content-center">
+            <h3>Notifications</h3>
+        </div>
+        <div class="card">
+            <pre>
+                {{notifications | json}}
+            </pre>
+            <p-table [value]="notifications" dataKey="id">
+                <!-- <ng-template pTemplate="header">
+                    <tr>
+                        <th class="text-center">Logo</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </ng-template> -->
+                <ng-template pTemplate="body" let-notification let-editing="editing" let-ri="rowIndex">
+                    <tr class="bg-white hover:surface-100">
+                    <!-- <tr [pEditableRow]="company" [formGroup]="companyForm"> -->
+                        
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    <div
+                                        class="flex flex-row column-gap-5"
+                                        (click)="onClickNotification(notification.isActive, notification.notificationId)"
+                                        [ngStyle]="{'cursor' : 'pointer'}"
+                                        >
+                                        <div [ngStyle]="{ 'width' : '1rem'}" class="flex align-items-center">
+                                            <span
+                                                *ngIf="isUnread(notification.isActive)"
+                                                class="status-dot border-round"></span>
+                                        </div>
+                                        <div class="flex flex-column">
+                                            <h4 class="text-left my-0">
+                                                {{notification.notificationHeader}}
+                                            </h4>
+                                            <p class="text-left my-0">
+                                                {{notification.notificationBody}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td [ngStyle]="{ 'width' : '1rem'}">
+                            <p-cellEditor>
+                                <ng-template pTemplate="output">
+                                    <i
+                                        class="pi pi-trash"
+                                        style="font-size: 2rem"
+                                        [ngStyle]="{'cursor' : 'pointer'}"
+                                        (click)="deleteNotification(notification.notificationId, ri)"
+                                        >
+                                    </i>
+                                </ng-template>
+
+                            </p-cellEditor>
+                        </td>
+                        <!-- <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button title="Edit Init" *ngIf="!editing" pButton pRipple type="button"
+                                    pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(company)"
+                                    class="p-button-rounded p-button-text" [disabled]="isEditing">
+                                </button>
+                                <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit" pSaveEditableRow
+                                    icon="pi pi-check" (click)="onRowEditSave()"
+                                    [disabled]="isFormUnchanged || companyForm.invalid"
+                                    class="p-button-rounded p-button-text p-button-success mr-2">
+                                </button>
+                                <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"
+                                    pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(company, ri)"
+                                    class="p-button-rounded p-button-text p-button-danger">
+                                </button>
+                            </div>
+                        </td> -->
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
