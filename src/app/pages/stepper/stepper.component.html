@@ -1,5 +1,7 @@
 <pre>
   {{ documentReqDtoFg.value | json }}
+  <hr>
+  {{updateCalculatedDocumentReqDtoFg.value | json}}
 </pre>
 
 <div class="flex justify-content-center">
@@ -28,7 +30,7 @@
                   name="demo[]"
                   accept=".doc, .docx, .xls, .xlsx, .pdf"
                   maxFileSize="3000000"
-                  (onSelect)="fileUpload($event, data.documentId, i)"
+                  (onSelect)="fileUpload($event, data.documentId, i, false)"
                   [auto]="true"
                   [disabled]="
                     (isClient && data.isSignedByPs) ||
@@ -81,6 +83,15 @@
                   [disabled]="data.isSignedByClient"
                 />
               </div>
+              <div class="col-12" *ngIf="data.documentDirectory">
+                <p-button
+                  label="Download"
+                  icon="pi pi-download"
+                  severity="success"
+                  [disabled]="!data.documentDirectory"
+                  (onClick)="downloadDocument(data.documentId)"
+                />
+              </div>
             </div>
           </div>
           <div class="flex py-4 gap-2">
@@ -107,62 +118,48 @@
           let-prevCallback="prevCallback"
           let-index="index"
         >
-          <div
+          <form
             class="flex flex-column gap-4 order-2 surface-ground surface-border border-round p-4"
+            [formGroup]="updateCalculatedDocumentReqDtoFg"
           >
-            <div>
-              <p class="font-bold text-lg">Calculated Salary Document</p>
-              <div class="flex gap-4">
-                <p-fileUpload
-                  *ngIf="isPS"
-                  mode="basic"
-                  chooseLabel="Choose"
-                  chooseIcon="pi pi-upload"
-                  name="demo[]"
-                  accept=".doc, .docx, .xls, .xlsx, .pdf"
-                  maxFileSize="3000000"
-                  [auto]="true"
-                /><p-button
-                  label="Submit"
-                  *ngIf="isPS"
-                  icon="pi pi-check"
-                  (onClick)="submitDocument()"
-                  [disabled]="!documentReqDtoFg.valid"
-                />
+            <div
+              *ngFor="
+                let data of stepperDocuments.calculatedDataResDto;
+                let i = index
+              "
+              formArrayName="documents"
+            >
+              <div [formGroupName]="i">
+                <p class="font-bold text-lg">{{ data.activity }}</p>
+                <div class="flex gap-4">
+                  <p-fileUpload
+                    *ngIf="isPS"
+                    mode="basic"
+                    chooseLabel="Choose"
+                    chooseIcon="pi pi-upload"
+                    name="demo[]"
+                    accept=".doc, .docx, .xls, .xlsx, .pdf"
+                    maxFileSize="3000000"
+                    (onSelect)="fileUpload($event, data.documentId, i, true)"
+                  />
 
-                <p-button
-                  label="Download"
-                  icon="pi pi-download"
-                  severity="success"
-                />
+                  <p-button
+                    [disabled]="!data.documentDirectory"
+                    (onClick)="downloadFinalDocument(data.documentId)"
+                    label="Download"
+                    icon="pi pi-download"
+                    severity="success"
+                  />
+                </div>
               </div>
             </div>
-            <div>
-              <p class="font-bold text-lg">Paycheck Document</p>
-              <div class="flex gap-4">
-                <p-fileUpload
-                  *ngIf="isPS"
-                  mode="basic"
-                  chooseLabel="Choose"
-                  chooseIcon="pi pi-upload"
-                  name="demo[]"
-                  accept=".doc, .docx, .xls, .xlsx, .pdf"
-                  maxFileSize="3000000"
-                  [auto]="true"
-                /><p-button
-                  *ngIf="isPS"
-                  label="Submit"
-                  icon="pi pi-check"
-                  (onClick)="submitDocument()"
-                  [disabled]="!documentReqDtoFg.valid"
-                />
-                <p-button
-                  label="Download"
-                  icon="pi pi-download"
-                  severity="success"
-                />
-              </div>
-            </div>
+            <p-button
+              label="Submit"
+              *ngIf="isPS"
+              icon="pi pi-check"
+              (onClick)="submitFinalDocument()"
+              [disabled]="!updateCalculatedDocumentReqDtoFg.valid"
+            />
             <div>
               <p class="font-bold text-lg">Payroll Documents Report</p>
               <p-button
@@ -171,7 +168,7 @@
                 severity="success"
               />
             </div>
-          </div>
+          </form>
           <div class="flex py-4 gap-2">
             <p-button
               label="Back"
@@ -184,10 +181,3 @@
     </p-stepper>
   </div>
 </div>
-<ngx-doc-viewer
-  [url]="
-    'https://drive.google.com/file/d/0B5ImRpiNhCfGZDVhMGEyYmUtZTdmMy00YWEyLWEyMTQtN2E2YzM3MDg3MTZh/preview'
-  "
-  viewer="google"
-  style="width: 100%; height: 50vh"
-></ngx-doc-viewer>

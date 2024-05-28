@@ -67,7 +67,7 @@ export const routes: Routes = [
     component: NavbarComponent,
     children: [
       {
-        path: '',
+        path: ':scheduleId',
         title: 'Stepper',
         loadComponent: () =>
           import('./pages/stepper/stepper.component').then((s) => s.Stepper),

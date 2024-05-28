@@ -4,6 +4,7 @@ import { StepperResDto } from '../models/dto/stepper/stepper.res.dto';
 import { DocumentReqDto } from '../models/dto/stepper/document.req.dto';
 import { InsertResDto } from '../models/dto/insert.res.dto';
 import { UpdateResDto } from '../models/dto/update.res.dto';
+import { UpdateCalculatedDocumentReqDto } from '../models/dto/stepper/update-calculated-document.req.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,10 @@ export class StepperService {
 
   saveDocument(body: DocumentReqDto) {
     return this.baseService.patch<UpdateResDto>('documents', body);
+  }
+
+  saveFinalDocument(body: UpdateCalculatedDocumentReqDto) {
+    return this.baseService.patch<UpdateResDto>('documents/final', body);
   }
 
   pingClient(clientAssignmentId: string) {
