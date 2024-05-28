@@ -71,6 +71,17 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/assign/assign-client/assign-client.component').then(acc => acc.AssignClientComponent)
             }
         ]
+    },
+    {
+        path: 'notification',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Notification',
+                loadComponent: () => import('./pages/notification/notification.component').then(n => n.NotificationComponent)
+            }
+        ]
     }
 ];
 
