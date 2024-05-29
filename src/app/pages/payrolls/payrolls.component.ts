@@ -196,6 +196,10 @@ export class Payrolls implements OnInit {
     );
   }
 
+  downloadReport() {
+    window.open(`${environment.backEndBaseUrl}:${environment.port}/reports`);
+  }
+
   previewDocument(documentId: string, documentName: string) {
     const fileType = documentName.split('.').at(1);
     firstValueFrom(this.stepperService.getDocument(documentId)).then((res) => {

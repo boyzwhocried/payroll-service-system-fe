@@ -31,4 +31,8 @@ export class PayrollStepperService {
   getDocument(documentId: string) {
     return this.baseService.getDocument(`documents/download/${documentId}`);
   }
+
+  getReport() {
+    return this.baseService.get(`reports`);
+  }
 }
