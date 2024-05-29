@@ -27,4 +27,8 @@ export class PayrollStepperService {
   pingClient(scheduleId: string) {
     return this.baseService.post<InsertResDto>(`payrolls/ping/${scheduleId}`);
   }
+
+  getDocument(documentId: string) {
+    return this.baseService.getDocument(`documents/download/${documentId}`);
+  }
 }

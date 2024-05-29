@@ -71,7 +71,13 @@
 
               <div class="col-12" *ngIf="data.isSignedByClient">
                 <p class="font-bold m-0 mb-3">Preview Signed Document</p>
-                <p-button label="Preview" icon="pi pi-eye" />
+                <p-button
+                  label="Preview"
+                  icon="pi pi-eye"
+                  (onClick)="
+                    previewDocument(data.documentId, data.documentName)
+                  "
+                />
               </div>
               <div
                 class="col-12 flex flex-column md:flex-row justify-content-between"
@@ -188,3 +194,20 @@
     </p-stepper>
   </div>
 </div>
+
+<p-dialog
+  [header]="docHeader"
+  [modal]="true"
+  [(visible)]="docVisible"
+  [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+>
+  <div [innerHTML]="docBody"></div>
+</p-dialog>
+
+<!-- <ngx-doc-viewer
+  [url]="testUrl"
+  viewer="mammoth"
+  style="width: 100%; height: 50vh"
+></ngx-doc-viewer> -->
+<script lang="javascript" src="dist/xlsx.full.min.js"></script>

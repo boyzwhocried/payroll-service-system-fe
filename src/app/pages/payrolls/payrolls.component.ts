@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormArray,
-  FormControl,
-  FormsModule,
   NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators,
@@ -20,12 +18,10 @@ import { TagModule } from 'primeng/tag';
 import { AuthService } from '../../services/auth/auth.service';
 import { RoleType } from '../../constants/role.const';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-import { UpdateCalculatedDocumentReqDto } from '../../models/dto/stepper/update-calculated-document.req.dto';
-
-interface UploadEvent {
-  originalEvent: Event;
-  files: File[];
-}
+import { environment } from '../../../env/environment.prod';
+import mammoth from 'mammoth';
+import { DialogModule } from 'primeng/dialog';
+import * as xlsx from 'xlsx';
 
 @Component({
   selector: 'app-stepper',
@@ -39,6 +35,7 @@ interface UploadEvent {
     RouterModule,
     FileUploadModule,
     StepperModule,
+    DialogModule,
     TagModule,
     NgxDocViewerModule,
   ],
@@ -48,7 +45,10 @@ export class Payrolls implements OnInit {
   stepperDocuments!: StepperResDto;
   documentIndex!: number;
   scheduleId!: string;
-
+  docVisible: boolean = false;
+  docHeader!: string;
+  docBody!: any;
+  pdfBody!: any;
   allClientDocumentsComplete: boolean = false;
   loginData = this.authService.getLoginData();
 
@@ -185,13 +185,43 @@ export class Payrolls implements OnInit {
 
   downloadDocument(documentId: string) {
     window.open(
-      `http://localhost:8080/documents/download/${documentId}`,
+      `${environment.backEndBaseUrl}:${environment.port}/documents/download/${documentId}`,
       '_blank'
     );
   }
 
   downloadFinalDocument(documentId: string) {
-    window.open(`http://localhost:8080/documents/final/download/${documentId}`);
+    window.open(
+      `${environment.backEndBaseUrl}:${environment.port}/documents/final/download/${documentId}`
+    );
+  }
+
+  previewDocument(documentId: string, documentName: string) {
+    const fileType = documentName.split('.').at(1);
+    firstValueFrom(this.stepperService.getDocument(documentId)).then((res) => {
+      if (fileType == 'pdf') {
+        // const buf = res;
+        // const blob = new Blob([buf], { type: 'application/pdf' });
+        // const url = URL.createObjectURL(blob);
+        // console.log(buf);
+      } else if (fileType === 'doc' || fileType === 'docx') {
+        mammoth
+          .convertToHtml({ arrayBuffer: res })
+          .then((resultObject) => {
+            this.docHeader = documentName;
+            this.docBody = resultObject.value;
+          })
+          .then(() => {
+            this.docVisible = true;
+          });
+      } else if (fileType === 'xls' || fileType === 'xlsx') {
+        const workbook = xlsx.read(res);
+
+        this.docHeader = documentName;
+        this.docBody = xlsx.utils.sheet_to_json(workbook);
+        this.docVisible = true;
+      }
+    });
   }
 
   ngOnInit(): void {

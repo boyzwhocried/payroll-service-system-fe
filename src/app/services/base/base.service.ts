@@ -56,6 +56,15 @@ export class BaseService {
       .pipe(this.response<T>());
   }
 
+  getDocument(path: string) {
+    return this.http.get(
+      `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+      {
+        responseType: 'arraybuffer',
+      }
+    );
+  }
+
   post<T>(path: string, body?: any, withToken: boolean = true) {
     return this.http
       .post<T>(
