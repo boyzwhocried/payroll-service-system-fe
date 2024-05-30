@@ -15,6 +15,7 @@ import { RoleResDto } from "../../../dto/role/role.res.dto";
 import { UserReqDto } from "../../../dto/user/user.req.dto";
 import { CompanyReqDto } from "../../../dto/company/company.req.dto";
 import { InputMaskModule } from 'primeng/inputmask';
+import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: 'user-new',
@@ -67,7 +68,7 @@ export class UserNew implements OnInit {
   initForm(): void {}
 
   loadRoles(): void {
-    this.roleService.getAll().subscribe(response => {
+    firstValueFrom(this.roleService.getAll()).then(response => {
       this.roles = response;
     });
   }

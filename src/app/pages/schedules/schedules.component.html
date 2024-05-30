@@ -6,7 +6,7 @@
           <p class="text-base">{{ schedule.clientName }}</p>
           <span routerLink="/login" class="border-circle align-items-center"
             [ngStyle]="{'width': '2.3rem', 'height' : '2.3rem', 'background-color' : 'transparent', 'border-style' : 'solid', 'border-width': '2px'}">
-            <a pBadge severity="danger" routerLink="/login" [ngStyle]="{ 'color' : 'black'}"
+            <a pBadge severity="danger" routerLink="/chat/" [ngStyle]="{ 'color' : 'black'}"
               class="ml-2 mt-2 pi pi-envelope"></a>
           </span>
         </div>
@@ -19,7 +19,7 @@
         </div>
         <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'green'}"></span>
-          <p class="m-0 ml-2"><small>Completed</small></p>
+          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatusName }}</small></p>
           <p class="col-12 ml-2"><small>{{ schedule.payrollDate }}</small></p>
         </div>
       </ng-template>
@@ -34,18 +34,20 @@
         </div>
       </ng-template>
     </p-card>
+  </div>
+  <div *ngFor="let clientSchedule of clientSchedules; let i = index" class="md:col-4 lg:col-3 col-12">
     <p-card *ngIf="roleClient" class="grid justify-content-center" [style]="{ width: '20rem' }">
       <ng-template class="grid justify-content-end" pTemplate="title">
-        <p class="text-base font-medium ml-2 text-right"><small>{{ schedule.payrollDate }}</small></p>
+        <p class="text-base font-medium ml-2 text-right"><small>{{ formatDate(clientSchedule.payrollDate) }}</small></p>
       </ng-template>
       <ng-template class="col" pTemplate="subtitle">
         <div *ngIf="!isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'orange'}"></span>
-          <p class="m-0 ml-2"><small>{{ schedule.scheduleStatusName }}</small></p>
+          <p class="m-0 ml-2"><small>{{ clientSchedule.scheduleStatusName }}</small></p>
         </div>
         <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
           <span class="status-dot border-round" [ngStyle]="{'background-color': 'green'}"></span>
-          <p class="m-0 ml-2"><small>Completed</small></p>
+          <p class="m-0 ml-2"><small>{{ clientSchedule.scheduleStatusName }}</small></p>
         </div>
       </ng-template>
       <ng-template pTemplate="body">
@@ -56,8 +58,8 @@
             <p-button size="small" label="View" class="w-full" styleClass="w-full" />
           </div>
           <div class="col-6">
-            <p-button (onClick)="showDialog(schedule)" *ngIf="isPendingSchedule(i)" size="small" label="Reschedule"
-              class="w-full" styleClass="w-full" />
+            <p-button (onClick)="showDialog(clientSchedule)" *ngIf="clientSchedule.canBeRescheduled" size="small"
+              label="Reschedule" class="w-full" styleClass="w-full" />
           </div>
         </div>
       </ng-template>
@@ -69,17 +71,18 @@
   <p-toast></p-toast>
   <p-dialog header="Reschedule" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
     <pre>
-    {{rescheduleReqDtoFg.value | json }}
+    {{rescheduleForm.value | json }}
   </pre>
 
-    <span class="p-text-secondary block mb-5">Update your Payroll Schedule.</span>
-    <div [formGroup]="rescheduleReqDtoFg" class="grid align-items-center gap-3 mb-3">
-      <p-calendar [iconDisplay]="'input'" formControlName="payrollDate" appendTo="body" [showIcon]="true"
-        inputId="icondisplay" class="w-full" styleClass="w-full" />
+    <span class="p-text-secondary block mb-5">Update your Last Document Deadline.</span>
+    <div [formGroup]="rescheduleForm" class="grid align-items-center gap-3 mb-3">
+      <p-calendar autofocus="false" [iconDisplay]="'input'" [maxDate]="maxDate" dateFormat="dd/mm/yy"
+        formControlName="newDeadline" appendTo="body" [showIcon]="true" inputId="icondisplay" class="w-full"
+        styleClass="w-full" />
     </div>
     <div class="grid justify-content-end gap-2">
       <p-button label="Cancel" severity="secondary" (click)="visible = false" />
-      <p-button label="Save" (click)="onSubmit();visible = false"></p-button>
+      <p-button label="Save" [disabled]="rescheduleForm.invalid" (click)="onSubmit();visible = false"></p-button>
     </div>
   </p-dialog>
 </div>

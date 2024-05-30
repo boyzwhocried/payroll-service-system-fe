@@ -14,6 +14,7 @@ import { TableModule } from 'primeng/table';
 import { PayrollService } from "../../../services/payroll.service";
 import { ScheduleResDto } from "../../../dto/schedule/schedule.res.dto";
 import { ScheduleStatusType } from "../../../constants/schedule-request-types.constant";
+import { firstValueFrom } from "rxjs";
 
 @Component({
   selector: 'client-schedules',
@@ -54,9 +55,8 @@ export class ClientSchedules implements OnInit {
       {field:'payrollDate', header: 'Payroll Date'},
       {field: 'action', header: 'Action'}
     ]
-    this.activeRoute.params.subscribe(param  =>{
-      console.log(param['id'])
-      this.payrollService.getSchedulesByClientId(param['id']).subscribe(res => {
+    firstValueFrom(this.activeRoute.params).then(param  =>{
+      firstValueFrom(this.payrollService.getSchedulesByClientId(param['id'])).then(res => {
         this.clientsSchedule = res
       })
     })

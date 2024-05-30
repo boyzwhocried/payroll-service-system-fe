@@ -1,5 +1,5 @@
 export interface ScheduleResDto {
-    id: string,
+    scheduleId: string,
     scheduleStatusName: string
     scheduleStatusCode: string
     canBeRescheduled: boolean

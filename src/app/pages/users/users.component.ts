@@ -19,6 +19,7 @@ import { RoleService } from '../../services/role/role.service';
 import { RoleResDto } from '../../dto/role/role.res.dto';
 import { UserResDto } from '../../dto/user/user.res.dto';
 import { CheckboxModule } from 'primeng/checkbox';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-users',
@@ -69,8 +70,8 @@ export class UsersComponent {
     private userService: UserService,
     private roleService: RoleService,
   ) {
-    this.userService.getAll().subscribe(response => { this.users = response })
-    this.roleService.getAll().subscribe((response: RoleResDto[]) => {
+    firstValueFrom(this.userService.getAll()).then(response => { this.users = response })
+    firstValueFrom(this.roleService.getAll()).then((response: RoleResDto[]) => {
       this.roles = response.map(role => ({
         label: role.roleName,
         value: role.id
@@ -96,7 +97,7 @@ export class UsersComponent {
       roleId: role?.value
     });
     this.originalFormValues = this.userForm.getRawValue();
-    this.userForm.valueChanges.subscribe(() => {
+    firstValueFrom(this.userForm.valueChanges).then(() => {
       this.checkFormUnchanged();
     });
   }

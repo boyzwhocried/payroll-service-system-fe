@@ -16,6 +16,7 @@ import { CompanyResDto } from '../../dto/company/company.res.dto';
 import { UpdateCompanyReqDto } from '../../dto/company/update-company.req.dto';
 import { CompanyService } from '../../services/company/company.service';
 import { CheckboxModule } from 'primeng/checkbox';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-companies',
@@ -62,7 +63,7 @@ export class CompaniesComponent {
     private companyService: CompanyService,
     private formBuilder: NonNullableFormBuilder
   ) {
-    this.companyService.getCompanies().subscribe(response => { this.companies = response })
+    firstValueFrom(this.companyService.getCompanies()).then(response => { this.companies = response })
   }
 
   generateImage(id: string) {
@@ -78,7 +79,7 @@ export class CompaniesComponent {
     this.isEditing = true;
     this.companyForm.patchValue({ ...company });
     this.originalFormValues = this.companyForm.getRawValue();
-    this.companyForm.valueChanges.subscribe(() => {
+    firstValueFrom(this.companyForm.valueChanges).then(() => {
       this.checkFormUnchanged();
     });
   }
