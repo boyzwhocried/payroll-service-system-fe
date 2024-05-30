@@ -1,9 +1,9 @@
-export interface UpdateUserResDto {
+export interface UpdateUserReqDto {
     id: string,
-    name: string,
+    userName: string,
     email: string,
-    password: string,
-    phoneNo: string,
+    phoneNumber: string,
+    roleId: string,
     fileContent: string,
     fileExtension: string
 }
