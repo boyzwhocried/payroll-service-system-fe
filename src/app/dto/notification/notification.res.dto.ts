@@ -3,5 +3,6 @@ export interface NotificationResDto {
     notificationCode: string,
     notificationHeader: string,
     notificationBody: string,
+    routeLink: string,
     isActive: boolean
 }
