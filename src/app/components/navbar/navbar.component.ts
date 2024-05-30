@@ -1,15 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { MenubarModule } from 'primeng/menubar';
-import { PrimeIcons } from 'primeng/api';
+import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
-import { NotificationService } from '../../services/notification/notification.service';
-import { firstValueFrom } from 'rxjs';
-import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
+import { MenubarModule } from 'primeng/menubar';
+import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -48,7 +47,6 @@ export class NavbarComponent {
   init() {
     firstValueFrom(this.notificationService.getNotificationCount()).then(
       response => {
-        console.log(response)
         this.notificationCount = response
       }
     )
@@ -69,8 +67,11 @@ export class NavbarComponent {
       },
       {
         label: 'Logout',
-        route: '/logout',
         icon: PrimeIcons.SIGN_OUT,
+        route: '/login',
+        command: () => {
+          localStorage.clear()
+        }
       }
     ]
 
@@ -208,4 +209,7 @@ export class NavbarComponent {
     this.router.navigateByUrl('notification')
   }
 
+  incrementCount(value: number) {
+    this.notificationCount += value
+  }
 }
