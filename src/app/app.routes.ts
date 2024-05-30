@@ -74,12 +74,33 @@ export const routes: Routes = [
     },
     {
         path: 'notification',
-        component: NavbarComponent,
         children: [
             {
                 path: '',
                 title: 'Notification',
                 loadComponent: () => import('./pages/notification/notification.component').then(n => n.NotificationComponent)
+            }
+        ]
+    },
+    {
+        path: 'profile',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Profile',
+                loadComponent: () => import('./pages/profile/profile.component').then(p => p.ProfileComponent)
+            }
+        ]
+    },
+    {
+        path: 'change-password',
+        component: NavbarComponent,
+        children: [
+            {
+                path: '',
+                title: 'Change Password',
+                loadComponent: () => import('./pages/change-password/change-password.component').then(cp => cp.ChangePasswordComponent)
             }
         ]
     }
