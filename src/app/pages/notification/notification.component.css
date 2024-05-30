@@ -1,0 +1,6 @@
+.status-dot {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: var(--primary-color);
+  }

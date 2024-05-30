@@ -4,7 +4,7 @@ import { PsListResDto } from "../../dto/user/ps-list.res.dto";
 import { ClientListResDto } from "../../dto/user/client-list.res.dto";
 import { environment } from "../../../env/environment.prod";
 import { ClientAssignmentReqDto } from "../../dto/client-assignment/client-assignment.req.dto";
-import { InsertResDto } from "../../dto/insert.res.dto";
+import { InsertResDto } from "../../dto/general-response/insert.res.dto";
 
 @Injectable({
     providedIn: 'root'
