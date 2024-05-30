@@ -15,6 +15,9 @@ import { MessageService } from "primeng/api";
 import { PayrollResDto } from "../../dto/payroll/payroll.res.dto";
 import { RoleType } from "../../constants/roles.constant";
 import { ScheduleStatusType } from "../../constants/schedule-request-types.constant";
+import { firstValueFrom } from "rxjs";
+import { ScheduleResDto } from "../../dto/schedule/schedule.res.dto";
+import { RescheduleReqDto } from "../../dto/schedule/reschedule.req.dto";
 
 @Component({
   selector: 'app-schedules',
@@ -42,17 +45,18 @@ export class Schedules implements OnInit {
   dataLogin = this.authService.getLoginData()
   visible: boolean = false;
   schedules : PayrollResDto[] = []
+  clientSchedules : ScheduleResDto[] = []
+  maxDate: Date | null = null
 
-  rescheduleReqDtoFg = this.fb.group({
-      id: ['', Validators.required],
-      payrollDate: ['', [Validators.required]]
+  rescheduleForm = this.fb.group({
+      scheduleId: ['', Validators.required],
+      newDeadline: ['', [Validators.required]]
   })
 
   constructor(
     private authService : AuthService,
     private payrollService : PayrollService,
     private fb : NonNullableFormBuilder,
-    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -60,9 +64,16 @@ export class Schedules implements OnInit {
   }
 
   init() {
-    this.payrollService.getAllClients().subscribe(res => {
-      this.schedules = res
-    })
+    if (this.rolePS) {
+      firstValueFrom(this.payrollService.getAllClients()).then(res => {
+        this.schedules = res
+      })
+    }
+    if (this.roleClient) {
+      firstValueFrom(this.payrollService.getLoginClientSchedule()).then(res => {
+        this.clientSchedules = res
+      })
+    }
   }
 
   get rolePS() {
@@ -72,29 +83,42 @@ export class Schedules implements OnInit {
     return this.dataLogin?.roleCode == RoleType.CLIENT
   }
 
-  showDialog(schedule : PayrollResDto) {
-    this.rescheduleReqDtoFg.reset()
+  showDialog(schedule : ScheduleResDto) {
+    this.rescheduleForm.reset()
     this.visible = true;
-    this.rescheduleReqDtoFg.patchValue(schedule)
+    this.maxDate = this.setMaxDate(schedule.payrollDate)
+    this.rescheduleForm.patchValue({
+      scheduleId : schedule.scheduleId,
+    })
   }
 
-  statusColor(i : number) : string {
-    if (this.schedules.at(i)?.scheduleStatusCode) {
-      return 'orange'
-    } else {
-      return 'green'
+  convertToDate(dateString : string | null) {
+    if (!dateString) {
+      return null
     }
+    let date = new Date(dateString)
+    return date
   }
 
-  isPendingSchedule(i : number) {
-    if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.PENDING_SCHEDULE) {
-      return true
-    }
-    return false
+  setMaxDate(dateString : string | null) {
+    let maxDate = this.convertToDate(dateString)
+    maxDate?.setDate(maxDate.getDate() - 2)
+    return maxDate
   }
+
+  formatDate(dateString : string | null) {
+    let payrollDate = this.convertToDate(dateString)
+    const day = String(payrollDate!.getUTCDate()).padStart(2, '0')
+    const month = String(payrollDate!.getUTCMonth() + 1).padStart(2, '0') // Months are zero-based
+    const year = payrollDate!.getUTCFullYear()
+
+    return `${day}/${month}/${year}`
+}
 
   isCompleted(i : number) {
     if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.COMPLETED) {
+      return true
+    } else if (this.clientSchedules.at(i)?.scheduleStatusCode == ScheduleStatusType.COMPLETED) {
       return true
     }
     return false
@@ -103,12 +127,19 @@ export class Schedules implements OnInit {
   isNoSchedule(i : number) {
     if (this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.NO_SCHEDULE) {
       return true
+    } else if (this.clientSchedules.at(i)?.scheduleStatusCode == ScheduleStatusType.NO_SCHEDULE) {
+      return true
     }
     return false
   }
 
   onSubmit() {
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: `Payroll Date is updated` });
-    console.log(this.messageService)
+    this.rescheduleForm.patchValue({
+      newDeadline: this.formatDate(this.rescheduleForm.getRawValue().newDeadline)
+    })
+    const request : RescheduleReqDto = this.rescheduleForm.getRawValue()
+    firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(res =>{
+      this.visible = false
+    })
   }
 }

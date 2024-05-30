@@ -7,9 +7,9 @@ import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { DocumentsReqDto } from '../../../dto/document/documents.req.dto';
-import { PayrollService } from '../../../services/payroll.service';
 import { DocumentReqDto } from '../../../dto/document/document.req.dto';
 import { firstValueFrom } from 'rxjs';
+import { DocumentService } from '../../../services/document.service';
 
 
 @Component({
@@ -28,10 +28,11 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './create-schedule.component.css'
 })
 export class CreateScheduleComponent implements OnInit{
-  scheduleId = this.route.snapshot.queryParamMap.get('id') as string
-  payrollDate = this.route.snapshot.queryParamMap.get('payrollDate')
-  maxDate = this.setMaxDate(this.payrollDate)
+  scheduleId! : string
+  payrollDate : string = ''
+  maxDate : Date | null = null
   documents: DocumentsReqDto[] = []
+  scheduleForm! : any
 
   activityInit: DocumentsReqDto[] = [
     {
@@ -48,21 +49,22 @@ export class CreateScheduleComponent implements OnInit{
     },
   ]
 
-  scheduleForm = this.fb.group({
-    scheduleId: [this.scheduleId, [Validators.required]],
-    documentsReqDto: this.fb.array(this.documents)
-  })
 
   constructor(
     private route: ActivatedRoute,
     private fb : NonNullableFormBuilder,
     private location: Location,
-    private payrollService: PayrollService
+    private documentService: DocumentService
   ) {}
 
   ngOnInit(): void {
-    console.log(this.payrollDate)
-    console.log(this.scheduleId)
+    this.scheduleId = this.route.snapshot.queryParamMap.get('id') as string
+    this.payrollDate = this.route.snapshot.queryParamMap.get('payrollDate') as string
+    this.maxDate = this.setMaxDate(this.payrollDate)
+    this.scheduleForm = this.fb.group({
+      scheduleId: [this.scheduleId, [Validators.required]],
+      documentsReqDto: this.fb.array(this.documents)
+    })
     this.activityOnInit()
   }
 
@@ -121,22 +123,9 @@ export class CreateScheduleComponent implements OnInit{
 onDateSelect(event:any, i: number) {
   const selectedDate = new Date(event);
   const dateString = selectedDate.toISOString()
-  console.log(dateString)
 
-  const day = selectedDate.getUTCDate();
-  const month = selectedDate.getUTCMonth() + 1; // Bulan dimulai dari 0
-  const year = selectedDate.getUTCFullYear();
-
-  // Tambahkan padding 0 jika hari atau bulan kurang dari 10
-  const formattedDay = day < 10 ? `0${day}` : day;
-  const formattedMonth = month < 10 ? `0${month}` : month;
-  console.log(event)
-  console.log(event.value)
-  console.log(selectedDate)
-  console.log(selectedDate.toISOString())
-
-  const d = dateString.substring(0, dateString.length - 5);
-  this.documentsReqDto.at(i)?.patchValue({documentDeadline: d})
+  const documentDeadline = dateString.substring(0, dateString.length - 5);
+  this.documentsReqDto.at(i)?.patchValue({documentDeadline: documentDeadline})
 }
 
   onBack() {
@@ -146,8 +135,7 @@ onDateSelect(event:any, i: number) {
   onSubmit() {
     if (this.scheduleForm.valid) {
       const documentReqDto : DocumentReqDto = this.scheduleForm.getRawValue()
-      firstValueFrom(this.payrollService.addPayrollSchedule(documentReqDto)).then((res) => {
-        console.log(res)
+      firstValueFrom(this.documentService.addPayrollSchedule(documentReqDto)).then(() => {
         this.location.back()
       })
     }

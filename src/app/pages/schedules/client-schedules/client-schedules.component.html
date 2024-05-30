@@ -1,6 +1,6 @@
 <div class="md:col-8 md:col-offset-2 mt-5 p-5 shadow-5 border-round">
   <div class="grid">
-    <button pButton [ngStyle]="{'background-color' : 'transparent', 'color' : 'black', 'border' : 'none'}"
+    <button pBadge pButton [ngStyle]="{'background-color' : 'transparent', 'color' : 'black', 'border' : 'none'}"
       (click)="onBack()" icon="pi pi-chevron-left"></button>
     <p class="text-lg font-semibold">Schedules</p>
   </div>
@@ -22,12 +22,12 @@
           <td class="grid text-center justify-content-center column-gap-2"><button pButton *ngIf="isPendingSchedule(i)"
               routerLink="/schedules/create" [queryParams]="{payrollDate:rowData.payrollDate, id: rowData.scheduleId}"
               icon="pi pi-plus" label="Schedule"></button>
-            <button pButton *ngIf="rowData.canBeRescheduled" label="Reschedule"></button>
+            <button pButton routerLink="/schedules/reschedule" *ngIf="!rowData.canBeRescheduled"
+              [queryParams]="{id: rowData.scheduleId, payrollDate:rowData.payrollDate}" label="Reschedule"></button>
             <button pButton routerLink="" label="View"></button>
           </td>
         </tr>
       </ng-template>
     </p-table>
   </div>
-
 </div>

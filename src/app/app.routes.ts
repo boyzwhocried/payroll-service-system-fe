@@ -55,10 +55,15 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/schedules/create-schedule/create-schedule.component').then(s => s.CreateScheduleComponent),
             },
             {
+                path: 'reschedule',
+                title: 'Reschedule',
+                loadComponent: () => import('./pages/schedules/reschedule/reschedule.component').then(r => r.RescheduleComponent)
+            },
+            {
                 path: ':id',
                 title: 'Client Schedule',
                 loadComponent: () => import('./pages/schedules/client-schedules/client-schedules.component').then(c => c.ClientSchedules)
-            }
+            },
         ]
     },
     {
