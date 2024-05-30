@@ -38,12 +38,10 @@ export class BaseService {
         }
       },
       error: (error) => {
+        this.toastr.error(error.error['message']);
         if (error['status'] == 401) {
-          this.toastr.error(error['message']);
           localStorage.clear();
           this.router.navigateByUrl('/login');
-        } else {
-          console.error('An unexpected error occurred:', error);
         }
       }
     });
