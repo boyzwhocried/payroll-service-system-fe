@@ -17,7 +17,8 @@
           </div>
           <div class="md:col-6 col-12">
             <label for="phoneNo">Phone Number <span class="text-red-500">*</span></label>
-            <input pInputText type="text" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full">
+            <p-inputMask id="phoneNo" mask="+629999999999?9999" formControlName="phoneNo" type="text" class="w-full" styleClass="w-full" />
+            <!-- <input pInputText type="text" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full"> -->
           </div>
           <div class="col-12">
             <label for="email">Email <span class="text-red-500">*</span></label>
