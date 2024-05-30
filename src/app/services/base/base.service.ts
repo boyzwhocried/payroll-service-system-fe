@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
@@ -57,10 +57,11 @@ export class BaseService {
   }
 
   getDocument(path: string) {
-    return this.http.get(
+    return this.http.get<HttpResponse<Blob>>(
       `${environment.backEndBaseUrl}:${environment.port}/${path}`,
       {
-        responseType: 'arraybuffer',
+        responseType: 'blob' as 'json',
+        observe: 'response',
       }
     );
   }

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormArray,
@@ -22,6 +22,9 @@ import { environment } from '../../../env/environment.prod';
 import mammoth from 'mammoth';
 import { DialogModule } from 'primeng/dialog';
 import * as xlsx from 'xlsx';
+import { TableModule } from 'primeng/table';
+import * as pdfjs from 'pdfjs-dist';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-stepper',
@@ -38,6 +41,8 @@ import * as xlsx from 'xlsx';
     DialogModule,
     TagModule,
     NgxDocViewerModule,
+    TableModule,
+    SkeletonModule,
   ],
 })
 export class Payrolls implements OnInit {
@@ -49,6 +54,9 @@ export class Payrolls implements OnInit {
   docHeader!: string;
   docBody!: any;
   pdfBody!: any;
+  xmlJson!: any;
+  pdfPages: number[] = [];
+  isExcel: boolean = false;
   allClientDocumentsComplete: boolean = false;
   loginData = this.authService.getLoginData();
 
@@ -72,7 +80,8 @@ export class Payrolls implements OnInit {
     private activeRoute: ActivatedRoute,
     private stepperService: PayrollStepperService,
     private fb: NonNullableFormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location
   ) {}
 
   get isClient() {
@@ -200,32 +209,93 @@ export class Payrolls implements OnInit {
     window.open(`${environment.backEndBaseUrl}:${environment.port}/reports`);
   }
 
+  async previewPdf(pdfFile: File) {
+    pdfjs.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    this.docVisible = true;
+
+    const pdfData = await pdfFile.arrayBuffer();
+
+    const pdf = await pdfjs.getDocument(pdfData).promise;
+
+    for (let i = 0; i < pdf.numPages; i++) {
+      this.pdfPages.push(i);
+    }
+
+    const totalPageNumber: number = pdf.numPages;
+
+    setTimeout(async () => {
+      for (let pageNum = 1; pageNum <= totalPageNumber; pageNum++) {
+        const canvas = document.getElementById(
+          `pdfCanvas-${pageNum}`
+        ) as HTMLCanvasElement;
+
+        await this.renderPage(pdf, pageNum, canvas);
+      }
+    }, 1);
+  }
+
+  async renderPage(
+    pdf: pdfjs.PDFDocumentProxy,
+    pageNumber: number,
+    canvas: HTMLCanvasElement
+  ): Promise<void> {
+    const page = await pdf.getPage(pageNumber);
+    const viewport = page.getViewport({ scale: 1 });
+    const context = canvas.getContext('2d')!;
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    await page.render({ canvasContext: context, viewport }).promise;
+  }
+
+  async previewDocx(previewFile: File) {
+    const fileData = await previewFile.arrayBuffer();
+
+    mammoth
+      .convertToHtml({ arrayBuffer: fileData })
+      .then((resultObject) => {
+        this.docBody = resultObject.value;
+      })
+      .then(() => {
+        this.docVisible = true;
+      });
+  }
+
+  async previewXls(previewFile: File) {
+    const fileData = await previewFile.arrayBuffer();
+
+    const workbook = xlsx.read(fileData);
+    const sheetName = workbook.SheetNames[0];
+    const workSheet = workbook.Sheets[sheetName];
+    this.xmlJson = xlsx.utils.sheet_to_json(workSheet, { header: 1 });
+    this.isExcel = !this.isExcel;
+    this.docVisible = true;
+  }
+
   previewDocument(documentId: string, documentName: string) {
     const fileType = documentName.split('.').at(1);
+    this.pdfPages = [];
     firstValueFrom(this.stepperService.getDocument(documentId)).then((res) => {
-      if (fileType == 'pdf') {
-        // const buf = res;
-        // const blob = new Blob([buf], { type: 'application/pdf' });
-        // const url = URL.createObjectURL(blob);
-        // console.log(buf);
+      this.docBody = '';
+      this.xmlJson = [[]];
+      this.docHeader = documentName;
+      const blobFile = res.body;
+      const previewFile = new File([blobFile as any], 'output.pdf', {
+        type: 'application/pdf',
+      });
+      if (fileType === 'pdf') {
+        this.previewPdf(previewFile);
       } else if (fileType === 'doc' || fileType === 'docx') {
-        mammoth
-          .convertToHtml({ arrayBuffer: res })
-          .then((resultObject) => {
-            this.docHeader = documentName;
-            this.docBody = resultObject.value;
-          })
-          .then(() => {
-            this.docVisible = true;
-          });
+        this.previewDocx(previewFile);
       } else if (fileType === 'xls' || fileType === 'xlsx') {
-        const workbook = xlsx.read(res);
-
-        this.docHeader = documentName;
-        this.docBody = xlsx.utils.sheet_to_json(workbook);
-        this.docVisible = true;
+        this.previewXls(previewFile);
       }
     });
+  }
+
+  onBack() {
+    this.location.back();
   }
 
   ngOnInit(): void {
