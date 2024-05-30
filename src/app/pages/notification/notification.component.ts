@@ -1,10 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { Router } from "@angular/router";
+import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { firstValueFrom } from "rxjs";
 import { NotificationResDto } from "../../dto/notification/notification.res.dto";
 import { NotificationService } from "../../services/notification/notification.service";
-import { firstValueFrom } from "rxjs";
-import { TableModule } from 'primeng/table';
-import { BadgeModule } from 'primeng/badge';
-import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'notification-app',
@@ -12,7 +14,8 @@ import { CommonModule } from "@angular/common";
     imports: [
         TableModule,
         BadgeModule,
-        CommonModule
+        CommonModule,
+        ButtonModule
     ],
     templateUrl: 'notification.component.html',
     styleUrl: 'notification.component.css'
@@ -20,10 +23,12 @@ import { CommonModule } from "@angular/common";
 
 export class NotificationComponent implements OnInit {
     notifications: NotificationResDto[] = []
+    
     isHovered: Boolean = false
 
     constructor(
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private router: Router
     ) {}
 
     ngOnInit(): void {
@@ -42,20 +47,19 @@ export class NotificationComponent implements OnInit {
         return isActive
     }
 
-    onClickNotification(isActive: boolean, id: string) {
-        if(isActive) {
-            firstValueFrom(this.notificationService.readNotification(id)).then(
-                () => {
-                    console.log('okay')
-                }
-            )
-        }
+    onClickNotification(notification: NotificationResDto) {
+        firstValueFrom(this.notificationService.readNotification(notification.notificationId)).then(
+            () => {
+                this.router.navigateByUrl(`${notification.routeLink}`)
+            }
+        )
     }
 
     deleteNotification(id: string, index: number) {
         firstValueFrom(this.notificationService.deleteNotification(id)).then(
             () => {
                 this.notifications.splice(index, 1)
+                
             }
         )
     }
