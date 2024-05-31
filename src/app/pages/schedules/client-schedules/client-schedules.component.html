@@ -22,7 +22,7 @@
           <td class="grid text-center justify-content-center column-gap-2"><button pButton *ngIf="isPendingSchedule(i)"
               routerLink="/schedules/create" [queryParams]="{payrollDate:rowData.payrollDate, id: rowData.scheduleId}"
               icon="pi pi-plus" label="Schedule"></button>
-            <button pButton routerLink="/schedules/reschedule" *ngIf="!rowData.canBeRescheduled"
+            <button pButton routerLink="/schedules/reschedule" *ngIf="rowData.canBeRescheduled"
               [queryParams]="{id: rowData.scheduleId, payrollDate:rowData.payrollDate}" label="Reschedule"></button>
             <button pButton routerLink="" label="View"></button>
           </td>
