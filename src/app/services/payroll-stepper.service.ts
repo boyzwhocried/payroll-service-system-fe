@@ -28,7 +28,7 @@ export class PayrollStepperService {
     return this.baseService.post<InsertResDto>(`payrolls/ping/${scheduleId}`);
   }
 
-  getDocument(documentId: string) {
+  getPreviewDocument(documentId: string) {
     return this.baseService.getDocument(`documents/download/${documentId}`);
   }
 

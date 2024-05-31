@@ -24,7 +24,7 @@ import { DialogModule } from 'primeng/dialog';
 import * as xlsx from 'xlsx';
 import { TableModule } from 'primeng/table';
 import * as pdfjs from 'pdfjs-dist';
-import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonIconService } from '../../services/button-icon.service';
 
 @Component({
   selector: 'app-stepper',
@@ -42,7 +42,6 @@ import { SkeletonModule } from 'primeng/skeleton';
     TagModule,
     NgxDocViewerModule,
     TableModule,
-    SkeletonModule,
   ],
 })
 export class Payrolls implements OnInit {
@@ -53,7 +52,6 @@ export class Payrolls implements OnInit {
   docVisible: boolean = false;
   docHeader!: string;
   docBody!: any;
-  pdfBody!: any;
   xmlJson!: any;
   pdfPages: number[] = [];
   isExcel: boolean = false;
@@ -81,7 +79,8 @@ export class Payrolls implements OnInit {
     private stepperService: PayrollStepperService,
     private fb: NonNullableFormBuilder,
     private authService: AuthService,
-    private location: Location
+    private location: Location,
+    public buttonIconService: ButtonIconService
   ) {}
 
   get isClient() {
@@ -102,6 +101,7 @@ export class Payrolls implements OnInit {
     documentIndex: number,
     isFinal: boolean
   ) {
+    this.buttonIconService.toggleUploadIcon();
     const toBase64 = (file: File) =>
       new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -113,50 +113,55 @@ export class Payrolls implements OnInit {
       });
 
     for (let file of event.files) {
-      toBase64(file).then((result) => {
-        const resultBase64 = result.substring(
-          result.indexOf(',') + 1,
-          result.length
-        );
+      toBase64(file)
+        .then((result) => {
+          const resultBase64 = result.substring(
+            result.indexOf(',') + 1,
+            result.length
+          );
 
-        if (!isFinal) {
-          this.documentReqDtoFg.patchValue({
-            documentId: documentId,
-            base64: resultBase64,
-            documentName: file.name,
-            clientAssignmentId: this.stepperDocuments.clientAssignmentId,
-            scheduleId: this.scheduleId,
-          });
-          if (this.isPS) {
+          if (!isFinal) {
             this.documentReqDtoFg.patchValue({
-              isSignedByPS: true,
-              isSignedByClient: true,
+              documentId: documentId,
+              base64: resultBase64,
+              documentName: file.name,
+              clientAssignmentId: this.stepperDocuments.clientAssignmentId,
+              scheduleId: this.scheduleId,
             });
+            if (this.isPS) {
+              this.documentReqDtoFg.patchValue({
+                isSignedByPS: true,
+                isSignedByClient: true,
+              });
+            } else {
+              this.documentReqDtoFg.patchValue({
+                isSignedByClient: true,
+              });
+            }
+
+            this.documentIndex = documentIndex;
           } else {
-            this.documentReqDtoFg.patchValue({
-              isSignedByClient: true,
+            this.documents.at(documentIndex).patchValue({
+              documentId: documentId,
+              base64: resultBase64,
+              documentName: file.name,
             });
           }
-
-          this.documentIndex = documentIndex;
-        } else {
-          this.documents.at(documentIndex).patchValue({
-            documentId: documentId,
-            base64: resultBase64,
-            documentName: file.name,
-          });
-        }
-      });
+        })
+        .then(() => {
+          this.buttonIconService.toggleUploadIcon();
+        });
     }
   }
 
   submitDocument() {
     if (this.documentReqDtoFg.valid) {
+      this.buttonIconService.toggleSubmitIcon();
       const documentReqDto: DocumentReqDto =
         this.documentReqDtoFg.getRawValue();
 
-      firstValueFrom(this.stepperService.saveDocument(documentReqDto)).then(
-        () => {
+      firstValueFrom(this.stepperService.saveDocument(documentReqDto))
+        .then(() => {
           this.stepperDocuments.documentsRes.forEach((item, index) => {
             if (index == this.documentIndex) {
               if (this.isPS) {
@@ -168,28 +173,34 @@ export class Payrolls implements OnInit {
               }
             }
           });
-
+        })
+        .then(() => {
           this.documentReqDtoFg.reset();
-        }
-      );
+          this.buttonIconService.toggleSubmitIcon();
+        });
     }
   }
 
   submitFinalDocument() {
     if (this.updateCalculatedDocumentReqDtoFg.valid) {
+      this.buttonIconService.toggleSubmitIcon();
       const updateCalculatedDocumentReqDto: any =
         this.updateCalculatedDocumentReqDtoFg.getRawValue();
 
-      console.log(firstValueFrom);
-
       firstValueFrom(
         this.stepperService.saveFinalDocument(updateCalculatedDocumentReqDto)
-      );
+      ).then(() => {
+        this.buttonIconService.toggleSubmitIcon();
+      });
     }
   }
 
   pingClient() {
-    firstValueFrom(this.stepperService.pingClient(this.scheduleId));
+    this.buttonIconService.togglePingIcon();
+    this.buttonIconService.pingIsLoading = true;
+    firstValueFrom(this.stepperService.pingClient(this.scheduleId)).then(() => {
+      this.buttonIconService.togglePingIcon();
+    });
   }
 
   downloadDocument(documentId: string) {
@@ -274,24 +285,29 @@ export class Payrolls implements OnInit {
   }
 
   previewDocument(documentId: string, documentName: string) {
+    this.buttonIconService.togglePreviewIcon();
     const fileType = documentName.split('.').at(1);
     this.pdfPages = [];
-    firstValueFrom(this.stepperService.getDocument(documentId)).then((res) => {
-      this.docBody = '';
-      this.xmlJson = [[]];
-      this.docHeader = documentName;
-      const blobFile = res.body;
-      const previewFile = new File([blobFile as any], 'output.pdf', {
-        type: 'application/pdf',
+    firstValueFrom(this.stepperService.getPreviewDocument(documentId))
+      .then((res) => {
+        this.docBody = '';
+        this.xmlJson = [[]];
+        this.docHeader = documentName;
+        const blobFile = res.body;
+        const previewFile = new File([blobFile as any], 'output.pdf', {
+          type: 'application/pdf',
+        });
+        if (fileType === 'pdf') {
+          this.previewPdf(previewFile);
+        } else if (fileType === 'doc' || fileType === 'docx') {
+          this.previewDocx(previewFile);
+        } else if (fileType === 'xls' || fileType === 'xlsx') {
+          this.previewXls(previewFile);
+        }
+      })
+      .then(() => {
+        this.buttonIconService.togglePreviewIcon();
       });
-      if (fileType === 'pdf') {
-        this.previewPdf(previewFile);
-      } else if (fileType === 'doc' || fileType === 'docx') {
-        this.previewDocx(previewFile);
-      } else if (fileType === 'xls' || fileType === 'xlsx') {
-        this.previewXls(previewFile);
-      }
-    });
   }
 
   onBack() {
