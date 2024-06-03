@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
@@ -7,24 +7,22 @@ import { ToastrService } from 'ngx-toastr';
 import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BaseService {
-
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private toastr: ToastrService,
-    private router: Router,
-
-  ) { }
+    private router: Router
+  ) {}
 
   private get headers() {
     return {
       headers: {
-        Authorization: `Bearer ${this.authService.getToken()}`
-      }
-    }
+        Authorization: `Bearer ${this.authService.getToken()}`,
+      },
+    };
   }
 
   private response<T>() {
@@ -43,28 +41,65 @@ export class BaseService {
           localStorage.clear();
           this.router.navigateByUrl('/login');
         }
-      }
+      },
     });
   }
 
-
   get<T>(path: string, withToken: boolean = true) {
-    return this.http.get<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .get<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 
-  post<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+  getDocument(path: string) {
+    return this.http.get<HttpResponse<Blob>>(
+      `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+      {
+        responseType: 'blob' as 'json',
+        observe: 'response',
+      }
+    );
+  }
+
+  post<T>(path: string, body?: any, withToken: boolean = true) {
+    return this.http
+      .post<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body ? body : null,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 
   put<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .put<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
-  
+
   patch<T>(path: string, body?: any, withToken: boolean = true) {
-    return this.http.patch<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body ? body : null, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .patch<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        body ? body : null,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 
   delete<T>(path: string, withToken: boolean = true) {
-    return this.http.delete<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined).pipe(this.response<T>())
+    return this.http
+      .delete<T>(
+        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+        withToken ? this.headers : undefined
+      )
+      .pipe(this.response<T>());
   }
 }
