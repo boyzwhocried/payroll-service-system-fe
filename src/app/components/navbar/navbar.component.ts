@@ -7,8 +7,10 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
-import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../env/environment.prod';
+import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -32,24 +34,41 @@ export class NavbarComponent {
   clientItem: MenuItem[] | undefined
   psItem: MenuItem[] | undefined
   notificationItem: MenuItem[] | undefined
-  notificationCount: number = 0
   userItem: MenuItem[] | undefined
+  
+  notificationCount: number = 0
+  notificationObservable: any
+
+  file = {
+    fileContent : '',
+    fileExtension : ''
+  }
+
+  fileObservable: any
 
   constructor(
     private notificationService: NotificationService,
+    private authService: AuthService,
+    private userService: UserService,
     private router: Router
-  ) { }
+  ) {
+    this.notificationObservable = this.notificationService.countObservable.subscribe(
+      next => this.notificationCount = next
+    )
+
+    this.fileObservable = this.userService.fileObservable.subscribe(
+      next => {
+        this.file = next as any
+      }
+    )
+  }
 
   ngOnInit() {
     this.init();
   }
 
   init() {
-    firstValueFrom(this.notificationService.getNotificationCount()).then(
-      response => {
-        this.notificationCount = response
-      }
-    )
+    this.notificationService.getNotificationCount()
 
     this.userItem = [
       {
@@ -71,6 +90,8 @@ export class NavbarComponent {
         route: '/login',
         command: () => {
           localStorage.clear()
+          this.notificationObservable.unsubscribe()
+          this.fileObservable.unsubscribe()
         }
       }
     ]
@@ -195,6 +216,19 @@ export class NavbarComponent {
       this.userItem
     ]
 
+  }
+
+  isAvatarUpdated() {
+    return ((this.file.fileContent) && (this.file.fileExtension))
+  }
+
+  getProfileImage() {
+    if (this.isAvatarUpdated()) {
+      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`
+    } else {
+      const id = this.authService.getLoginData().fileId as string
+      return `${environment.backEndBaseUrl}:${environment.port}/files/${id}`
+    }
   }
 
   isUnreadNotification() {
