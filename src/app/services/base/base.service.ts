@@ -1,10 +1,10 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../env/environment.prod';
 import { ToastrService } from 'ngx-toastr';
-import { tap } from 'rxjs/internal/operators/tap';
+import { throwError, catchError, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,81 +25,73 @@ export class BaseService {
     };
   }
 
-  private response<T>() {
-    return tap<T>({
-      next: (response) => {
-        if (response) {
-          const resTemp = response as any;
-          if (resTemp['message']) {
-            this.toastr.success(resTemp['message']);
-          }
-        }
-      },
-      error: (error) => {
-        this.toastr.error(error.error['message']);
-        if (error['status'] == 401) {
-          localStorage.clear();
-          this.router.navigateByUrl('/login');
-        }
-      },
-    });
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = error.error.message;
+    } else {
+      errorMessage = error.error?.message || 'Internal server error';
+    }
+    this.toastr.error(errorMessage);
+    if (error.status === 401) {
+      localStorage.clear();
+      this.router.navigateByUrl('/login');
+    }
+    return throwError(errorMessage);
+  }
+
+  private handleResponse<T>(response: T) {
+    if (response) {
+      const resTemp = response as any;
+      if (resTemp['message']) {
+        this.toastr.success(resTemp['message']);
+      }
+    }
+    return response;
   }
 
   get<T>(path: string, withToken: boolean = true) {
-    return this.http
-      .get<T>(
-        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        withToken ? this.headers : undefined
-      )
-      .pipe(this.response<T>());
+    return this.http.get<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined)
+      .pipe(
+        tap(response => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
-  getDocument(path: string) {
-    return this.http.get<HttpResponse<Blob>>(
-      `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-      {
-        responseType: 'blob' as 'json',
-        observe: 'response',
-      }
-    );
+  post<T>(path: string, body: any, withToken: boolean = true) {
+    return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined)
+      .pipe(
+        tap(response => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
-  post<T>(path: string, body?: any, withToken: boolean = true) {
-    return this.http
-      .post<T>(
-        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        body ? body : null,
-        withToken ? this.headers : undefined
-      )
-      .pipe(this.response<T>());
+  postWithoutHandler<T>(path: string, body: any, withToken: boolean = true) {
+    return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined)
+      .pipe();
   }
 
   put<T>(path: string, body: any, withToken: boolean = true) {
-    return this.http
-      .put<T>(
-        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        body,
-        withToken ? this.headers : undefined
-      )
-      .pipe(this.response<T>());
+    return this.http.put<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined)
+      .pipe(
+        tap(response => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   patch<T>(path: string, body?: any, withToken: boolean = true) {
-    return this.http
-      .patch<T>(
-        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        body ? body : null,
-        withToken ? this.headers : undefined
-      )
-      .pipe(this.response<T>());
+    return this.http.patch<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body ? body : null, withToken ? this.headers : undefined)
+      .pipe(
+        tap(response => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   delete<T>(path: string, withToken: boolean = true) {
-    return this.http
-      .delete<T>(
-        `${environment.backEndBaseUrl}:${environment.port}/${path}`,
-        withToken ? this.headers : undefined
-      )
-      .pipe(this.response<T>());
+    return this.http.delete<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, withToken ? this.headers : undefined)
+      .pipe(
+        tap(response => this.handleResponse(response)),
+        catchError(this.handleError)
+      );
   }
 }

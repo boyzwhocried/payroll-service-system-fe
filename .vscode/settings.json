@@ -6,14 +6,19 @@
         "devkit",
         "Dule",
         "fileupload",
+        "floatlabel",
         "icondisplay",
         "inputtext",
         "Lita",
+        "livechat",
         "messageservice",
         "primeflex",
         "primeicons",
         "primeng",
         "roleid",
+        "scrollpanel",
+        "sockjs",
+        "stompjs",
         "toastr"
     ]
 }

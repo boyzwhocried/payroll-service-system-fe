@@ -25,7 +25,7 @@ export class UserService {
     return this.baseService.get<UserResDto[]>(`users/role/${roleCode}`)
   }
 
-  getUserById(id: number) {
+  getUserById(id: string) {
     return this.baseService.get<UserResDto>(`users/${id}`)
   }
 
