@@ -143,6 +143,17 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'chat',
+    component: NavbarComponent,
+    children: [
+      {
+        path: ':id',
+        title: 'Chat',
+        loadComponent: () => import('./components/chat/chat.component').then(cc => cc.ChatComponent)
+      },
+    ]
+  },
+  {
     path: 'notification',
     children: [
       {
@@ -201,4 +212,4 @@ export const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
@@ -7,8 +7,10 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
-import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { RoleType } from '../../constants/roles.constant';
 
 @Component({
   selector: 'app-navbar',
@@ -23,43 +25,40 @@ import { NotificationService } from '../../services/notification/notification.se
     ButtonModule
   ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.css']
 })
-
-export class NavbarComponent {
-  allItem: MenuItem[] | undefined
-  saItem: MenuItem[] | undefined
-  clientItem: MenuItem[] | undefined
-  psItem: MenuItem[] | undefined
-  notificationItem: MenuItem[] | undefined
-  notificationCount: number = 0
-  userItem: MenuItem[] | undefined
+export class NavbarComponent implements OnInit {
+  allItem: MenuItem[] | undefined;
+  saItem: MenuItem[] | undefined;
+  clientItem: MenuItem[] | undefined;
+  psItem: MenuItem[] | undefined;
+  notificationItem: MenuItem[] | undefined;
+  notificationCount: number = 0;
+  userItem: MenuItem[] | undefined;
+  menuItem: MenuItem[] | undefined;
 
   constructor(
+    private authService: AuthService,
     private notificationService: NotificationService,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.init();
+    this.initMenuItems();
+    this.initNotifications();
+    this.setMenuItemsBasedOnRole();
   }
 
-  init() {
-    firstValueFrom(this.notificationService.getNotificationCount()).then(
-      response => {
-        this.notificationCount = response
-      }
-    )
-
+  private initMenuItems() {
     this.userItem = [
       {
         label: 'Profile',
-        route: '/profile',
+        routerLink: '/profile',
         icon: PrimeIcons.USER,
       },
       {
         label: 'Change Password',
-        route: '/change-password',
+        routerLink: '/change-password',
         icon: PrimeIcons.LOCK,
       },
       {
@@ -68,12 +67,19 @@ export class NavbarComponent {
       {
         label: 'Logout',
         icon: PrimeIcons.SIGN_OUT,
-        route: '/login',
+        routerLink: '/login',
         command: () => {
-          localStorage.clear()
+          localStorage.clear();
         }
+      },
+    ];
+
+    this.notificationItem = [
+      {
+        icon: PrimeIcons.BELL,
+        routerLink: '/notification'
       }
-    ]
+    ];
 
     this.allItem = [
       {
@@ -82,12 +88,12 @@ export class NavbarComponent {
         items: [
           {
             label: 'List',
-            route: '/users',
+            routerLink: '/users',
             icon: PrimeIcons.LIST,
           },
           {
             label: 'Create',
-            route: '/users/new',
+            routerLink: '/users/new',
             icon: PrimeIcons.PLUS,
           },
         ]
@@ -95,37 +101,32 @@ export class NavbarComponent {
       {
         label: 'Companies',
         icon: PrimeIcons.BUILDING,
-        route: '/companies'
+        routerLink: '/companies'
       },
       {
         label: 'Assign',
-        route: '/assign',
+        routerLink: '/assign',
         icon: PrimeIcons.BOOK,
       },
       {
         label: 'Schedule',
-        route: '/schedule',
+        routerLink: '/schedule',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       {
         label: 'Chat',
-        route: '/chat',
+        routerLink: `/chat/${this.authService.getLoginData().userId}`,
         icon: PrimeIcons.COMMENTS,
       },
       {
         label: 'Schedules',
-        route: '/schedules',
+        routerLink: '/schedules',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       { separator: true },
-      this.notificationItem = [
-        {
-          icon: PrimeIcons.BELL,
-          route: '/notification'
-        }
-      ],
-      this.userItem
-    ]
+      ...this.notificationItem,
+      
+    ];
 
     this.saItem = [
       {
@@ -134,12 +135,12 @@ export class NavbarComponent {
         items: [
           {
             label: 'List',
-            route: '/users',
+            routerLink: '/users',
             icon: PrimeIcons.LIST,
           },
           {
             label: 'Create',
-            route: '/users/new',
+            routerLink: '/users/new',
             icon: PrimeIcons.PLUS,
           },
         ]
@@ -150,66 +151,90 @@ export class NavbarComponent {
         items: [
           {
             label: 'List',
-            route: '/companies',
+            routerLink: '/companies',
             icon: PrimeIcons.LIST,
           },
           {
             label: 'Create',
-            route: '/companies/new',
+            routerLink: '/companies/new',
             icon: PrimeIcons.PLUS,
           },
         ]
       },
       {
         label: 'Assign',
-        route: '/assign',
+        routerLink: '/assign',
         icon: PrimeIcons.BOOK,
       },
       { separator: true },
-      this.userItem
+      
     ];
 
     this.clientItem = [
       {
         label: 'Schedule',
-        route: '/schedule',
+        routerLink: '/schedule',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       {
         label: 'Chat',
-        route: '/chat',
+        routerLink: `/chat/${this.authService.getLoginData().userId}`,
         icon: PrimeIcons.COMMENTS,
       },
       { separator: true },
-      this.userItem
+      
     ];
-
 
     this.psItem = [
       {
         label: 'Schedules',
-        route: '/schedules',
+        routerLink: '/schedules',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       { separator: true },
-      this.userItem
-    ]
+      
+    ];
+  }
 
+  private initNotifications() {
+    firstValueFrom(this.notificationService.getNotificationCount()).then(
+      response => {
+        this.notificationCount = response;
+      }
+    );
+  }
+
+  private setMenuItemsBasedOnRole() {
+    const roleCode = this.authService.getLoginData().roleCode;
+    switch (roleCode) {
+      case RoleType.CLIENT:
+        this.menuItem = this.clientItem;
+        break;
+      case RoleType.PS:
+        this.menuItem = this.psItem;
+        break;
+      case RoleType.SUPER_ADMIN:
+        this.menuItem = this.saItem;
+        break;
+      default:
+        this.menuItem = this.allItem;
+        break;
+    }
   }
 
   isUnreadNotification() {
-    return this.notificationCount > 0
+    return this.notificationCount > 0;
   }
 
   getNotificationValue() {
-    return this.notificationCount
+    return this.notificationCount;
   }
 
   toNotificationMenu() {
-    this.router.navigateByUrl('notification')
+    this.router.navigateByUrl('notification');
   }
 
   incrementCount(value: number) {
-    this.notificationCount += value
+    this.notificationCount += value;
   }
 }
