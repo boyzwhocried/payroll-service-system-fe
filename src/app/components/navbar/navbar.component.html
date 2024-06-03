@@ -1,13 +1,13 @@
 <div class="card">
-    <p-menubar [model]="allItem" [style]="{'border-radius':'0px', 'padding' : ' 1rem'}">
+    <p-menubar [model]="menuItem" [style]="{'border-radius':'0px', 'padding' : ' 1rem'}">
         <ng-template pTemplate="item" let-item>
-            <ng-container *ngIf="item.route">
-                <a [routerLink]="item.route" class="p-menuitem-link">
+            <ng-container *ngIf="item.routerLink">
+                <a [routerLink]="item.routerLink" class="p-menuitem-link">
                     <span [class]="item.icon"></span>
                     <span class="ml-2">{{ item.label }}</span>
                 </a>
             </ng-container>
-            <ng-container *ngIf="!item.route && !item.url && item.icon ">
+            <ng-container *ngIf="!item.routerLink && item.icon">
                 <a class="p-menuitem-link">
                     <span [class]="item.icon"></span>
                     <span class="ml-2">{{ item.label }}</span>
@@ -15,26 +15,15 @@
             </ng-container>
         </ng-template>
         <div class="flex flex-row gap-3">
-            <i
-                *ngIf="!isUnreadNotification()"
-                class="pi pi-bell flex align-content-center"
-                style="font-size: xx-large"
-                [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)' : 'none'}"
-                (click)="toNotificationMenu()"
-                ></i>
-            <i
-                *ngIf="isUnreadNotification()"
-                class="pi pi-bell flex align-content-center"
-                style="font-size: xx-large"
-                pBadge
-                value= "{{getNotificationValue()}}"
-                [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)' : 'none'}"
-                (click)="toNotificationMenu()"
-                ></i>
+            <i *ngIf="!isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: xx-large"
+                [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}" (click)="toNotificationMenu()"></i>
+            <i *ngIf="isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: xx-large"
+                pBadge value="{{getNotificationValue()}}" [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}"
+                (click)="toNotificationMenu()"></i>
             <p-menu #user [model]="userItem" [popup]="true">
                 <ng-template pTemplate="item" let-item>
-                    <ng-container *ngIf="item.route">
-                        <a [routerLink]="item.route" class="p-menuitem-link">
+                    <ng-container *ngIf="item.routerLink">
+                        <a [routerLink]="item.routerLink" class="p-menuitem-link">
                             <span class="ml-2">{{ item.label }}</span>
                         </a>
                     </ng-container>

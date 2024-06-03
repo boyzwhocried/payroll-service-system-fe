@@ -42,16 +42,9 @@ export class LoginComponent {
       const loginReqDto: LoginReqDto = this.loginForm.getRawValue()
       this.authService.login(loginReqDto).subscribe({
         next: (response) => {
-          this.authService.saveLoginData(response)
-          console.log(response)
-          const roleCode: string = response.roleCode
-          if (roleCode == RoleType.SUPER_ADMIN) {
-            this.router.navigateByUrl('/users')
-          } else if (roleCode == RoleType.PS) {
-            
-          } else if (roleCode == RoleType.CLIENT) {
-            
-          }
+          this.authService.saveLoginData(response);
+          const roleCode: string = response.roleCode;
+          this.router.navigateByUrl(roleCode == RoleType.SUPER_ADMIN ? '/users' : '/schedules')
         },
         error: (error) => console.error('Login failed:', error),
         complete: () => console.log('Login request complete')
@@ -59,9 +52,5 @@ export class LoginComponent {
     } else {
       console.log('Form is not valid:', this.loginForm.errors);
     }
-  }
-
-  onClicks(): void {
-    alert('Click detected');
   }
 }
