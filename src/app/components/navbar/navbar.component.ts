@@ -110,7 +110,7 @@ export class NavbarComponent implements OnInit {
       },
       {
         label: 'Schedule',
-        routerLink: '/schedule',
+        routerLink: '/schedules',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       {
@@ -173,7 +173,7 @@ export class NavbarComponent implements OnInit {
     this.clientItem = [
       {
         label: 'Schedule',
-        routerLink: '/schedule',
+        routerLink: '/schedules',
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       {

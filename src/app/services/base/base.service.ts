@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
@@ -15,7 +15,7 @@ export class BaseService {
     private authService: AuthService,
     private toastr: ToastrService,
     private router: Router
-  ) {}
+  ) { }
 
   private get headers() {
     return {
@@ -58,7 +58,7 @@ export class BaseService {
       );
   }
 
-  post<T>(path: string, body: any, withToken: boolean = true) {
+  post<T>(path: string, body?: any, withToken: boolean = true) {
     return this.http.post<T>(`${environment.backEndBaseUrl}:${environment.port}/${path}`, body, withToken ? this.headers : undefined)
       .pipe(
         tap(response => this.handleResponse(response)),
@@ -93,5 +93,15 @@ export class BaseService {
         tap(response => this.handleResponse(response)),
         catchError(this.handleError)
       );
+  }
+
+  getDocument(path: string) {
+    return this.http.get<HttpResponse<Blob>>(
+      `${environment.backEndBaseUrl}:${environment.port}/${path}`,
+      {
+        responseType: 'blob' as 'json',
+        observe: 'response',
+      }
+    );
   }
 }
