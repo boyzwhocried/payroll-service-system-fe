@@ -8,7 +8,6 @@ import { ImageModule } from 'primeng/image';
 import { ProfileResDto } from "../../dto/user/profile.res.dto";
 import { UserService } from "../../services/user/user.service";
 import { firstValueFrom } from "rxjs";
-import { FileService } from "../../services/file/file.service";
 import { UpdateUserReqDto } from "../../dto/user/update-user.req.dto";
 import { InputMaskModule } from 'primeng/inputmask';
 
@@ -46,8 +45,7 @@ export class ProfileComponent implements OnInit {
 
     constructor(
         private formBuilder: NonNullableFormBuilder,
-        private userService: UserService,
-        private fileService: FileService
+        private userService: UserService
     ) {}
 
     ngOnInit(): void {
@@ -66,7 +64,10 @@ export class ProfileComponent implements OnInit {
     }
 
     generateImage(id?: string) {
-        return this.userService.getImageUrl(id)
+        if(id) {
+            return this.userService.getImageUrl(id)
+        }
+        return ''
     }
 
     generateNewImage(contentData?: string | undefined, extension?: string | undefined): string {
