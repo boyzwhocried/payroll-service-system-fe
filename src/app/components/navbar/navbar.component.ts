@@ -37,13 +37,13 @@ export class NavbarComponent implements OnInit {
   notificationItem: MenuItem[] | undefined
   userItem: MenuItem[] | undefined
   menuItem: MenuItem[] | undefined
-  
+
   notificationCount: number = 0
   notificationObservable: any
 
   file = {
-    fileContent : '',
-    fileExtension : ''
+    fileContent: '',
+    fileExtension: ''
   }
 
   fileObservable: any
@@ -51,7 +51,6 @@ export class NavbarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
-    private authService: AuthService,
     private userService: UserService,
     private router: Router
   ) {
@@ -150,7 +149,7 @@ export class NavbarComponent implements OnInit {
       },
       { separator: true },
       ...this.notificationItem,
-      
+
     ];
 
     this.saItem = [
@@ -192,7 +191,7 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.BOOK,
       },
       { separator: true },
-      
+
     ];
 
     this.clientItem = [
@@ -207,7 +206,7 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.COMMENTS,
       },
       { separator: true },
-      
+
     ];
 
     this.psItem = [
@@ -217,7 +216,7 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       { separator: true },
-      
+
     ];
   }
 
