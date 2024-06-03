@@ -55,11 +55,10 @@ export class NotificationComponent implements OnInit {
         )
     }
 
-    deleteNotification(id: string, index: number) {
-        firstValueFrom(this.notificationService.deleteNotification(id)).then(
+    deleteNotification(id: string, index: number, isActive: boolean) {
+        firstValueFrom(this.notificationService.deleteNotification(id, isActive)).then(
             () => {
                 this.notifications.splice(index, 1)
-                
             }
         )
     }

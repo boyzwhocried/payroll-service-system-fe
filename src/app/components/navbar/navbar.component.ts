@@ -7,9 +7,10 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
+import { environment } from '../../../env/environment.prod';
 import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
-import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { UserService } from '../../services/user/user.service';
 import { RoleType } from '../../constants/roles.constant';
 
 @Component({
@@ -27,21 +28,43 @@ import { RoleType } from '../../constants/roles.constant';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
+
 export class NavbarComponent implements OnInit {
-  allItem: MenuItem[] | undefined;
-  saItem: MenuItem[] | undefined;
-  clientItem: MenuItem[] | undefined;
-  psItem: MenuItem[] | undefined;
-  notificationItem: MenuItem[] | undefined;
-  notificationCount: number = 0;
-  userItem: MenuItem[] | undefined;
-  menuItem: MenuItem[] | undefined;
+  allItem: MenuItem[] | undefined
+  saItem: MenuItem[] | undefined
+  clientItem: MenuItem[] | undefined
+  psItem: MenuItem[] | undefined
+  notificationItem: MenuItem[] | undefined
+  userItem: MenuItem[] | undefined
+  menuItem: MenuItem[] | undefined
+  
+  notificationCount: number = 0
+  notificationObservable: any
+
+  file = {
+    fileContent : '',
+    fileExtension : ''
+  }
+
+  fileObservable: any
 
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
+    private authService: AuthService,
+    private userService: UserService,
     private router: Router
-  ) { }
+  ) {
+    this.notificationObservable = this.notificationService.countObservable.subscribe(
+      next => this.notificationCount = next
+    )
+
+    this.fileObservable = this.userService.fileObservable.subscribe(
+      next => {
+        this.file = next as any
+      }
+    )
+  }
 
   ngOnInit() {
     this.initMenuItems();
@@ -69,7 +92,9 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.SIGN_OUT,
         routerLink: '/login',
         command: () => {
-          localStorage.clear();
+          localStorage.clear()
+          this.notificationObservable.unsubscribe()
+          this.fileObservable.unsubscribe()
         }
       },
     ];
@@ -197,11 +222,7 @@ export class NavbarComponent implements OnInit {
   }
 
   private initNotifications() {
-    firstValueFrom(this.notificationService.getNotificationCount()).then(
-      response => {
-        this.notificationCount = response;
-      }
-    );
+    this.notificationService.getNotificationCount()
   }
 
   private setMenuItemsBasedOnRole() {
@@ -219,6 +240,19 @@ export class NavbarComponent implements OnInit {
       default:
         this.menuItem = this.allItem;
         break;
+    }
+  }
+
+  isAvatarUpdated() {
+    return ((this.file.fileContent) && (this.file.fileExtension))
+  }
+
+  getProfileImage() {
+    if (this.isAvatarUpdated()) {
+      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`
+    } else {
+      const id = this.authService.getLoginData().fileId as string
+      return `${environment.backEndBaseUrl}:${environment.port}/files/${id}`
     }
   }
 

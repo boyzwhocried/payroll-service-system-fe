@@ -8,12 +8,20 @@ import { ProfileResDto } from '../../dto/user/profile.res.dto';
 import { PasswordReqDto } from '../../dto/user/password.req.dto';
 import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 import { environment } from '../../../env/environment.prod';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  file = {
+    fileContent : '',
+    fileExtension : ''
+  }
+
+  fileObserver: any
+  fileObservable = new Observable(subscriber => this.fileObserver = subscriber)
 
   constructor(private baseService: BaseService) { }
 
@@ -46,6 +54,11 @@ export class UserService {
   }
 
   updateUser(data: UpdateUserReqDto) {
+    if (data.fileContent) {
+      this.file.fileContent = data.fileContent
+      this.file.fileExtension = data.fileExtension
+      this.fileObserver.next(this.file)
+    }
     return this.baseService.patch<UpdateResDto>('users', data)
   }
 

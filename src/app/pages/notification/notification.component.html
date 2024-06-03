@@ -48,7 +48,7 @@
                                         class="pi pi-trash"
                                         style="font-size: 2rem"
                                         [ngStyle]="{'cursor' : 'pointer'}"
-                                        (click)="deleteNotification(notification.notificationId, ri)"
+                                        (click)="deleteNotification(notification.notificationId, ri, notification.isActive)"
                                         >
                                     </i>
                                 </ng-template>

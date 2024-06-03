@@ -8,15 +8,12 @@
             </div>
         </div>
         <div class="flex flex-column align-items-center">
-            <pre>
-                {{updateUserForm.value | json}}
-            </pre>
             <h1 class="text-center">Profile</h1>
             <div class="relative" (mouseover)="isHover=true" (mouseout)="isHover=false">
 
                 <p-avatar
                     *ngIf="!isEditable"
-                    image="{{generateImage(profileRes?.profilePictureId)}}"
+                    [image]="generateImage(profileRes?.profilePictureId)"
                     shape="circle"
                     styleClass="w-15rem h-15rem"
                     size="xlarge"/>
@@ -39,7 +36,7 @@
                     size="xlarge" role="button"
                     (click)="onAvatarClick()"/>
                 <i *ngIf="isEditable"
-                    class="pi pi-pencil absolute right-0 top-0"
+                    class="pi pi-pencil absolute right-0 bottom-0"
                     style="font-size: xx-large"></i>
                 <input type="file"
                         #fileInput
