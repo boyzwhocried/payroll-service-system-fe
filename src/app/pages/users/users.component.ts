@@ -7,7 +7,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
-import { Validators, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  Validators,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
@@ -43,17 +47,16 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./users.component.css'],
 })
 export class UsersComponent {
-
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   isEditing = false;
   isHovered = false;
-  users: UserResDto[] = []
+  users: UserResDto[] = [];
   clonedUsers: { [s: string]: UserResDto } = {};
   roles?: SelectItem[];
   originalFormValues: any;
   isFormUnchanged = true;
-  showFilterRow = false
+  showFilterRow = false;
 
   userForm = this.formBuilder.group({
     id: ['', [Validators.required]],
@@ -68,33 +71,37 @@ export class UsersComponent {
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private userService: UserService,
-    private roleService: RoleService,
+    private roleService: RoleService
   ) {
-    firstValueFrom(this.userService.getAll()).then(response => { this.users = response })
+    firstValueFrom(this.userService.getAll()).then((response) => {
+      this.users = response;
+    });
     firstValueFrom(this.roleService.getAll()).then((response: RoleResDto[]) => {
-      this.roles = response.map(role => ({
+      this.roles = response.map((role) => ({
         label: role.roleName,
-        value: role.id
+        value: role.id,
       }));
     });
-
   }
 
-  generateImage(contentData?: string | undefined, extension?: string | undefined): string {
+  generateImage(
+    contentData?: string | undefined,
+    extension?: string | undefined
+  ): string {
     return `data:image/${extension};base64,${contentData}`;
   }
 
   getImage(imageId: string) {
-    return `${environment.backEndBaseUrl}:${environment.port}/files/${imageId}`
+    return `${environment.backEndBaseUrl}:${environment.port}/files/${imageId}`;
   }
 
   onRowEditInit(user: UserResDto) {
-    const role = this.roles?.find(r => r.label === user.roleName);
+    const role = this.roles?.find((r) => r.label === user.roleName);
     this.clonedUsers[user.id as string] = { ...user };
     this.isEditing = true;
     this.userForm.patchValue({
       ...user,
-      roleId: role?.value
+      roleId: role?.value,
     });
     this.originalFormValues = this.userForm.getRawValue();
     firstValueFrom(this.userForm.valueChanges).then(() => {
@@ -103,7 +110,9 @@ export class UsersComponent {
   }
 
   checkFormUnchanged() {
-    this.isFormUnchanged = JSON.stringify(this.userForm.getRawValue()) === JSON.stringify(this.originalFormValues);
+    this.isFormUnchanged =
+      JSON.stringify(this.userForm.getRawValue()) ===
+      JSON.stringify(this.originalFormValues);
   }
 
   onRowEditSave() {
@@ -117,9 +126,9 @@ export class UsersComponent {
         },
         error: (error) => console.error('Update failed:', error),
         complete: () => {
-          console.log('Update user complete')
+          console.log('Update user complete');
           this.userForm.reset();
-        }
+        },
       });
     } else {
       // this.messageService.add({ severity: 'warning', summary: 'Failed', detail: `Form is not valid` });
@@ -145,10 +154,12 @@ export class UsersComponent {
 
       reader.onload = () => {
         const base64 = (reader.result as string).split(',')[1];
-        this.userForm.patchValue({ fileContent: base64, fileExtension: file.type.split('/')[1] });
+        this.userForm.patchValue({
+          fileContent: base64,
+          fileExtension: file.type.split('/')[1],
+        });
       };
       reader.readAsDataURL(file);
     }
   }
-
 }
