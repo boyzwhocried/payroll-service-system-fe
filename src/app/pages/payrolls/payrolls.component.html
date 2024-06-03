@@ -1,8 +1,8 @@
-<!-- <pre>
+<pre>
   {{ documentReqDtoFg.value | json }}
   <hr>
   {{updateCalculatedDocumentReqDtoFg.value | json}}
-</pre> -->
+</pre>
 
 <div class="flex justify-content-center">
   <div class="md:w-8 lg:w-6">
@@ -24,7 +24,11 @@
     <p-stepper orientation="vertical" [linear]="true">
       <p-stepperPanel
         *ngFor="let data of stepperDocuments.documentsRes; let i = index"
-        [header]="data.activity + ' - ' + data.documentDeadline"
+        [header]="
+          formatDate(data.documentDeadline).toLocaleDateString('id-ID') +
+          ' - ' +
+          data.activity
+        "
       >
         <p-tag severity="success" value="Success" />
 
@@ -43,11 +47,9 @@
                     mode="basic"
                     chooseLabel="Choose"
                     [chooseIcon]="buttonIconService.uploadIcon"
-                    name="demo[]"
                     accept=".doc, .docx, .xls, .xlsx, .pdf"
                     maxFileSize="3000000"
                     (onSelect)="fileUpload($event, data.documentId, i, false)"
-                    [auto]="true"
                     [disabled]="
                       (isClient && data.isSignedByPs) ||
                       (isPS && !data.isSignedByClient) ||
@@ -177,8 +179,8 @@
                         *ngIf="isPS"
                         mode="basic"
                         chooseLabel="Choose"
-                        chooseIcon="pi pi-upload"
-                        name="demo[]"
+                        [chooseIcon]="buttonIconService.uploadIcon"
+                        [disabled]="buttonIconService.uploadIsLoading"
                         accept=".doc, .docx, .xls, .xlsx, .pdf"
                         maxFileSize="3000000"
                         (onSelect)="

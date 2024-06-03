@@ -95,13 +95,18 @@ export class Payrolls implements OnInit {
     return this.updateCalculatedDocumentReqDtoFg.get('documents') as FormArray;
   }
 
+  formatDate(date: string) {
+    const fDate = new Date(date);
+    return fDate;
+  }
+
   fileUpload(
     event: any,
     documentId: string,
     documentIndex: number,
     isFinal: boolean
   ) {
-    this.buttonIconService.toggleUploadIcon();
+    this.buttonIconService.toggleSubmitIcon();
     const toBase64 = (file: File) =>
       new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -149,7 +154,7 @@ export class Payrolls implements OnInit {
           }
         })
         .then(() => {
-          this.buttonIconService.toggleUploadIcon();
+          this.buttonIconService.toggleSubmitIcon();
         });
     }
   }
@@ -171,6 +176,7 @@ export class Payrolls implements OnInit {
                   item.isSignedByClient = true;
                 }
               }
+              item.documentName = documentReqDto.documentName;
             }
           });
         })
@@ -217,7 +223,9 @@ export class Payrolls implements OnInit {
   }
 
   downloadReport() {
-    window.open(`${environment.backEndBaseUrl}:${environment.port}/reports`);
+    window.open(
+      `${environment.backEndBaseUrl}:${environment.port}/reports/${this.scheduleId}`
+    );
   }
 
   async previewPdf(pdfFile: File) {

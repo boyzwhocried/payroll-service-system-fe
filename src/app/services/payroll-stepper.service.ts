@@ -32,7 +32,7 @@ export class PayrollStepperService {
     return this.baseService.getDocument(`documents/download/${documentId}`);
   }
 
-  getReport() {
-    return this.baseService.get(`reports`);
+  getReport(scheduleId: string) {
+    return this.baseService.get(`reports/${scheduleId}`);
   }
 }
