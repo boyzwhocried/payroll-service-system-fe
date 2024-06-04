@@ -26,7 +26,7 @@
       <ng-template pTemplate="body" let-rowData let-i="rowIndex">
         <tr>
           <td>{{ i + 1 }}</td>
-          <td>{{ formatDate(rowData.payrollDate) }}</td>
+          <td>{{ rowData.payrollDate }}</td>
           <td>{{ rowData.scheduleStatusName }}</td>
           <td class="grid text-center justify-content-center column-gap-2">
             <button
@@ -52,6 +52,7 @@
             ></button>
             <button
               pButton
+              *ngIf="rowData.scheduleStatusCode != 'SQT01'"
               routerLink=""
               label="View"
               routerLink="/payrolls/{{ rowData.scheduleId }}"
