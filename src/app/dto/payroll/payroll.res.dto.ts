@@ -1,8 +1,9 @@
-export interface PayrollResDto{
-    clientAssignmentId: string,
-    clientName: string,
-    scheduleStatusName: string,
-    scheduleStatusCode: string,
-    payrollDate: string
-  }
+export interface PayrollResDto {
+  clientAssignmentId: string,
+  clientName: string,
+  clientId: string,
+  scheduleStatusName: string,
+  scheduleStatusCode: string,
+  payrollDate: string
+}
 
