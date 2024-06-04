@@ -29,13 +29,14 @@ import { RoleType } from '../../constants/roles.constant';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
-  allItem: MenuItem[] | undefined;
-  saItem: MenuItem[] | undefined;
-  clientItem: MenuItem[] | undefined;
-  psItem: MenuItem[] | undefined;
-  notificationItem: MenuItem[] | undefined;
-  userItem: MenuItem[] | undefined;
-  menuItem: MenuItem[] | undefined;
+  allItem: MenuItem[] | undefined
+  saItem: MenuItem[] | undefined
+  clientItem: MenuItem[] | undefined
+  psItem: MenuItem[] | undefined
+  notificationItem: MenuItem[] | undefined
+  userItem: MenuItem[] | undefined
+  menuItem: MenuItem[] | undefined
+  userData = this.authService.getLoginData()
 
   notificationCount: number = 0;
   notificationObservable: any;
@@ -263,5 +264,9 @@ export class NavbarComponent implements OnInit {
 
   incrementCount(value: number) {
     this.notificationCount += value;
+  }
+
+  getFirstName(): string {
+    return this.userData.userName.split(' ')[0];
   }
 }

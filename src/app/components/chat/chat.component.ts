@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { WebSocketService } from '../../services/websocket/websocket.service';
@@ -58,6 +58,7 @@ export class ChatComponent implements OnInit {
     private userService: UserService,
     private clientAssignmentService: ClientAssignmentService,
     private chatService: ChatService,
+    private location: Location,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -78,7 +79,6 @@ export class ChatComponent implements OnInit {
         this.recipient = await this.fetchUser(userIds[1]);
       }
 
-      // Fetch all messages
       const allMessages = await firstValueFrom(this.chatService.loadMessage(this.clientId));
       this.receivedMessages = allMessages;
       this.scrollToBottom();
@@ -97,7 +97,6 @@ export class ChatComponent implements OnInit {
   }
 
   get allMessages(): ChatMessageDto[] {
-    // return [...this.receivedMessages, ...this.sentMessages].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     return [...this.receivedMessages, ...this.sentMessages]
   }
 
@@ -123,5 +122,9 @@ export class ChatComponent implements OnInit {
         container.scrollTop = container.scrollHeight;
       }
     }, 100);
+  }
+
+  onBack() {
+    this.location.back()
   }
 }

@@ -15,7 +15,7 @@ export class BaseService {
     private authService: AuthService,
     private toastr: ToastrService,
     private router: Router
-  ) { }
+  ) {}
 
   private get headers() {
     return {

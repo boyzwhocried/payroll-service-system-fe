@@ -8,16 +8,16 @@ import { Observable, firstValueFrom } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
-  })
+})
 
 export class NotificationService {
     count: number = 0
     countObserver: any
     countObservable = new Observable<number>(subscriber => this.countObserver = subscriber)
-    
+
     constructor(
         private baseService: BaseService
-    ) {}
+    ) { }
 
     getNotificationCount() {
         firstValueFrom(this.baseService.get<number>('notifications/count')).then(
@@ -37,7 +37,7 @@ export class NotificationService {
     }
 
     deleteNotification(id: string, isActive: boolean) {
-        if(isActive) {
+        if (isActive) {
             this.count -= 1
             this.countObserver.next(this.count)
         }

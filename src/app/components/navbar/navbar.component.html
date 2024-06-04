@@ -14,10 +14,10 @@
                 </a>
             </ng-container>
         </ng-template>
-        <div class="flex flex-row gap-3">
-            <i *ngIf="!isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: xx-large"
+        <div class="flex flex-row gap-3 align-items-center">
+            <i *ngIf="!isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
                 [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}" (click)="toNotificationMenu()"></i>
-            <i *ngIf="isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: xx-large"
+            <i *ngIf="isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
                 pBadge value="{{getNotificationValue()}}" [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}"
                 (click)="toNotificationMenu()"></i>
             <p-menu #user [model]="userItem" [popup]="true">
@@ -29,11 +29,9 @@
                     </ng-container>
                 </ng-template>
             </p-menu>
+            <p>Hi, {{getFirstName()}}!</p>
             <p-button (click)="user.toggle($event)" [link]="true" styleClass="p-0 ">
-                <p-avatar
-                    [image]="getProfileImage()" 
-                    class="flex align-content-center"
-                    shape="circle"/>
+                <p-avatar [image]="getProfileImage()" class="flex align-content-center" shape="circle" />
             </p-button>
         </div>
     </p-menubar>
