@@ -51,11 +51,7 @@ export class Payrolls implements OnInit {
   scheduleId!: string;
   docVisible: boolean = false;
   docHeader!: string;
-  docBody!: any;
-  xmlJson!: any;
   pdfPages: number[] = [];
-  isExcel: boolean = false;
-  allClientDocumentsComplete: boolean = false;
   loginData = this.authService.getLoginData();
 
   documentReqDtoFg = this.fb.group({
@@ -268,50 +264,17 @@ export class Payrolls implements OnInit {
     await page.render({ canvasContext: context, viewport }).promise;
   }
 
-  async previewDocx(previewFile: File) {
-    const fileData = await previewFile.arrayBuffer();
-
-    mammoth
-      .convertToHtml({ arrayBuffer: fileData })
-      .then((resultObject) => {
-        this.docBody = resultObject.value;
-      })
-      .then(() => {
-        this.docVisible = true;
-      });
-  }
-
-  async previewXls(previewFile: File) {
-    const fileData = await previewFile.arrayBuffer();
-
-    const workbook = xlsx.read(fileData);
-    const sheetName = workbook.SheetNames[0];
-    const workSheet = workbook.Sheets[sheetName];
-    this.xmlJson = xlsx.utils.sheet_to_json(workSheet, { header: 1 });
-    this.isExcel = !this.isExcel;
-    this.docVisible = true;
-  }
-
   previewDocument(documentId: string, documentName: string) {
     this.buttonIconService.togglePreviewIcon();
-    const fileType = documentName.split('.').at(1);
     this.pdfPages = [];
     firstValueFrom(this.stepperService.getPreviewDocument(documentId))
       .then((res) => {
-        this.docBody = '';
-        this.xmlJson = [[]];
         this.docHeader = documentName;
         const blobFile = res.body;
         const previewFile = new File([blobFile as any], 'output.pdf', {
           type: 'application/pdf',
         });
-        if (fileType === 'pdf') {
-          this.previewPdf(previewFile);
-        } else if (fileType === 'doc' || fileType === 'docx') {
-          this.previewDocx(previewFile);
-        } else if (fileType === 'xls' || fileType === 'xlsx') {
-          this.previewXls(previewFile);
-        }
+        this.previewPdf(previewFile);
       })
       .then(() => {
         this.buttonIconService.togglePreviewIcon();
