@@ -29,7 +29,7 @@ export class PayrollStepperService {
   }
 
   getPreviewDocument(documentId: string) {
-    return this.baseService.getDocument(`documents/download/${documentId}`);
+    return this.baseService.getDocument(`documents/preview/${documentId}`);
   }
 
   getReport(scheduleId: string) {
