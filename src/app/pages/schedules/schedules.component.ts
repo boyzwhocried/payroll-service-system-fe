@@ -1,11 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  FormsModule,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
@@ -23,6 +18,8 @@ import { ScheduleStatusType } from '../../constants/schedule-request-types.const
 import { firstValueFrom } from 'rxjs';
 import { ScheduleResDto } from '../../dto/schedule/schedule.res.dto';
 import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
+import { ImageModule } from 'primeng/image';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-schedules',
@@ -41,10 +38,12 @@ import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
     DialogModule,
     InputTextModule,
     ToastModule,
+    ImageModule,
+    SkeletonModule,
   ],
   providers: [MessageService],
 })
-export class Schedules implements OnInit {
+export class SchedulesComponent implements OnInit {
   roleCode: boolean = true;
   status: string = 'Pending';
   dataLogin = this.authService.getLoginData();
@@ -52,6 +51,7 @@ export class Schedules implements OnInit {
   schedules: PayrollResDto[] = [];
   clientSchedules: ScheduleResDto[] = [];
   maxDate: Date | null = null;
+  isLoading = true
 
   rescheduleForm = this.fb.group({
     scheduleId: ['', Validators.required],
@@ -62,32 +62,38 @@ export class Schedules implements OnInit {
     private authService: AuthService,
     private payrollService: PayrollService,
     private fb: NonNullableFormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.init();
   }
 
-  init() {
+  private async init() {
     if (this.rolePS) {
-      firstValueFrom(this.payrollService.getAllClients()).then((res) => {
-        this.schedules = res;
-      });
+      try {
+        this.isLoading = true;
+        this.schedules = await firstValueFrom(this.payrollService.getAllClients());
+      } finally {
+        this.isLoading = false;
+      }
+
     }
     if (this.roleClient) {
-      firstValueFrom(this.payrollService.getLoginClientSchedule()).then(
-        (res) => {
-          this.clientSchedules = res;
-        }
-      );
+      try {
+        this.isLoading = true;
+        this.clientSchedules = await firstValueFrom(this.payrollService.getLoginClientSchedule());
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
   get rolePS() {
-    return this.dataLogin?.roleCode == RoleType.PS;
+    return this.dataLogin?.roleCode === RoleType.PS;
   }
+
   get roleClient() {
-    return this.dataLogin?.roleCode == RoleType.CLIENT;
+    return this.dataLogin?.roleCode === RoleType.CLIENT;
   }
 
   showDialog(schedule: ScheduleResDto) {
@@ -99,72 +105,47 @@ export class Schedules implements OnInit {
     });
   }
 
-  convertToDate(dateString: string | null) {
+  private convertToDate(dateString: string | null): Date | null {
     if (!dateString) {
       return null;
     }
-    const parts = dateString.split('/');
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const year = parseInt(parts[2], 10);
-    let date = new Date(year, month, day);
-    return date;
+    const [day, month, year] = dateString.split('/').map(part => parseInt(part, 10));
+    return new Date(year, month - 1, day);
   }
 
-  setMaxDate(dateString: string | null) {
-    let maxDate = this.convertToDate(dateString);
+  private setMaxDate(dateString: string | null): Date | null {
+    const maxDate = this.convertToDate(dateString);
     maxDate?.setDate(maxDate.getDate() - 2);
     return maxDate;
   }
 
-  formatDate(dateString: string | null) {
-    let payrollDate = this.convertToDate(dateString);
-    const day = String(payrollDate!.getUTCDate()).padStart(2, '0');
-    const month = String(payrollDate!.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = payrollDate!.getUTCFullYear();
-
+  private formatDate(dateString: string | null): string {
+    const payrollDate = this.convertToDate(dateString);
+    if (!payrollDate) {
+      return '';
+    }
+    const day = String(payrollDate.getUTCDate()).padStart(2, '0');
+    const month = String(payrollDate.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = payrollDate.getUTCFullYear();
     return `${day}/${month}/${year}`;
   }
 
-  isCompleted(i: number) {
-    if (
-      this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.COMPLETED
-    ) {
-      return true;
-    } else if (
-      this.clientSchedules.at(i)?.scheduleStatusCode ==
-      ScheduleStatusType.COMPLETED
-    ) {
-      return true;
-    }
-    return false;
+  isCompleted(i: number): boolean {
+    return this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED ||
+      this.clientSchedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED;
   }
 
-  isNoSchedule(i: number) {
-    if (
-      this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.NO_SCHEDULE
-    ) {
-      return true;
-    } else if (
-      this.clientSchedules.at(i)?.scheduleStatusCode ==
-      ScheduleStatusType.NO_SCHEDULE
-    ) {
-      return true;
-    }
-    return false;
+  isNoSchedule(i: number): boolean {
+    return this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.NO_SCHEDULE ||
+      this.clientSchedules[i]?.scheduleStatusCode === ScheduleStatusType.NO_SCHEDULE;
   }
 
   onSubmit() {
-    this.rescheduleForm.patchValue({
-      newDeadline: this.formatDate(
-        this.rescheduleForm.getRawValue().newDeadline
-      ),
-    });
+    const newDeadline = this.formatDate(this.rescheduleForm.getRawValue().newDeadline);
+    this.rescheduleForm.patchValue({ newDeadline });
     const request: RescheduleReqDto = this.rescheduleForm.getRawValue();
-    firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(
-      (res) => {
-        this.visible = false;
-      }
-    );
+    firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(() => {
+      this.visible = false;
+    });
   }
 }
