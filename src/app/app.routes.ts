@@ -67,7 +67,7 @@ export const routes: Routes = [
         title: 'Schedule',
         loadComponent: () =>
           import('./pages/schedules/schedules.component').then(
-            (s) => s.Schedules
+            (s) => s.SchedulesComponent
           ),
         canMatch: [roleValidation],
         data: [RoleType.PS, RoleType.CLIENT],
@@ -216,4 +216,4 @@ export const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
