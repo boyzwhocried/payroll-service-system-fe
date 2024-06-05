@@ -17,8 +17,7 @@
           </div>
           <div class="md:col-6 col-12">
             <label for="phoneNo">Phone Number <span class="text-red-500">*</span></label>
-            <p-inputMask id="phoneNo" mask="+629999999999?9999" formControlName="phoneNo" type="text" class="w-full" styleClass="w-full" />
-            <!-- <input pInputText type="text" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full"> -->
+            <input pInputText type="tel" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full">
           </div>
           <div class="col-12">
             <label for="email">Email <span class="text-red-500">*</span></label>
@@ -31,7 +30,7 @@
               (onChange)="changeRoleOption()" />
           </div>
           <div class="md:col-6 col-12">
-            <label for="profilePicture">Profile Picture <span class="text-red-500">*</span></label>
+            <label for="profilePicture">Profile Picture </label>
             <div class="card flex justify-content-center">
               <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
                 url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000" [auto]="true"
@@ -49,7 +48,7 @@
                 inputId="icondisplay" />
             </div>
             <div class="md:col-6 col-12">
-              <label for="profilePicture">Company Logo <span class="text-red-500">*</span></label>
+              <label for="profilePicture">Company Logo </label>
               <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
                 url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000" [auto]="true"
                 (onSelect)="onProfileSelect($event, true)" />
