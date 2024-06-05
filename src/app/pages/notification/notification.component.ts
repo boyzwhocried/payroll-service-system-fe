@@ -7,6 +7,8 @@ import { TableModule } from 'primeng/table';
 import { firstValueFrom } from "rxjs";
 import { NotificationResDto } from "../../dto/notification/notification.res.dto";
 import { NotificationService } from "../../services/notification/notification.service";
+import { SkeletonModule } from 'primeng/skeleton';
+import { ImageModule } from "primeng/image";
 
 @Component({
     selector: 'notification-app',
@@ -15,7 +17,9 @@ import { NotificationService } from "../../services/notification/notification.se
         TableModule,
         BadgeModule,
         CommonModule,
-        ButtonModule
+        ButtonModule,
+        SkeletonModule,
+        ImageModule,
     ],
     templateUrl: 'notification.component.html',
     styleUrl: 'notification.component.css'
@@ -25,6 +29,7 @@ export class NotificationComponent implements OnInit {
     notifications: NotificationResDto[] = []
 
     isHovered: Boolean = false
+    isLoading = true
 
     constructor(
         private notificationService: NotificationService,
@@ -32,16 +37,20 @@ export class NotificationComponent implements OnInit {
         private location: Location,
     ) { }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.init()
+        try {
+            this.isLoading = true
+            await firstValueFrom(this.notificationService.getNotifications()).then(response => {this.notifications = response})
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            this.isLoading = false
+        }
     }
 
     init() {
-        firstValueFrom(this.notificationService.getNotifications()).then(
-            response => {
-                this.notifications = response
-            }
-        )
+
     }
 
     isUnread(isActive: Boolean) {
