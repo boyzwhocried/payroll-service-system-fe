@@ -1,90 +1,77 @@
-<div class="md:flex flex-none my-5 gap-3">
-  <div *ngFor="let schedule of schedules; let i = index" class="md:col-4 lg:col-3 col-12">
-    <p-card *ngIf="rolePS" class="grid justify-content-center" [style]="{ width: '20rem' }">
-      <ng-template class="col align-self-center" pTemplate="title">
-        <div class="grid mx-1 justify-content-between align-items-center">
-          <p class="text-base">{{ schedule.clientName }}</p>
-          <button
-            class="p-button-rounded p-button-text p-button-secondary border-2 border-black-alpha-50 bg-secondary-100"
-            pButton pRipple type="button" routerLink="/chat/{{schedule.clientId}}" icon="pi pi-envelope"
-            title="Chat"></button>
+<div class="container py-5 mx-auto justify-content-center flex">
+  <div class="flex flex-column sm:col-10">
+    <h2 class="sm:text-left text-center mb-4">Your Schedules</h2>
+    <div class="grid gap-5 mx-auto justify-content-center">
+
+      <ng-container *ngIf="isLoading">
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+      </ng-container>
+
+      <ng-container *ngIf="schedules.length > 0 || clientSchedules.length > 0; else noData">
+        <ng-container *ngFor="let schedule of schedules; let i = index">
+          <p-card *ngIf="rolePS" [header]="schedule.clientName" [subheader]="schedule.payrollDate"
+            class="flex flex-col mx-2">
+            <ng-template pTemplate="content">
+              <div
+                [ngClass]="{'grid mx-1 align-items-center': true, 'text-green': isCompleted(i), 'text-orange': !isCompleted(i)}">
+                <span class="status-dot border-round"
+                  [ngStyle]="{'background-color': isCompleted(i) ? 'green' : 'orange'}"></span>
+                <p class="m-0 ml-2"><small>{{ schedule.scheduleStatusName }}</small></p>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <div class="grid gap-2 col">
+                <div class="flex gap-2">
+                  <p-button [disabled]="isNoSchedule(i)" [routerLink]="'/schedules/' + schedule.clientAssignmentId"
+                    size="small" label="View" class="w-full" icon="pi pi-eye"></p-button>
+                  <p-button [routerLink]="'/chat/' + schedule.clientId" size="small" label="Chat" class="w-full"
+                    icon="pi pi-envelope"></p-button>
+                </div>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+        <ng-container *ngFor="let clientSchedule of clientSchedules; let i = index">
+          <p-card *ngIf="roleClient" [header]="clientSchedule.payrollDate" [style]="{ width: '20rem' }"
+            class="flex flex-col mx-2">
+            <ng-template pTemplate="content">
+              <div
+                [ngClass]="{'grid mx-1 align-items-center': true, 'text-green': isCompleted(i), 'text-orange': !isCompleted(i)}">
+                <span class="status-dot border-round"
+                  [ngStyle]="{'background-color': isCompleted(i) ? 'green' : 'orange'}"></span>
+                <p class="m-0 ml-2"><small>{{ clientSchedule.scheduleStatusName }}</small></p>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <div class="grid gap-2 col">
+                <p-button size="small" label="View" [routerLink]="'/payrolls/' + clientSchedule.scheduleId"
+                  class="w-full" icon="pi pi-eye"></p-button>
+                <p-button *ngIf="clientSchedule.canBeRescheduled" (click)="showDialog(clientSchedule)" size="small"
+                  label="Reschedule" class="w-full" icon="pi pi-history"></p-button>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #noData>
+        <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5" *ngIf="!isLoading">
+            <p-image src="../../../assets/images/empty/Empty-pana.svg" alt="Image" width="270" />
+          <h2 class="text-center text-color-secondary font-light">Quiet day, nothing on the schedule.</h2>
         </div>
       </ng-template>
-      <ng-template class="col" pTemplate="subtitle">
-        <div *ngIf="!isCompleted(i)" class="grid mx-1 align-items-center">
-          <span class="status-dot border-round" [ngStyle]="{ 'background-color': 'orange' }"></span>
-          <p class="m-0 ml-2">
-            <small>{{ schedule.scheduleStatusName }}</small>
-          </p>
-          <p class="col-12 ml-2">
-            <small>{{ schedule.payrollDate }}</small>
-          </p>
-        </div>
-        <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
-          <span class="status-dot border-round" [ngStyle]="{ 'background-color': 'green' }"></span>
-          <p class="m-0 ml-2">
-            <small>{{ schedule.scheduleStatusName }}</small>
-          </p>
-          <p class="col-12 ml-2">
-            <small>{{ schedule.payrollDate }}</small>
-          </p>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="body"> </ng-template>
-      <ng-template pTemplate="footer">
-        <div class="grid mt-1 justify-content-between">
-          <div class="md:col-5 col-6">
-            <p-button [disabled]="isNoSchedule(i)" routerLink="/schedules/{{ schedule.clientAssignmentId }}"
-              size="small" label="View" class="w-full" styleClass="w-full" />
-          </div>
-        </div>
-      </ng-template>
-    </p-card>
-  </div>
-  <div *ngFor="let clientSchedule of clientSchedules; let i = index" class="md:col-4 lg:col-3 col-12">
-    <p-card *ngIf="roleClient" class="grid justify-content-center" [style]="{ width: '20rem' }">
-      <ng-template class="grid justify-content-end" pTemplate="title">
-        <p class="text-base font-medium ml-2 text-right">
-          <small>{{ clientSchedule.payrollDate }}</small>
-        </p>
-      </ng-template>
-      <ng-template class="col" pTemplate="subtitle">
-        <div *ngIf="!isCompleted(i)" class="grid mx-1 align-items-center">
-          <span class="status-dot border-round" [ngStyle]="{ 'background-color': 'orange' }"></span>
-          <p class="m-0 ml-2">
-            <small>{{ clientSchedule.scheduleStatusName }}</small>
-          </p>
-        </div>
-        <div *ngIf="isCompleted(i)" class="grid mx-1 align-items-center">
-          <span class="status-dot border-round" [ngStyle]="{ 'background-color': 'green' }"></span>
-          <p class="m-0 ml-2">
-            <small>{{ clientSchedule.scheduleStatusName }}</small>
-          </p>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="body"> </ng-template>
-      <ng-template pTemplate="footer">
-        <div class="grid mt-1 justify-content-between">
-          <div class="md:col-4 col-6">
-            <p-button size="small" label="View" routerLink="/payrolls/{{ clientSchedule.scheduleId }}" class="w-full"
-              styleClass="w-full" />
-          </div>
-          <div class="col-6">
-            <p-button (onClick)="showDialog(clientSchedule)" *ngIf="clientSchedule.canBeRescheduled" size="small"
-              label="Reschedule" class="w-full" styleClass="w-full" />
-          </div>
-        </div>
-      </ng-template>
-    </p-card>
+
+    </div>
   </div>
 </div>
 
 <div class="card flex justify-content-center">
   <p-toast></p-toast>
   <p-dialog header="Reschedule" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
-    <pre>
-    {{ rescheduleForm.value | json }}
-  </pre>
+    <pre>{{ rescheduleForm.value | json }}</pre>
 
     <span class="p-text-secondary block mb-5">Update your Last Document Deadline.</span>
     <div [formGroup]="rescheduleForm" class="grid align-items-center gap-3 mb-3">

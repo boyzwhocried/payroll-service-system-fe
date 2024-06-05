@@ -1,56 +1,65 @@
-<div class="flex align-items-center justify-content-center min-h-screen lg:mx-5 lg:my-5">
+<div class="flex justify-content-center lg:mx-5 lg:my-5">
     <div class="surface-card p-4 shadow-2 border-round w-full">
         <div class="flex flex-row gap-2 align-items-center">
-            <button class="p-button-rounded p-button-text p-button-secondary"  pButton pRipple type="button"
+            <button class="p-button-rounded p-button-text p-button-secondary" pButton pRipple type="button"
                 (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
             <h3>Notifications</h3>
         </div>
         <div class="card">
-            <p-table [value]="notifications" dataKey="id">
-                <ng-template pTemplate="body" let-notification let-editing="editing" let-ri="rowIndex">
-                    <tr class="bg-white hover:surface-100">
-
-                        <td>
-                            <p-cellEditor>
-                                <ng-template pTemplate="output">
-                                    <div class="flex flex-row column-gap-5" (click)="onClickNotification(notification)"
-                                        [ngStyle]="{'cursor' : 'pointer'}" role="button">
-                                        <div [ngStyle]="{ 'width' : '1rem'}" class="flex align-items-center">
-                                            <span *ngIf="isUnread(notification.isActive)"
-                                                class="status-dot border-round"></span>
-                                        </div>
-                                        <div class="flex flex-column">
-                                            <h4 class="text-left my-0">
-                                                {{notification.notificationHeader}}
-                                            </h4>
-                                            <p class="text-left my-0">
-                                                {{notification.notificationBody}}
-                                            </p>
-                                        </div>
+            <div class="surface-card px-3" *ngIf="isLoading">
+                <ul class="m-0 p-0 list-none">
+                    <li *ngFor="let dummy of [].constructor(3); let i = index" class="my-5">
+                        <div class="flex align-items-center gap-5">
+                            <p-skeleton shape="circle" styleClass="" width="0.5rem" height="0.5rem"></p-skeleton>
+                            <div style="flex: 1">
+                                <p-skeleton width="100%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+                                <p-skeleton width="75%" height="1rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <ng-template #noData>
+                <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+                    *ngIf="!isLoading">
+                    <p-image src="../../../assets/images/notification/Empty street-rafiki.svg" alt="Image" width="270" />
+                    <h2 class="text-center text-color-secondary font-light">Hmm... all quiet on the notification front.</h2>
+                </div>
+            </ng-template>
+            
+            <div *ngIf="notifications.length > 0; else noData">
+                <p-table [value]="notifications" dataKey="id">
+                    <ng-template pTemplate="body" let-notification let-editing="editing" let-ri="rowIndex">
+                        <tr class="bg-white hover:surface-100">
+                            <td colspan="2">
+                                <div class="flex flex-row column-gap-5 cursor-pointer"
+                                    (click)="onClickNotification(notification)">
+                                    <div class="flex align-items-center justify-content-center w-min" style="width: 1rem">
+                                        <span *ngIf="isUnread(notification.isActive)"
+                                            class="status-dot border-round"></span>
+                                        <span *ngIf="!isUnread(notification.isActive)"
+                                            class="status-dot-empty border-round"></span>
                                     </div>
-                                </ng-template>
-                            </p-cellEditor>
-                        </td>
-                        <td>
-                            <p-cellEditor>
-                                <ng-template pTemplate="output">
-                                </ng-template>
-                            </p-cellEditor>
-                        </td>
-                        <td [ngStyle]="{ 'width' : '1rem'}">
-                            <p-cellEditor>
-                                <ng-template pTemplate="output">
-                                    <button title="Delete Notification" pButton pRipple type="button" icon="pi pi-trash"
-                                        (click)="deleteNotification(notification.notificationId, ri, notification.isActive)"
-                                        class="p-button-rounded p-button-text p-button-danger">
-                                    </button>
-                                </ng-template>
-
-                            </p-cellEditor>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
+                                    <div class="flex flex-column">
+                                        <h4 class="text-left my-0">
+                                            {{notification.notificationHeader}}
+                                        </h4>
+                                        <p class="text-left my-0">
+                                            {{notification.notificationBody}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="width: 1rem">
+                                <button title="Delete Notification" pButton pRipple type="button" icon="pi pi-trash"
+                                    (click)="deleteNotification(notification.notificationId, ri, notification.isActive)"
+                                    class="p-button-rounded p-button-text p-button-danger">
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
         </div>
     </div>
 </div>
