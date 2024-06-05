@@ -19,6 +19,12 @@ import { RoleType } from '../../constants/roles.constant';
 import { ChatMessageDto } from '../../dto/chat/chat-message.dto';
 import { FormatTimestampPipe } from '../../utils/formatTimestamp.pipe';
 import { ChatService } from '../../services/chat/chat.service';
+import { SkeletonModule } from 'primeng/skeleton';
+import { environment } from '../../../env/environment';
+import { AvatarModule } from 'primeng/avatar';
+import { AvatarGroupModule } from 'primeng/avatargroup';
+import { ImageModule } from 'primeng/image';
+
 
 @Component({
   selector: 'app-chat',
@@ -32,6 +38,10 @@ import { ChatService } from '../../services/chat/chat.service';
     InputTextModule,
     FloatLabelModule,
     FormatTimestampPipe,
+    SkeletonModule,
+    AvatarModule,
+    AvatarGroupModule,
+    ImageModule,
   ],
   providers: [MessageService],
   templateUrl: './chat.component.html',
@@ -50,6 +60,7 @@ export class ChatComponent implements OnInit {
 
   isClient = this.authService.getLoginData().roleCode === RoleType.CLIENT;
   connected = false;
+  isLoading = true
 
   constructor(
     private websocketService: WebSocketService,
@@ -72,6 +83,7 @@ export class ChatComponent implements OnInit {
     });
 
     try {
+      this.isLoading = true;
       this.assignment = await firstValueFrom(this.clientAssignmentService.getClientAssignmentByClientId(this.clientId));
       if (this.assignment) {
         const userIds = this.isClient ? [this.assignment.clientId, this.assignment.psId] : [this.assignment.psId, this.assignment.clientId];
@@ -84,6 +96,8 @@ export class ChatComponent implements OnInit {
       this.scrollToBottom();
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      this.isLoading = false
     }
   }
 
@@ -122,6 +136,10 @@ export class ChatComponent implements OnInit {
         container.scrollTop = container.scrollHeight;
       }
     }, 100);
+  }
+
+  getImage(imageId: string) {
+    return `${environment.backEndBaseUrl}:${environment.port}/files/${imageId}`;
   }
 
   onBack() {
