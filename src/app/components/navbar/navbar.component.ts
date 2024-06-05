@@ -23,12 +23,11 @@ import { RoleType } from '../../constants/roles.constant';
     AvatarModule,
     BadgeModule,
     MenuModule,
-    ButtonModule
+    ButtonModule,
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.css'],
 })
-
 export class NavbarComponent implements OnInit {
   allItem: MenuItem[] | undefined
   saItem: MenuItem[] | undefined
@@ -41,29 +40,29 @@ export class NavbarComponent implements OnInit {
   notificationCount: number = 0
   notificationObservable: any
   profileImageId: string = ''
+  userData = this.authService.getLoginData()
 
   file = {
     fileContent: '',
-    fileExtension: ''
-  }
+    fileExtension: '',
+  };
 
-  fileObservable: any
+  fileObservable: any;
 
   constructor(
-    private authService: AuthService,
     private notificationService: NotificationService,
     private userService: UserService,
+    private authService: AuthService,
     private router: Router
   ) {
-    this.notificationObservable = this.notificationService.countObservable.subscribe(
-      next => this.notificationCount = next
-    )
+    this.notificationObservable =
+      this.notificationService.countObservable.subscribe(
+        (next) => (this.notificationCount = next)
+      );
 
-    this.fileObservable = this.userService.fileObservable.subscribe(
-      next => {
-        this.file = next as any
-      }
-    )
+    this.fileObservable = this.userService.fileObservable.subscribe((next) => {
+      this.file = next as any;
+    });
   }
 
   ngOnInit() {
@@ -97,15 +96,15 @@ export class NavbarComponent implements OnInit {
           this.fileObservable.unsubscribe()
           localStorage.clear()
           this.router.navigateByUrl('/login')
-        }
+        },
       },
     ];
 
     this.notificationItem = [
       {
         icon: PrimeIcons.BELL,
-        routerLink: '/notification'
-      }
+        routerLink: '/notification',
+      },
     ];
 
     this.allItem = [
@@ -123,12 +122,12 @@ export class NavbarComponent implements OnInit {
             routerLink: '/users/new',
             icon: PrimeIcons.PLUS,
           },
-        ]
+        ],
       },
       {
         label: 'Companies',
         icon: PrimeIcons.BUILDING,
-        routerLink: '/companies'
+        routerLink: '/companies',
       },
       {
         label: 'Assign',
@@ -152,7 +151,6 @@ export class NavbarComponent implements OnInit {
       },
       { separator: true },
       ...this.notificationItem,
-
     ];
 
     this.saItem = [
@@ -170,7 +168,7 @@ export class NavbarComponent implements OnInit {
             routerLink: '/users/new',
             icon: PrimeIcons.PLUS,
           },
-        ]
+        ],
       },
       {
         label: 'Companies',
@@ -183,7 +181,6 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.BOOK,
       },
       { separator: true },
-
     ];
 
     this.clientItem = [
@@ -198,7 +195,6 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.COMMENTS,
       },
       { separator: true },
-
     ];
 
     this.psItem = [
@@ -208,12 +204,11 @@ export class NavbarComponent implements OnInit {
         icon: PrimeIcons.CALENDAR_CLOCK,
       },
       { separator: true },
-
     ];
   }
 
   private initNotifications() {
-    this.notificationService.getNotificationCount()
+    this.notificationService.getNotificationCount();
   }
 
   private setMenuItemsBasedOnRole() {
@@ -239,12 +234,12 @@ export class NavbarComponent implements OnInit {
   }
 
   isAvatarUpdated() {
-    return ((this.file.fileContent) && (this.file.fileExtension))
+    return this.file.fileContent && this.file.fileExtension;
   }
 
   getProfileImage() {
     if (this.isAvatarUpdated()) {
-      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`
+      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`;
     } else {
       return `${environment.backEndBaseUrl}:${environment.port}/files/${this.profileImageId}`
     }
@@ -264,5 +259,9 @@ export class NavbarComponent implements OnInit {
 
   incrementCount(value: number) {
     this.notificationCount += value;
+  }
+
+  getFirstName(): string {
+    return this.userData.userName.split(' ')[0];
   }
 }

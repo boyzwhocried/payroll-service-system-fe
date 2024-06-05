@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, Location } from "@angular/common";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { BadgeModule } from 'primeng/badge';
@@ -23,13 +23,14 @@ import { NotificationService } from "../../services/notification/notification.se
 
 export class NotificationComponent implements OnInit {
     notifications: NotificationResDto[] = []
-    
+
     isHovered: Boolean = false
 
     constructor(
         private notificationService: NotificationService,
-        private router: Router
-    ) {}
+        private router: Router,
+        private location: Location,
+    ) { }
 
     ngOnInit(): void {
         this.init()
@@ -61,5 +62,9 @@ export class NotificationComponent implements OnInit {
                 this.notifications.splice(index, 1)
             }
         )
+    }
+
+    onBack() {
+        this.location.back()
     }
 }

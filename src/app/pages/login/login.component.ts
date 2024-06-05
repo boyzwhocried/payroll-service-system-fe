@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { RippleModule } from 'primeng/ripple';
 import { AuthService } from '../../services/auth/auth.service';
 import { LoginReqDto } from '../../dto/user/login.req.dto';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RoleType } from '../../constants/roles.constant';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
@@ -22,6 +22,7 @@ import { ToastrService } from 'ngx-toastr';
     ButtonModule,
     InputTextModule,
     RippleModule,
+    RouterModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],

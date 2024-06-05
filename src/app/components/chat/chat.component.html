@@ -2,7 +2,9 @@
     <div class="chat-section grid justify-content-center mb-3 h-full w-full">
         <div class="col-12 md:col-8 lg:col-6 flex flex-column chat-container surface-card border-round h-full w-full">
             <div class="chat-header flex align-items-center justify-content-between p-2 border-bottom-1 surface-border">
-                <div class="recipient-info flex align-items-center">
+                <div class="recipient-info flex align-items-center gap-2">
+                    <button class="p-button-rounded p-button-text p-button-secondary" pButton pRipple type="button"
+                        (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
                     <div class="recipient-name text-lg font-bold">{{ recipient?.userName }} - {{ recipient?.roleName }}
                     </div>
                 </div>

@@ -9,19 +9,15 @@
     <div class="grid">
       <button
         pButton
-        [ngStyle]="{
-          'background-color': 'transparent',
-          color: 'black',
-          border: 'none'
-        }"
         (click)="onBack()"
         icon="pi pi-chevron-left"
+        title="back"
       ></button>
       <h3>Payroll</h3>
     </div>
     <h1 class="text-center">Upload Required Payroll Documents</h1>
 
-    <p-stepper orientation="vertical" [linear]="true">
+    <p-stepper *ngIf="stepperDocuments" orientation="vertical" [linear]="true">
       <p-stepperPanel
         *ngFor="let data of stepperDocuments.documentsRes; let i = index"
         [header]="
@@ -264,8 +260,6 @@
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   id="testoa"
 >
-  <div [innerHTML]="docBody" *ngIf="docBody"></div>
-
   <div
     *ngFor="let p of pdfPages; let i = index"
     class="flex justify-content-center"
@@ -273,10 +267,4 @@
   >
     <canvas id="{{ 'pdfCanvas-' + (i + 1) }}"></canvas>
   </div>
-
-  <table class="table" *ngIf="isExcel">
-    <tr *ngFor="let data of xmlJson">
-      <td *ngFor="let d of data">{{ d }}</td>
-    </tr>
-  </table>
 </p-dialog>

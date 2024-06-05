@@ -5,13 +5,10 @@ import { LoginReqDto } from '../../dto/user/login.req.dto';
 import { LoginResDto } from '../../dto/user/login.res.dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
-  constructor(
-    private http: HttpClient,
-  ) { }
+  constructor(private http: HttpClient) {}
 
   login(loginReqDto: LoginReqDto) {
     return this.http.post<LoginResDto>(`${environment.backEndBaseUrl}:${environment.port}/login/`, loginReqDto)
@@ -22,13 +19,13 @@ export class AuthService {
   }
 
   getLoginData() {
-    const dataLogin = localStorage.getItem('dataLogin')
-    return dataLogin ? JSON.parse(dataLogin) : undefined
+    const dataLogin = localStorage.getItem('dataLogin');
+    return dataLogin ? JSON.parse(dataLogin) : undefined;
   }
 
   getToken() {
-    const dataLogin = this.getLoginData()
-    return dataLogin ? dataLogin.token : undefined
+    const dataLogin = this.getLoginData();
+    return dataLogin ? dataLogin.token : undefined;
   }
 
   isLoggedIn() {
@@ -39,3 +36,4 @@ export class AuthService {
     return false
   }
 }
+
