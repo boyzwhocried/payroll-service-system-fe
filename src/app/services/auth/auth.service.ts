@@ -11,10 +11,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(loginReqDto: LoginReqDto) {
-    return this.http.post<LoginResDto>(
-      `${environment.backEndBaseUrl}:${environment.port}/users/login`,
-      loginReqDto
-    );
+    return this.http.post<LoginResDto>(`${environment.backEndBaseUrl}:${environment.port}/login/`, loginReqDto)
   }
 
   saveLoginData(loginResDto: LoginResDto | undefined) {
@@ -30,4 +27,13 @@ export class AuthService {
     const dataLogin = this.getLoginData();
     return dataLogin ? dataLogin.token : undefined;
   }
+
+  isLoggedIn() {
+    const loginData = this.getLoginData()
+    if(loginData) {
+      return true
+    }
+    return false
+  }
 }
+
