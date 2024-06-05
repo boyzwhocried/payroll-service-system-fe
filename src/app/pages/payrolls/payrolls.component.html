@@ -38,7 +38,7 @@
             <div class="grid">
               <div class="col-6">
                 <p class="font-bold m-0 mb-3">Upload Signed Document</p>
-                <div class="flex gap-4 flex-column md:flex-row">
+                <div class="flex gap-4 flex-wrap flex-column md:flex-row">
                   <p-fileUpload
                     mode="basic"
                     chooseLabel="Choose"
@@ -52,16 +52,19 @@
                       data.isSignedByPs ||
                       buttonIconService.uploadIsLoading
                     "
-                  /><p-button
+                  />
+                  <button
+                    pButton
+                    class=""
                     label="Submit"
                     [icon]="buttonIconService.submitIcon"
                     severity="success"
-                    (onClick)="submitDocument()"
+                    (click)="confirm(1)"
                     [disabled]="
                       !documentReqDtoFg.valid ||
                       buttonIconService.submitIsLoading
                     "
-                  />
+                  ></button>
                 </div>
               </div>
 
@@ -112,17 +115,18 @@
                     />
                   </div>
                 </div>
-                <div class="flex align-items-end align-self-end">
-                  <p-button
+                <div class="flex md:align-items-end mt-3">
+                  <button
+                    pButton
                     *ngIf="isPS"
                     label="Ping Client"
                     [icon]="buttonIconService.pingIcon"
                     severity="danger"
-                    (onClick)="pingClient()"
+                    (click)="confirm(3)"
                     [disabled]="
                       data.isSignedByClient || buttonIconService.pingIsLoading
                     "
-                  />
+                  ></button>
                 </div>
               </div>
             </div>
@@ -194,16 +198,20 @@
                     </div>
                   </div>
                 </div>
-                <p-button
-                  label="Submit"
-                  *ngIf="isPS"
-                  [icon]="buttonIconService.submitIcon"
-                  (onClick)="submitFinalDocument()"
-                  [disabled]="
-                    !updateCalculatedDocumentReqDtoFg.valid ||
-                    buttonIconService.submitIsLoading
-                  "
-                />
+
+                <div>
+                  <button
+                    pButton
+                    label="Submit"
+                    *ngIf="isPS"
+                    [icon]="buttonIconService.submitIcon"
+                    (click)="confirm(2)"
+                    [disabled]="
+                      !updateCalculatedDocumentReqDtoFg.valid ||
+                      buttonIconService.submitIsLoading
+                    "
+                  ></button>
+                </div>
                 <div>
                   <p class="font-bold text-lg">Payroll Documents Report</p>
                   <p-button
@@ -268,3 +276,39 @@
     <canvas id="{{ 'pdfCanvas-' + (i + 1) }}"></canvas>
   </div>
 </p-dialog>
+
+<p-toast />
+<p-confirmDialog #cd>
+  <ng-template pTemplate="headless" let-message>
+    <div
+      class="flex flex-column align-items-center p-5 surface-overlay border-round"
+    >
+      <div
+        class="inline-flex justify-content-center align-items-center h-15rem w-15rem"
+      >
+        <img
+          src="../../../assets/images/confirmation/Yes or no-amico.svg"
+          alt=""
+        />
+      </div>
+      <span class="font-bold text-2xl block mb-2 mt-4">
+        {{ message.header }}
+      </span>
+      <p class="mb-0">{{ message.message }}</p>
+      <div class="flex align-items-center gap-2 mt-4">
+        <button
+          pButton
+          label="Yes"
+          (click)="cd.accept()"
+          class="w-8rem"
+        ></button>
+        <button
+          pButton
+          label="No"
+          (click)="cd.reject()"
+          class="p-button-outlined w-8rem"
+        ></button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmDialog>

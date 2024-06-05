@@ -106,7 +106,7 @@
             <p-button
               size="small"
               label="View"
-              [disabled]="!clientSchedule.canBeRescheduled"
+              [disabled]="clientSchedule.scheduleStatusCode == 'SQT01'"
               routerLink="/payrolls/{{ clientSchedule.scheduleId }}"
               class="w-full"
               styleClass="w-full"

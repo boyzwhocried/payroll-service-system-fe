@@ -19,12 +19,13 @@ import { AuthService } from '../../services/auth/auth.service';
 import { RoleType } from '../../constants/roles.constant';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { environment } from '../../../env/environment.prod';
-import mammoth from 'mammoth';
 import { DialogModule } from 'primeng/dialog';
-import * as xlsx from 'xlsx';
 import { TableModule } from 'primeng/table';
 import * as pdfjs from 'pdfjs-dist';
 import { ButtonIconService } from '../../services/button-icon.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-stepper',
@@ -42,7 +43,10 @@ import { ButtonIconService } from '../../services/button-icon.service';
     TagModule,
     NgxDocViewerModule,
     TableModule,
+    ConfirmDialogModule,
+    ToastModule,
   ],
+  providers: [ConfirmationService, MessageService],
 })
 export class Payrolls implements OnInit {
   date: Date | undefined;
@@ -76,7 +80,9 @@ export class Payrolls implements OnInit {
     private fb: NonNullableFormBuilder,
     private authService: AuthService,
     private location: Location,
-    public buttonIconService: ButtonIconService
+    public buttonIconService: ButtonIconService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   get isClient() {
@@ -193,6 +199,7 @@ export class Payrolls implements OnInit {
         this.stepperService.saveFinalDocument(updateCalculatedDocumentReqDto)
       ).then(() => {
         this.buttonIconService.toggleSubmitIcon();
+        this.updateCalculatedDocumentReqDtoFg.reset();
         this.stepperDocuments.calculatedDataResDto[0].documentDirectory =
           'exist';
         this.stepperDocuments.calculatedDataResDto[1].documentDirectory =
@@ -314,5 +321,29 @@ export class Payrolls implements OnInit {
           }
         );
       });
+  }
+
+  confirm(type: number) {
+    this.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Please confirm to proceed.',
+      accept: () => {
+        if (type === 1) {
+          this.submitFinalDocument();
+        } else if (type === 2) {
+          this.submitDocument();
+        } else if (type === 3) {
+          this.pingClient();
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 2500,
+        });
+      },
+    });
   }
 }
