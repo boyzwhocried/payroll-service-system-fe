@@ -1,39 +1,75 @@
 <div class="flex align-items-center justify-content-center min-h-screen">
-  <div class="surface-card p-4 shadow-2 border-round w-full md:w-8 ">
+  <div class="surface-card p-4 shadow-2 border-round w-full md:w-8">
     <pre>
       {{ rescheduleForm.getRawValue().rescheduleReqDto | json }}
     </pre>
     <div class="grid">
       <div class="md:col-6 col-8">
         <div class="grid">
-          <button pButton [ngStyle]="{'background-color' : 'transparent', 'color' : 'black', 'border' : 'none'}"
-            (click)="onBack()" icon="pi pi-chevron-left"></button>
+          <button
+            pButton
+            [ngStyle]="{
+              'background-color': 'transparent',
+              color: 'black',
+              border: 'none'
+            }"
+            (click)="onBack()"
+            icon="pi pi-chevron-left"
+          ></button>
           <h3>Reschedule</h3>
         </div>
       </div>
-      <p class="align-self-end justify-content-end text-right md:col-6 col-4">{{ formatDate(payrollDate) }}</p>
+      <p class="align-self-end justify-content-end text-right md:col-6 col-4">
+        {{ payrollDate }}
+      </p>
     </div>
-    <div class=" card" [formGroup]="rescheduleForm">
-      <div *ngFor="let activity of rescheduleReqDto.controls; let i = index" formArrayName="rescheduleReqDto">
+    <div class="card" [formGroup]="rescheduleForm">
+      <div
+        *ngFor="let activity of rescheduleReqDto.controls; let i = index"
+        formArrayName="rescheduleReqDto"
+      >
         <div class="grid" [formGroupName]="i">
           <div class="md:col-6 col-12 pb-0">
-            <label class="col-12" [ngStyle]="{'padding-left' : '2px'}" for="activity{{i}}">Activity
+            <label
+              class="col-12"
+              [ngStyle]="{ 'padding-left': '2px' }"
+              for="activity{{ i }}"
+              >Activity
             </label>
-            <input class="col-12 " formControlName="activity" pInputText />
+            <input class="col-12" formControlName="activity" pInputText />
           </div>
-          <div class=" md:col-6 col-12 align-self-end ">
-            <label class="col-12" [ngStyle]="{'padding-left' : '2px'}" for="documentDeadline{{i}}">Document
-              Deadline</label>
-            <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]=" true" inputId="icondisplay"
-              class="w-full" styleClass="w-full" [maxDate]="maxDate" dateFormat="dd/mm/yy"
-              [inputStyle]="{'padding-top' : '8px', 'padding-bottom' : '8px'}" formControlName="documentDeadline" />
+          <div class="md:col-6 col-12 align-self-end">
+            <label
+              class="col-12"
+              [ngStyle]="{ 'padding-left': '2px' }"
+              for="documentDeadline{{ i }}"
+              >Document Deadline</label
+            >
+            <p-calendar
+              [iconDisplay]="'input'"
+              dataType="string"
+              [showIcon]="true"
+              inputId="icondisplay"
+              class="w-full"
+              styleClass="w-full"
+              [maxDate]="maxDate"
+              [minDate]="minDate"
+              dateFormat="dd/mm/yy"
+              [inputStyle]="{ 'padding-top': '8px', 'padding-bottom': '8px' }"
+              formControlName="documentDeadline"
+            />
           </div>
         </div>
       </div>
       <div class="grid mt-5 md:justify-content-end">
         <div class="md:col-2 col-6">
-          <button pButton class="w-full" (click)="onSubmit()" [disabled]="rescheduleReqDto.invalid"
-            label="Submit"></button>
+          <button
+            pButton
+            class="w-full"
+            (click)="onSubmit()"
+            [disabled]="rescheduleReqDto.invalid"
+            label="Submit"
+          ></button>
         </div>
       </div>
     </div>

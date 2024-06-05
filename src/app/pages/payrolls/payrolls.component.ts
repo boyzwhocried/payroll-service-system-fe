@@ -193,6 +193,10 @@ export class Payrolls implements OnInit {
         this.stepperService.saveFinalDocument(updateCalculatedDocumentReqDto)
       ).then(() => {
         this.buttonIconService.toggleSubmitIcon();
+        this.stepperDocuments.calculatedDataResDto[0].documentDirectory =
+          'exist';
+        this.stepperDocuments.calculatedDataResDto[1].documentDirectory =
+          'exist';
       });
     }
   }

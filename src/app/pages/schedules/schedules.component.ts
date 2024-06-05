@@ -52,6 +52,7 @@ export class Schedules implements OnInit {
   schedules: PayrollResDto[] = [];
   clientSchedules: ScheduleResDto[] = [];
   maxDate: Date | null = null;
+  minDate: Date | null = null;
 
   rescheduleForm = this.fb.group({
     scheduleId: ['', Validators.required],
@@ -93,6 +94,7 @@ export class Schedules implements OnInit {
   showDialog(schedule: ScheduleResDto) {
     this.rescheduleForm.reset();
     this.visible = true;
+    this.minDate = this.setMinDate();
     this.maxDate = this.setMaxDate(schedule.payrollDate);
     this.rescheduleForm.patchValue({
       scheduleId: schedule.scheduleId,
@@ -111,19 +113,37 @@ export class Schedules implements OnInit {
     return date;
   }
 
+  setMinDate() {
+    const currentDate = new Date();
+
+    let minDate = currentDate;
+    return minDate;
+  }
+
   setMaxDate(dateString: string | null) {
     let maxDate = this.convertToDate(dateString);
     maxDate?.setDate(maxDate.getDate() - 2);
     return maxDate;
   }
 
-  formatDate(dateString: string | null) {
-    let payrollDate = this.convertToDate(dateString);
-    const day = String(payrollDate!.getUTCDate()).padStart(2, '0');
-    const month = String(payrollDate!.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = payrollDate!.getUTCFullYear();
+  onDateSelect(event: any) {
+    const selectedDate = new Date(event);
 
-    return `${day}/${month}/${year}`;
+    const newDate = new Date(
+      Date.UTC(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        selectedDate.getHours(),
+        selectedDate.getMinutes(),
+        selectedDate.getSeconds()
+      )
+    );
+    const dateString = newDate.toISOString();
+
+    const documentDeadline = dateString.substring(0, dateString.length - 5);
+
+    this.rescheduleForm.patchValue({ newDeadline: documentDeadline });
   }
 
   isCompleted(i: number) {
@@ -155,14 +175,9 @@ export class Schedules implements OnInit {
   }
 
   onSubmit() {
-    this.rescheduleForm.patchValue({
-      newDeadline: this.formatDate(
-        this.rescheduleForm.getRawValue().newDeadline
-      ),
-    });
     const request: RescheduleReqDto = this.rescheduleForm.getRawValue();
     firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(
-      (res) => {
+      () => {
         this.visible = false;
       }
     );

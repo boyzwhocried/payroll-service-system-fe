@@ -145,11 +145,8 @@ export class CreateScheduleComponent implements OnInit {
 
   setMinDate() {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const dateString = `01/${currentMonth}/2024`;
 
-    let minDate = this.convertToDate(dateString);
-    minDate?.setDate(minDate.getDate());
+    let minDate = currentDate;
     return minDate;
   }
 
