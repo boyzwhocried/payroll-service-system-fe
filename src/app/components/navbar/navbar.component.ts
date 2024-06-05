@@ -36,10 +36,11 @@ export class NavbarComponent implements OnInit {
   notificationItem: MenuItem[] | undefined
   userItem: MenuItem[] | undefined
   menuItem: MenuItem[] | undefined
+  roleCode: string = ''
+  notificationCount: number = 0
+  notificationObservable: any
+  profileImageId: string = ''
   userData = this.authService.getLoginData()
-
-  notificationCount: number = 0;
-  notificationObservable: any;
 
   file = {
     fileContent: '',
@@ -68,6 +69,8 @@ export class NavbarComponent implements OnInit {
     this.initMenuItems();
     this.initNotifications();
     this.setMenuItemsBasedOnRole();
+    this.roleCode = this.authService.getLoginData().roleCode
+    this.profileImageId = this.authService.getLoginData().fileId
   }
 
   private initMenuItems() {
@@ -88,11 +91,11 @@ export class NavbarComponent implements OnInit {
       {
         label: 'Logout',
         icon: PrimeIcons.SIGN_OUT,
-        routerLink: '/login',
         command: () => {
-          localStorage.clear();
-          this.notificationObservable.unsubscribe();
-          this.fileObservable.unsubscribe();
+          this.notificationObservable.unsubscribe()
+          this.fileObservable.unsubscribe()
+          localStorage.clear()
+          this.router.navigateByUrl('/login')
         },
       },
     ];
@@ -169,19 +172,8 @@ export class NavbarComponent implements OnInit {
       },
       {
         label: 'Companies',
-        icon: PrimeIcons.BUILDING,
-        items: [
-          {
-            label: 'List',
-            routerLink: '/companies',
-            icon: PrimeIcons.LIST,
-          },
-          {
-            label: 'Create',
-            routerLink: '/companies/new',
-            icon: PrimeIcons.PLUS,
-          },
-        ],
+        routerLink: '/companies',
+        icon: PrimeIcons.BUILDING
       },
       {
         label: 'Assign',
@@ -237,6 +229,10 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  isSuperAdmin() {
+    return RoleType.SUPER_ADMIN == this.roleCode
+  }
+
   isAvatarUpdated() {
     return this.file.fileContent && this.file.fileExtension;
   }
@@ -245,8 +241,7 @@ export class NavbarComponent implements OnInit {
     if (this.isAvatarUpdated()) {
       return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`;
     } else {
-      const id = this.authService.getLoginData().fileId as string;
-      return `${environment.backEndBaseUrl}:${environment.port}/files/${id}`;
+      return `${environment.backEndBaseUrl}:${environment.port}/files/${this.profileImageId}`
     }
   }
 

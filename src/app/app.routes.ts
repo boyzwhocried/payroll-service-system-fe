@@ -5,6 +5,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { roleValidation } from './validations/role.validations';
 import { RoleType } from './constants/roles.constant';
 import { ForbiddenComponent } from './pages/not-found copy/forbidden.component';
+import { loginValidation } from './validations/login.validation';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
   {
     path: 'login',
     title: 'Login',
+    canMatch: [loginValidation],
     loadComponent: () =>
       import('./pages/login/login.component').then((c) => c.LoginComponent),
   },

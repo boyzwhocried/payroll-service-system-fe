@@ -9,6 +9,8 @@ import { AuthService } from '../../services/auth/auth.service';
 import { LoginReqDto } from '../../dto/user/login.req.dto';
 import { Router, RouterModule } from '@angular/router';
 import { RoleType } from '../../constants/roles.constant';
+import { firstValueFrom } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -35,21 +37,21 @@ export class LoginComponent {
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private authService: AuthService,
+    private toastr: ToastrService,
     private router: Router
   ) { }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       const loginReqDto: LoginReqDto = this.loginForm.getRawValue()
-      this.authService.login(loginReqDto).subscribe({
-        next: (response) => {
-          this.authService.saveLoginData(response);
-          const roleCode: string = response.roleCode;
+      firstValueFrom(this.authService.login(loginReqDto)).then(
+        next => {
+          this.authService.saveLoginData(next)
+          const roleCode: string = next.roleCode
           this.router.navigateByUrl(roleCode == RoleType.SUPER_ADMIN ? '/users' : '/schedules')
         },
-        error: (error) => console.error('Login failed:', error),
-        complete: () => console.log('Login request complete')
-      });
+        error => this.toastr.error(error.error.message)
+      )
     } else {
       console.log('Form is not valid:', this.loginForm.errors);
     }

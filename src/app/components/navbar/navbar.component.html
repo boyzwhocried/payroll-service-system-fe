@@ -15,14 +15,16 @@
             </ng-container>
         </ng-template>
         <div class="flex flex-row gap-3 align-items-center">
-            <i *ngIf="!isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
-                [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}" (click)="toNotificationMenu()"></i>
-            <i *ngIf="isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
-                pBadge value="{{getNotificationValue()}}" [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}"
-                (click)="toNotificationMenu()"></i>
+            <div *ngIf="!isSuperAdmin()">
+                <i *ngIf="!isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
+                    [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}" (click)="toNotificationMenu()"></i>
+                <i *ngIf="isUnreadNotification()" class="pi pi-bell flex align-content-center" style="font-size: x-large"
+                    pBadge value="{{getNotificationValue()}}" [ngStyle]="{'cursor': 'pointer', 'brightness(0.9)': 'none'}"
+                    (click)="toNotificationMenu()"></i>
+            </div>
             <p-menu #user [model]="userItem" [popup]="true">
                 <ng-template pTemplate="item" let-item>
-                    <ng-container *ngIf="item.routerLink">
+                    <ng-container>
                         <a [routerLink]="item.routerLink" class="p-menuitem-link">
                             <span class="ml-2">{{ item.label }}</span>
                         </a>
