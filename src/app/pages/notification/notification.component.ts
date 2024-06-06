@@ -13,10 +13,13 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ImageModule } from 'primeng/image';
 import { AuthService } from '../../services/auth/auth.service';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
 
 @Component({
   selector: 'notification-app',
   standalone: true,
+  templateUrl: 'notification.component.html',
+  styleUrl: 'notification.component.css',
   imports: [
     TableModule,
     BadgeModule,
@@ -26,9 +29,8 @@ import { AuthService } from '../../services/auth/auth.service';
     ToastModule,
     SkeletonModule,
     ImageModule,
+    BackButtonComponent,
   ],
-  templateUrl: 'notification.component.html',
-  styleUrl: 'notification.component.css',
   providers: [ConfirmationService, MessageService],
 })
 export class NotificationComponent implements OnInit {

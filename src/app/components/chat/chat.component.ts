@@ -24,28 +24,30 @@ import { environment } from '../../../env/environment';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ImageModule } from 'primeng/image';
+import { BackButtonComponent } from "../back-button/back-button.component";
 
 
 @Component({
-  selector: 'app-chat',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    ButtonModule,
-    ToastModule,
-    InputTextModule,
-    FloatLabelModule,
-    FormatTimestampPipe,
-    SkeletonModule,
-    AvatarModule,
-    AvatarGroupModule,
-    ImageModule,
-  ],
-  providers: [MessageService],
-  templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+    selector: 'app-chat',
+    standalone: true,
+    providers: [MessageService],
+    templateUrl: './chat.component.html',
+    styleUrls: ['./chat.component.css'],
+    imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientModule,
+        ButtonModule,
+        ToastModule,
+        InputTextModule,
+        FloatLabelModule,
+        FormatTimestampPipe,
+        SkeletonModule,
+        AvatarModule,
+        AvatarGroupModule,
+        ImageModule,
+        BackButtonComponent
+    ]
 })
 export class ChatComponent implements OnInit {
   @ViewChild('messagesContainer') messagesContainer: ElementRef | undefined;

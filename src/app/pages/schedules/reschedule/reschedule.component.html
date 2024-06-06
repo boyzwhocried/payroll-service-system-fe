@@ -5,17 +5,8 @@
     </pre>
     <div class="grid">
       <div class="md:col-6 col-8">
-        <div class="grid">
-          <button
-            pButton
-            [ngStyle]="{
-              'background-color': 'transparent',
-              color: 'black',
-              border: 'none'
-            }"
-            (click)="onBack()"
-            icon="pi pi-chevron-left"
-          ></button>
+        <div class="grid align-items-center gap-2">
+          <app-back-button />
           <h3>Reschedule</h3>
         </div>
       </div>
@@ -24,6 +15,17 @@
       </p>
     </div>
     <div class="card" [formGroup]="rescheduleForm">
+      <div *ngIf="isLoading">
+        <div *ngFor="let _ of [0, 1, 2]" class="grid mb-2">
+          <div
+            class="flex flex-column md:col-6 col-12 gap-2"
+            *ngFor="let _ of [0, 1]"
+          >
+            <p-skeleton width="6rem" styleClass="" />
+            <p-skeleton height="2rem" styleClass="" />
+          </div>
+        </div>
+      </div>
       <div
         *ngFor="let activity of rescheduleReqDto.controls; let i = index"
         formArrayName="rescheduleReqDto"
@@ -36,7 +38,12 @@
               for="activity{{ i }}"
               >Activity
             </label>
-            <input class="col-12" formControlName="activity" pInputText />
+            <input
+              class="col-12"
+              formControlName="activity"
+              pInputText
+              aria-label="activity"
+            />
           </div>
           <div class="md:col-6 col-12 align-self-end">
             <label

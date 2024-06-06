@@ -18,10 +18,14 @@ import { UpdateDocumentScheduleReqDto } from '../../../dto/document/update-docum
 import { DocumentService } from '../../../services/document.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { BackButtonComponent } from '../../../components/back-button/back-button.component';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-reschedule',
   standalone: true,
+  templateUrl: './reschedule.component.html',
+  styleUrl: './reschedule.component.css',
   imports: [
     CommonModule,
     TableModule,
@@ -31,9 +35,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     InputTextModule,
     CalendarModule,
     ConfirmDialogModule,
+    BackButtonComponent,
+    SkeletonModule,
   ],
-  templateUrl: './reschedule.component.html',
-  styleUrl: './reschedule.component.css',
   providers: [ConfirmationService, MessageService],
 })
 export class RescheduleComponent implements OnInit {
@@ -43,6 +47,7 @@ export class RescheduleComponent implements OnInit {
   minDate: Date | null = null;
   reschedule: OldDocumentResDto[] = [];
   req: UpdateDocumentScheduleReqDto[] = [];
+  isLoading = true;
 
   rescheduleForm = this.fb.group({
     rescheduleReqDto: this.fb.array(this.req),
@@ -57,14 +62,23 @@ export class RescheduleComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.scheduleId = this.route.snapshot.queryParamMap.get('id') as string;
-    firstValueFrom(this.documentService.getScheduleById(this.scheduleId)).then(
-      (res) => {
+
+    try {
+      this.isLoading = true;
+      await firstValueFrom(
+        this.documentService.getScheduleById(this.scheduleId)
+      ).then((res) => {
         this.reschedule = res;
         this.activityOnInit();
-      }
-    );
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      this.isLoading = false;
+    }
+
     this.payrollDate = this.route.snapshot.queryParamMap.get(
       'payrollDate'
     ) as string;

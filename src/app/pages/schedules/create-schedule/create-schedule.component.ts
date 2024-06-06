@@ -18,10 +18,13 @@ import { firstValueFrom } from 'rxjs';
 import { DocumentService } from '../../../services/document.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { BackButtonComponent } from '../../../components/back-button/back-button.component';
 
 @Component({
   selector: 'app-create-schedule',
   standalone: true,
+  templateUrl: './create-schedule.component.html',
+  styleUrl: './create-schedule.component.css',
   imports: [
     CommonModule,
     TableModule,
@@ -32,9 +35,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     CalendarModule,
     ToastModule,
     ConfirmDialogModule,
+    BackButtonComponent,
   ],
-  templateUrl: './create-schedule.component.html',
-  styleUrl: './create-schedule.component.css',
   providers: [ConfirmationService, MessageService],
 })
 export class CreateScheduleComponent implements OnInit {

@@ -1,24 +1,56 @@
-<pre>
+<!-- <pre>
   {{ documentReqDtoFg.value | json }}
   <hr>
   {{updateCalculatedDocumentReqDtoFg.value | json}}
-</pre>
+</pre> -->
 
-<div class="flex justify-content-center">
+<div class="flex justify-content-center my-5">
   <div class="md:w-8 lg:w-6">
-    <div class="grid align-items-center">
-      <button
-        class="p-button-rounded p-button-text p-button-secondary"
-        pButton
-        pRipple
-        type="button"
-        (click)="onBack()"
-        icon="pi pi-chevron-left"
-        title="Back"
-      ></button>
+    <div class="grid align-items-center gap-2">
+      <app-back-button />
       <h3>Payroll</h3>
     </div>
+    <hr />
     <h1 class="text-center">Upload Required Payroll Documents</h1>
+    <div class="surface-card" *ngIf="isLoading">
+      <div class="flex flex-row p-2">
+        <p-skeleton
+          shape="circle"
+          width="2rem"
+          height="2rem"
+          styleClass="mr-2 "
+        />
+        <div class="w-full">
+          <div class="flex mb-3">
+            <div>
+              <p-skeleton width="10rem" styleClass="mt-2" />
+            </div>
+          </div>
+          <p-skeleton width="100%" height="150px" />
+          <div class="flex justify-content-between mt-3">
+            <p-skeleton width="6rem" height="3rem" />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row align-items-center p-2">
+        <p-skeleton
+          shape="circle"
+          width="2rem"
+          height="2rem"
+          styleClass="mr-2"
+        />
+        <p-skeleton width="10rem" styleClass="" />
+      </div>
+      <div class="flex flex-row align-items-center p-2">
+        <p-skeleton
+          shape="circle"
+          width="2rem"
+          height="2rem"
+          styleClass="mr-2"
+        />
+        <p-skeleton width="10rem" styleClass="" />
+      </div>
+    </div>
 
     <p-stepper *ngIf="stepperDocuments" orientation="vertical" [linear]="true">
       <p-stepperPanel

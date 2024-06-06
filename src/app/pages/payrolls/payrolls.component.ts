@@ -26,6 +26,8 @@ import { ButtonIconService } from '../../services/button-icon.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { Skeleton, SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-stepper',
@@ -45,6 +47,8 @@ import { ToastModule } from 'primeng/toast';
     TableModule,
     ConfirmDialogModule,
     ToastModule,
+    BackButtonComponent,
+    SkeletonModule,
   ],
   providers: [ConfirmationService, MessageService],
 })
@@ -56,8 +60,10 @@ export class Payrolls implements OnInit {
   docVisible: boolean = false;
   docHeader!: string;
   pdfPages: number[] = [];
+  isLoading = true;
   loginData = this.authService.getLoginData();
   fileUpload!: any;
+  finalFileUpload: any[] = [];
 
   documentReqDtoFg = this.fb.group({
     documentId: ['', [Validators.required]],
@@ -148,6 +154,7 @@ export class Payrolls implements OnInit {
               });
             }
 
+            this.fileUpload = fileUpload;
             this.documentIndex = documentIndex;
           } else {
             this.documents.at(documentIndex).patchValue({
@@ -155,11 +162,11 @@ export class Payrolls implements OnInit {
               base64: resultBase64,
               documentName: file.name,
             });
+            this.finalFileUpload.push(fileUpload);
           }
         })
         .then(() => {
           this.buttonIconService.toggleSubmitIcon();
-          this.fileUpload = fileUpload;
         });
     }
   }
@@ -202,6 +209,9 @@ export class Payrolls implements OnInit {
       firstValueFrom(
         this.stepperService.saveFinalDocument(updateCalculatedDocumentReqDto)
       ).then(() => {
+        this.finalFileUpload.forEach((fileUpload) => {
+          fileUpload.clear();
+        });
         this.buttonIconService.toggleSubmitIcon();
         this.updateCalculatedDocumentReqDtoFg.reset();
         this.stepperDocuments.calculatedDataResDto[0].documentDirectory =
@@ -301,6 +311,7 @@ export class Payrolls implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isLoading = true;
     firstValueFrom(this.activeRoute.params)
       .then((param) => {
         this.scheduleId = param['scheduleId'];
@@ -322,6 +333,7 @@ export class Payrolls implements OnInit {
                 clientAssignmentId: this.stepperDocuments.clientAssignmentId,
               });
             }
+            this.isLoading = false;
           }
         );
       });
