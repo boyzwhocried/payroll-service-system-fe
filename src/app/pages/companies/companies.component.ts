@@ -55,8 +55,8 @@ export class CompaniesComponent {
   companyForm = this.formBuilder.group({
     id: ['', [Validators.required]],
     companyName: ['', [Validators.required]],
-    companyLogoContent: [''],
-    companyLogoExtension: [''],
+    companyLogoContent: ['', [Validators.required]],
+    companyLogoExtension: ['', [Validators.required]],
   });
 
   constructor(
@@ -88,28 +88,29 @@ export class CompaniesComponent {
     this.isFormUnchanged = JSON.stringify(this.companyForm.getRawValue()) === JSON.stringify(this.originalFormValues);
   }
 
-  onRowEditSave() {
+  onRowEditSave(index: number) {
     this.isEditing = false
     if (this.companyForm.valid) {
       const editedCompany: UpdateCompanyReqDto = this.companyForm.getRawValue()
-      this.companyService.updateCompanyData(editedCompany).subscribe({
-        next: (response) => {
+      firstValueFrom(this.companyService.updateCompanyData(editedCompany)).then(
+        response => {
+          this.companies.at(index)!.companyName = this.companyForm.value.companyName as string
+          this.companies.at(index)!.companyLogoContent = this.companyForm.value.companyLogoContent as string
+          this.companies.at(index)!.companyLogoExtension = this.companyForm.value.companyLogoExtension as string
           this.companyForm.reset()
         },
-        error: (error) => console.error('Update failed:', error),
-        complete: () => {
-          console.log('Update company complete')
+        error => {
           this.companyForm.reset()
         }
-      })
+      )
     }
   }
 
   onRowEditCancel(company: CompanyResDto, index: number) {
     this.companies[index] = this.clonedCompany[company.id as string]
     delete this.clonedCompany[company.id as string]
-    this.companyForm.reset();
-    this.isEditing = false;
+    this.companyForm.reset()
+    this.isEditing = false
   }
 
   onAvatarClick(): void {

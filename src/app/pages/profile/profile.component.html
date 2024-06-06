@@ -4,23 +4,22 @@
             <div class="flex flex-column-reverse md:flex-row gap-4">
                 <p-button icon="pi pi-pencil" *ngIf="!isEditable" (onClick)="toogleEdit()"></p-button>
                 <p-button icon="pi pi-save" *ngIf="isEditable" (onClick)="saveEdit()" [disabled]="isNotAvailableToSave(updateUserForm)"></p-button>
-                <p-button icon="pi pi-times" severity="danger" *ngIf="isEditable" (onClick)="closeEdit()"></p-button>
+                <p-button icon="pi pi-times" severity="danger" *ngIf="isEditable" (onClick)="toogleEdit()"></p-button>
             </div>
         </div>
         <div class="flex flex-column align-items-center">
             <h1 class="text-center">Profile</h1>
             <div class="relative" (mouseover)="isHover=true" (mouseout)="isHover=false">
-
                 <p-avatar
                     *ngIf="!isEditable"
-                    [image]="generateImage(profileRes?.profilePictureId)"
+                    [image]="generateImage(profileRes?.profilePictureContent, profileRes?.profilePictureExtension)"
                     shape="circle"
                     styleClass="w-15rem h-15rem"
                     size="xlarge"/>
                     
                 <p-avatar
                     *ngIf="isEditable && !isImageInput()"
-                    [image]="generateImage(profileRes?.profilePictureId)"
+                    [image]="generateImage(profileRes?.profilePictureContent, updateUserForm.value.profilePictureExtension)"
                     shape="circle"
                     styleClass="w-15rem h-15rem"
                     [ngStyle]="{'cursor' : 'pointer', 'filter' : isHover? 'brightness(0.5)' : 'none'}"
@@ -29,7 +28,7 @@
                 
                 <p-avatar
                     *ngIf="isEditable && isImageInput()"
-                    [image]="generateNewImage(updateUserForm.value.fileContent, updateUserForm.value.fileExtension)"
+                    [image]="generateImage(updateUserForm.value.profilePictureContent, updateUserForm.value.profilePictureExtension)"
                     shape="circle"
                     styleClass="w-15rem h-15rem"
                     [ngStyle]="{'cursor' : 'pointer', 'filter' : isHover? 'brightness(0.5)' : 'none'}"
@@ -79,7 +78,7 @@
                             <input
                                 name="Email"
                                 pInputText id="email"
-                                formControlName="email" type="text"
+                                formControlName="email" type="email"
                                 class="w-full" />
                         </div>
                     </div>
@@ -99,13 +98,11 @@
                         </div>
                         
                         <div class="field" *ngIf="isEditable">
-                            <p-inputMask
+                            <input
                                 name="Phone Number"
-                                id="phoneNumber"
-                                mask="+629999999999?9999"
-                                formControlName="phoneNumber" type="text"
-                                class="w-full"
-                                styleClass="w-full" />
+                                pInputText id="phoneNumber"
+                                formControlName="phoneNumber" type="tel"
+                                class="w-full" />
                         </div>
                     </div>
     
