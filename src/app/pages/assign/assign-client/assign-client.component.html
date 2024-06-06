@@ -1,104 +1,153 @@
 <pre>
-    {{clientAssignmentReq.value | json}}
-    {{assignedClient | json}}
+    {{ clientAssignmentReq.value | json }}
+    {{ assignedClient | json }}
 </pre>
-<div class="flex flex-column row-gap-5 align-items-center justify-content-center min-h-screen m-5">
+<div
+  class="flex flex-column row-gap-5 align-items-center justify-content-center min-h-screen m-5"
+>
+  <form [formGroup]="clientAssignmentReq" class="flex flex-column row-gap-5">
+    <div
+      class="surface-card p-4 shadow-2 border-round w-full flex flex-column row-gap-5"
+    >
+      <div class="flex flex-row justify-content-between align-content-center">
+        <h3>{{ psUserName }}'s Clients</h3>
+      </div>
+      <div class="div">
+        <p-scrollPanel
+          [style]="{ width: '100%', height: '200px' }"
+          styleClass="surface-400 p-3"
+        >
+          <p-chip
+            *ngFor="let assigned of assignedClient; let i = index"
+            label="{{ assigned.fullName }}"
+            [image]="generateImage(assigned.profilePictureId)"
+            alt="preAssigned{{ i }}"
+            styleClass="mr-3"
+            [removable]="isClientRemovable(i)"
+            (onRemove)="removeFromForm(i, assigned)"
+          />
+        </p-scrollPanel>
+      </div>
 
-    <form [formGroup]="clientAssignmentReq" class="flex flex-column row-gap-5 ">
+      <div class="card">
+        <p-table [value]="unassignedClient" dataKey="id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="text-center">Avatar</th>
+              <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+              <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+              <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </ng-template>
 
-        <div class="surface-card p-4 shadow-2 border-round w-full flex flex-column row-gap-5">
-        
-            <div class="flex flex-row justify-content-between align-content-center">
-                <h3>{{psUserName}}'s Clients</h3>
-            </div>
-            <div class="div">
-                <p-scrollPanel [style]="{ width: '100%', height: '200px' }" styleClass="surface-400 p-3">
-                    <p-chip
-                        *ngFor="let assigned of assignedClient; let i=index" 
-                        label="{{assigned.fullName}}" 
-                        [image]="generateImage(assigned.profilePictureId)" 
-                        alt="preAssigned{{i}}" styleClass="mr-3" [removable]="isClientRemovable(i)" (onRemove)="removeFromForm(i, assigned)"/>
-                </p-scrollPanel>
-            </div>
-            
-            <div class="card">
-                
-                <p-table [value]="unassignedClient" dataKey="id">
-                    
-                    <ng-template pTemplate="header">
-                        
-                        <tr>
-                            <th class="text-center">Avatar</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </ng-template>
-    
-                    <ng-template pTemplate="body" let-uclient let-ri="rowIndex">
-                        
-                        <tr *ngIf="isClientSelected(uclient.id)">
-                            <td>
-                                <p-cellEditor>
-                                    <ng-template pTemplate="output">
-                                        <p-avatar [image]="generateImage(uclient.profilePictureId)" shape="circle"
-                                            class="flex justify-content-center" />
-                                    </ng-template>
-                                </p-cellEditor>
-                            </td>
-    
-                            <td>
-                                <p-cellEditor>
-                                    <ng-template pTemplate="output">
-                                        {{uclient.fullName}}
-                                    </ng-template>
-                                </p-cellEditor>
-                            </td>
-                            
-                            <td>
-                                <p-cellEditor>
-                                    <ng-template pTemplate="output">
-                                        {{uclient.email}}
-                                    </ng-template>
-                                </p-cellEditor>
-                            </td>
-                            
-                            <td>
-                                <p-cellEditor>
-                                    <ng-template pTemplate="output">
-                                        {{uclient.phoneNumber}}
-                                    </ng-template>
-                                </p-cellEditor>
-                            </td>
-    
-                            <td>
-                                <div class="flex align-items-center justify-content-center gap-2">
-                                    <p-button icon="pi pi-plus" label="Add" type="button" (onClick)="addToForm(uclient)" />
-                                </div>
-                            </td>
-    
-                        </tr>
-    
-                    </ng-template>
-    
-                </p-table>
-    
-            </div>
+          <ng-template pTemplate="body" let-uclient let-ri="rowIndex">
+            <tr *ngIf="isClientSelected(uclient.id)">
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="output">
+                    <p-avatar
+                      [image]="generateImage(uclient.profilePictureId)"
+                      shape="circle"
+                      class="flex justify-content-center"
+                    />
+                  </ng-template>
+                </p-cellEditor>
+              </td>
 
-            <div class="card" *ngIf="isUnassignedClientsEmpty()" [ngStyle]="{ 'width' : '80rem' }">
-                <div class="text-center">
-                    No clients currently available
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="output">
+                    {{ uclient.fullName }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="output">
+                    {{ uclient.email }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="output">
+                    {{ uclient.phoneNumber }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td>
+                <div
+                  class="flex align-items-center justify-content-center gap-2"
+                >
+                  <p-button
+                    icon="pi pi-plus"
+                    label="Add"
+                    type="button"
+                    (onClick)="addToForm(uclient)"
+                  />
                 </div>
-            </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
-        </div>
+      <div
+        class="card"
+        *ngIf="isUnassignedClientsEmpty()"
+        [ngStyle]="{ width: '80rem' }"
+      >
+        <div class="text-center">No clients currently available</div>
+      </div>
+    </div>
 
-        <div class="flex flex-row gap-5 align-items-center justify-content-center">
-            <p-button label="Cancel" severity="secondary" (onClick)="onCancel()"/>
-            <p-button label="Submit" [disabled]="isClientsEmpty()" (onClick)="onSubmit()"/>
-        </div>
-
-    </form>
-
+    <div class="flex flex-row gap-5 align-items-center justify-content-center">
+      <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
+      <p-button
+        label="Submit"
+        [disabled]="isClientsEmpty()"
+        (onClick)="confirm()"
+      />
+    </div>
+  </form>
 </div>
+
+<p-toast />
+<p-confirmDialog #cd>
+  <ng-template pTemplate="headless" let-message>
+    <div
+      class="flex flex-column align-items-center p-5 surface-overlay border-round"
+    >
+      <div
+        class="inline-flex justify-content-center align-items-center h-15rem w-15rem"
+      >
+        <img
+          src="../../../assets/images/confirmation/Yes or no-amico.svg"
+          alt=""
+        />
+      </div>
+      <span class="font-bold text-2xl block mb-2 mt-4">
+        {{ message.header }}
+      </span>
+      <p class="mb-0">{{ message.message }}</p>
+      <div class="flex align-items-center gap-2 mt-4">
+        <button
+          pButton
+          label="Yes"
+          (click)="cd.accept()"
+          class="w-8rem"
+        ></button>
+        <button
+          pButton
+          label="No"
+          (click)="cd.reject()"
+          class="p-button-outlined w-8rem"
+        ></button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmDialog>
