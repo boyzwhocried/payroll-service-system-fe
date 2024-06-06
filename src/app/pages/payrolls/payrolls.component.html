@@ -73,7 +73,7 @@
             <div class="grid">
               <div class="col-6">
                 <p class="font-bold m-0 mb-3">Upload Signed Document</p>
-                <div class="flex gap-4 flex-wrap flex-column md:flex-row">
+                <div class="flex gap-4 flex-row flex-wrap md:flex-nowrap">
                   <p-fileUpload
                     mode="basic"
                     chooseLabel="Choose"
@@ -91,6 +91,14 @@
                       buttonIconService.uploadIsLoading
                     "
                   />
+                  <p-button
+                    icon="pi pi-times"
+                    [disabled]="!documentReqDtoFg.valid"
+                    (onClick)="clearFile()"
+                    severity="danger"
+                  />
+                </div>
+                <div class="mt-4">
                   <button
                     pButton
                     class=""

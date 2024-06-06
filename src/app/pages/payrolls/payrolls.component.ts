@@ -339,6 +339,11 @@ export class Payrolls implements OnInit {
       });
   }
 
+  clearFile() {
+    this.fileUpload.clear();
+    this.documentReqDtoFg.reset();
+  }
+
   confirm(type: number) {
     this.confirmationService.confirm({
       header: 'Are you sure?',
