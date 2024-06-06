@@ -26,25 +26,27 @@ import { TableModule } from 'primeng/table';
 import * as pdfjs from 'pdfjs-dist';
 import { ButtonIconService } from '../../services/button-icon.service';
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
+import { Skeleton, SkeletonModule } from 'primeng/skeleton';
 
 @Component({
-    selector: 'app-stepper',
-    standalone: true,
-    templateUrl: './payrolls.component.html',
-    styleUrl: './payrolls.component.css',
-    imports: [
-        CommonModule,
-        ButtonModule,
-        ReactiveFormsModule,
-        RouterModule,
-        FileUploadModule,
-        StepperModule,
-        DialogModule,
-        TagModule,
-        NgxDocViewerModule,
-        TableModule,
-        BackButtonComponent
-    ]
+  selector: 'app-stepper',
+  standalone: true,
+  templateUrl: './payrolls.component.html',
+  styleUrl: './payrolls.component.css',
+  imports: [
+    CommonModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    FileUploadModule,
+    StepperModule,
+    DialogModule,
+    TagModule,
+    NgxDocViewerModule,
+    TableModule,
+    BackButtonComponent,
+    SkeletonModule,
+  ]
 })
 export class Payrolls implements OnInit {
   date: Date | undefined;
@@ -54,6 +56,7 @@ export class Payrolls implements OnInit {
   docVisible: boolean = false;
   docHeader!: string;
   pdfPages: number[] = [];
+  isLoading = true
   loginData = this.authService.getLoginData();
 
   documentReqDtoFg = this.fb.group({
@@ -79,7 +82,7 @@ export class Payrolls implements OnInit {
     private authService: AuthService,
     private location: Location,
     public buttonIconService: ButtonIconService
-  ) {}
+  ) { }
 
   get isClient() {
     return this.loginData?.roleCode == RoleType.CLIENT;
@@ -288,6 +291,7 @@ export class Payrolls implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isLoading = true;
     firstValueFrom(this.activeRoute.params)
       .then((param) => {
         this.scheduleId = param['scheduleId'];
@@ -309,6 +313,7 @@ export class Payrolls implements OnInit {
                 clientAssignmentId: this.stepperDocuments.clientAssignmentId,
               });
             }
+            this.isLoading = false
           }
         );
       });
