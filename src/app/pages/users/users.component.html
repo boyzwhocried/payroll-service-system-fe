@@ -8,7 +8,6 @@
             <p-checkbox binary="true" [(ngModel)]="showFilterRow" label="Show Filters"></p-checkbox>
         </small>
         <div class="card">
-            <!-- <pre>{{ userForm.value | json }}</pre> -->
             <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 5" [rows]="5"
                 [globalFilterFields]="['avatar', 'userName', 'roleName', 'email', 'phoneNumber']">
                 <ng-template pTemplate="header">
@@ -36,13 +35,13 @@
                                 <ng-template pTemplate="input">
                                     <div class="avatar-container" (mouseover)="isHovered = true"
                                         (mouseout)="isHovered = false">
-                                        <p-avatar *ngIf="userForm.value.fileContent && userForm.value.fileExtension"
-                                            [image]="generateImage(userForm.value.fileContent, userForm.value.fileExtension)"
+                                        <p-avatar *ngIf="userForm.value.profilePictureContent && userForm.value.profilePictureExtension"
+                                            [image]="generateImage(userForm.value.profilePictureContent, userForm.value.profilePictureExtension)"
                                             shape="circle" class="flex justify-content-center" title="Edit Avatar"
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
-                                        <p-avatar *ngIf="!userForm.value.fileContent && !userForm.value.fileExtension"
-                                            [image]="getImage(user.profilePictureId)" shape="circle"
+                                        <p-avatar *ngIf="!userForm.value.profilePictureContent && !userForm.value.profilePictureExtension"
+                                            [image]="generateImage(user.profilePictureContent, user.profilePictureExtension)" shape="circle"
                                             class="flex justify-content-center" title="Edit Avatar" role="button"
                                             (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
@@ -56,7 +55,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-                                    <p-avatar [image]='getImage(user.profilePictureId)' shape="circle"
+                                    <p-avatar [image]='generateImage(user.profilePictureContent, user.profilePictureExtension)' shape="circle"
                                         class="flex justify-content-center" />
                                 </ng-template>
                             </p-cellEditor>
@@ -75,8 +74,7 @@
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <p-dropdown [options]="roles" appendTo="body" formControlName="roleId">
-                                    </p-dropdown>
+                                    {{user.roleName}}
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{user.roleName}}
@@ -112,7 +110,7 @@
                                     class="p-button-rounded p-button-text" [disabled]="isEditing">
                                 </button>
                                 <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit" pSaveEditableRow
-                                    icon="pi pi-check" (click)="onRowEditSave()" [disabled]="isFormUnchanged || userForm.invalid"
+                                    icon="pi pi-check" (click)="onRowEditSave(ri)" [disabled]="isFormUnchanged || userForm.invalid"
                                     class="p-button-rounded p-button-text p-button-success mr-2">
                                 </button>
                                 <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"

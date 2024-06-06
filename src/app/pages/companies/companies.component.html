@@ -7,7 +7,6 @@
             </small>
         </div>
         <div class="card">
-            <!-- <pre>{{ companyForm.value | json }}</pre> -->
             <p-table [value]="companies" dataKey="id" editMode="row" [paginator]="companies.length > 5" [rows]="5"
                 [globalFilterFields]="['logo', 'companyName']" >
                 <ng-template pTemplate="header">
@@ -36,8 +35,8 @@
                                             role="button" (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
                                         <p-avatar
-                                            *ngIf="!companyForm.value.companyLogoContent || !companyForm.value.companyLogoExtension"
-                                            [image]="generateImage(company.companyLogoId)" shape="circle"
+                                            *ngIf="!companyForm.value.companyLogoContent && !companyForm.value.companyLogoExtension"
+                                            [image]="generatePreviewImage(company.companyLogoContent, company.companyLogoExtension)" shape="circle"
                                             class="flex justify-content-center" title="Edit Avatar" role="button"
                                             (click)="onAvatarClick()"
                                             [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
@@ -51,7 +50,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="output">
-                                    <p-avatar [image]="generateImage(company.companyLogoId)" shape="circle"
+                                    <p-avatar [image]="generatePreviewImage(company.companyLogoContent, company.companyLogoExtension)" shape="circle"
                                         class="flex justify-content-center" />
                                 </ng-template>
                             </p-cellEditor>
@@ -74,7 +73,7 @@
                                     class="p-button-rounded p-button-text" [disabled]="isEditing">
                                 </button>
                                 <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit" pSaveEditableRow
-                                    icon="pi pi-check" (click)="onRowEditSave()"
+                                    icon="pi pi-check" (click)="onRowEditSave(ri)"
                                     [disabled]="isFormUnchanged || companyForm.invalid"
                                     class="p-button-rounded p-button-text p-button-success mr-2">
                                 </button>
