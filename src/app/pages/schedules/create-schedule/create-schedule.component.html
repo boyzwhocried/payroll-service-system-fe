@@ -5,17 +5,8 @@
     </pre>
     <div class="grid">
       <div class="md:col-6 col-8">
-        <div class="grid">
-          <button
-            pButton
-            [ngStyle]="{
-              'background-color': 'transparent',
-              color: 'black',
-              border: 'none'
-            }"
-            (click)="onBack()"
-            icon="pi pi-chevron-left"
-          ></button>
+        <div class="grid align-items-center gap-2">
+          <app-back-button/>
           <h3>Create Schedule</h3>
         </div>
       </div>
@@ -24,76 +15,33 @@
       </p>
     </div>
     <div class="card" [formGroup]="scheduleForm">
-      <div
-        *ngFor="let activity of documentsReqDto.controls; let i = index"
-        formArrayName="documentsReqDto"
-      >
+      <div *ngFor="let activity of documentsReqDto.controls; let i = index" formArrayName="documentsReqDto">
         <div class="grid" [formGroupName]="i">
           <div class="md:col-6 col-12 pb-0">
-            <label
-              class="col-12"
-              [ngStyle]="{ 'padding-left': '2px' }"
-              for="activity{{ i }}"
-              >Activity</label
-            >
-            <input
-              class="col-12"
-              formControlName="activity"
-              id="activity{{ i }}"
-              pInputText
-            />
+            <label class="col-12" [ngStyle]="{ 'padding-left': '2px' }" for="activity{{ i }}">Activity</label>
+            <input class="col-12" formControlName="activity" id="activity{{ i }}" pInputText />
           </div>
           <div class="md:col-4 col-10 align-self-end">
-            <label
-              class="col-12"
-              [ngStyle]="{ 'padding-left': '2px' }"
-              for="documentDeadline{{ i }}"
-              >Document Deadline</label
-            >
-            <p-calendar
-              [iconDisplay]="'input'"
-              dataType="string"
-              [showIcon]="true"
-              inputId="icondisplay"
-              class="w-full"
-              styleClass="w-full"
-              [maxDate]="maxDate"
-              [minDate]="minDate"
-              (onSelect)="onDateSelect($event, i)"
-              dateFormat="dd/mm/yy"
-              [inputStyle]="{ 'padding-top': '8px', 'padding-bottom': '8px' }"
-              id="documentDeadline{{ i }}"
-            />
+            <label class="col-12" [ngStyle]="{ 'padding-left': '2px' }" for="documentDeadline{{ i }}">Document
+              Deadline</label>
+            <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]="true" inputId="icondisplay" class="w-full"
+              styleClass="w-full" [maxDate]="maxDate" [minDate]="minDate" (onSelect)="onDateSelect($event, i)"
+              dateFormat="dd/mm/yy" [inputStyle]="{ 'padding-top': '8px', 'padding-bottom': '8px' }"
+              id="documentDeadline{{ i }}" />
           </div>
           <div class="md:col-2 col-2 align-self-end text-right">
-            <button
-              pButton
-              icon="pi pi-times"
-              severity="danger"
-              (click)="removeActivity(i)"
-              label=""
-            ></button>
+            <button pButton icon="pi pi-times" severity="danger" (click)="removeActivity(i)" label="Remove"
+              title="Remove"></button>
           </div>
         </div>
       </div>
       <div class="grid mt-5 md:justify-content-end">
         <div class="md:col-2 col-6">
-          <button
-            pButton
-            class="w-full"
-            (click)="addActivity()"
-            icon="pi pi-plus"
-            label="Add"
-          ></button>
+          <button pButton class="w-full" (click)="addActivity()" icon="pi pi-plus" label="Add" title="Add"></button>
         </div>
         <div class="md:col-2 col-6">
-          <button
-            pButton
-            class="w-full"
-            (click)="onSubmit()"
-            [disabled]="scheduleForm.invalid || documentsReqDto.length < 3"
-            label="Submit"
-          ></button>
+          <button pButton class="w-full" (click)="onSubmit()"
+            [disabled]="scheduleForm.invalid || documentsReqDto.length < 3" label="Submit" title="Submit"></button>
         </div>
       </div>
     </div>
