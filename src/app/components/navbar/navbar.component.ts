@@ -42,7 +42,8 @@ export class NavbarComponent implements OnInit {
   profileImageId: string = ''
   userData = this.authService.getLoginData()
 
-  file = {
+  profile = {
+    userName: '',
     fileContent: '',
     fileExtension: '',
   };
@@ -61,7 +62,7 @@ export class NavbarComponent implements OnInit {
       );
 
     this.fileObservable = this.userService.fileObservable.subscribe((next) => {
-      this.file = next as any;
+      this.profile = next as any;
     });
   }
 
@@ -233,13 +234,25 @@ export class NavbarComponent implements OnInit {
     return RoleType.SUPER_ADMIN == this.roleCode
   }
 
+  isNameUpdated() {
+    return this.profile.userName
+  }
+
   isAvatarUpdated() {
-    return this.file.fileContent && this.file.fileExtension;
+    return this.profile.fileContent && this.profile.fileExtension
+  }
+
+  getUserName() {
+    if(this.isNameUpdated()) {
+      return this.profile.userName
+    } else {
+      return this.getFirstName()
+    }
   }
 
   getProfileImage() {
     if (this.isAvatarUpdated()) {
-      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`;
+      return `data:image/${this.profile.fileExtension};base64,${this.profile.fileContent}`;
     } else {
       return `${environment.backEndBaseUrl}:${environment.port}/files/${this.profileImageId}`
     }
