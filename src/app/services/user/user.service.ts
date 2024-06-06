@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../../../env/environment.prod';
+import { BaseService } from '../base/base.service';
 import { InsertResDto } from '../../dto/general-response/insert.res.dto';
 import { UpdateResDto } from '../../dto/general-response/update.res.dto';
-import { PasswordReqDto } from '../../dto/user/password.req.dto';
-import { ProfileResDto } from '../../dto/user/profile.res.dto';
-import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 import { UserReqDto } from '../../dto/user/user.req.dto';
 import { UserResDto } from '../../dto/user/user.res.dto';
-import { BaseService } from '../base/base.service';
+import { ProfileResDto } from '../../dto/user/profile.res.dto';
+import { PasswordReqDto } from '../../dto/user/password.req.dto';
+import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
+import { environment } from '../../../env/environment.prod';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  profile = {
-    userName : '',
+  file = {
     fileContent : '',
     fileExtension : ''
   }
@@ -42,7 +41,7 @@ export class UserService {
     return this.baseService.post<InsertResDto>(`users`, user)
   }
 
-  editUser(user: UpdateUserReqDto) {
+  editUser(user: UserReqDto) {
     return this.baseService.patch<UpdateResDto>(`users`, user)
   }
 
@@ -55,10 +54,11 @@ export class UserService {
   }
 
   updateUser(data: UpdateUserReqDto) {
-    this.profile.userName = data.userName
-    this.profile.fileContent = data.profilePictureContent
-    this.profile.fileExtension = data.profilePictureExtension
-    this.fileObserver.next(this.profile)
+    if (data.fileContent) {
+      this.file.fileContent = data.fileContent
+      this.file.fileExtension = data.fileExtension
+      this.fileObserver.next(this.file)
+    }
     return this.baseService.patch<UpdateResDto>('users', data)
   }
 
