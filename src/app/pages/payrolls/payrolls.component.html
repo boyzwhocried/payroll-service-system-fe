@@ -1,246 +1,166 @@
-<pre>
+<!-- <pre>
   {{ documentReqDtoFg.value | json }}
   <hr>
   {{updateCalculatedDocumentReqDtoFg.value | json}}
-</pre>
+</pre> -->
 
-<div class="flex justify-content-center">
+<div class="flex justify-content-center my-5">
   <div class="md:w-8 lg:w-6">
-    <div class="grid align-items-center">
-      <button class="p-button-rounded p-button-text p-button-secondary"  pButton pRipple type="button"
-                (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
+    <div class="grid align-items-center gap-2">
+      <app-back-button />
       <h3>Payroll</h3>
     </div>
+    <hr>
     <h1 class="text-center">Upload Required Payroll Documents</h1>
+    <div class="surface-card" *ngIf="isLoading">
+      <div class="flex flex-row p-2">
+        <p-skeleton shape="circle" width="2rem" height="2rem" styleClass="mr-2 " />
+        <div class="w-full">
+          <div class="flex mb-3">
+            <div>
+              <p-skeleton width="10rem" styleClass="mt-2" />
+            </div>
+          </div>
+          <p-skeleton width="100%" height="150px" />
+          <div class="flex justify-content-between mt-3">
+            <p-skeleton width="6rem" height="3rem" />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row align-items-center p-2">
+        <p-skeleton shape="circle" width="2rem" height="2rem" styleClass="mr-2" />
+        <p-skeleton width="10rem" styleClass="" />
+      </div>
+      <div class="flex flex-row align-items-center p-2">
+        <p-skeleton shape="circle" width="2rem" height="2rem" styleClass="mr-2" />
+        <p-skeleton width="10rem" styleClass="" />
+      </div>
+    </div>
 
     <p-stepper *ngIf="stepperDocuments" orientation="vertical" [linear]="true">
-      <p-stepperPanel
-        *ngFor="let data of stepperDocuments.documentsRes; let i = index"
-        [header]="
+      <p-stepperPanel *ngFor="let data of stepperDocuments.documentsRes; let i = index" [header]="
           formatDate(data.documentDeadline).toLocaleDateString('id-ID') +
           ' - ' +
           data.activity
-        "
-      >
+        ">
         <p-tag severity="success" value="Success" />
 
-        <ng-template
-          pTemplate="content"
-          let-nextCallback="nextCallback"
-          let-prevCallback="prevCallback"
-          let-index="index"
-        >
+        <ng-template pTemplate="content" let-nextCallback="nextCallback" let-prevCallback="prevCallback"
+          let-index="index">
           <div class="border-2 surface-ground surface-border border-round p-4">
             <div class="grid">
               <div class="col-6">
                 <p class="font-bold m-0 mb-3">Upload Signed Document</p>
                 <div class="flex gap-4 flex-column md:flex-row">
-                  <p-fileUpload
-                    mode="basic"
-                    chooseLabel="Choose"
-                    [chooseIcon]="buttonIconService.uploadIcon"
-                    accept=".doc, .docx, .xls, .xlsx, .pdf"
-                    maxFileSize="3000000"
-                    (onSelect)="fileUpload($event, data.documentId, i, false)"
-                    [disabled]="
+                  <p-fileUpload mode="basic" chooseLabel="Choose" [chooseIcon]="buttonIconService.uploadIcon"
+                    accept=".doc, .docx, .xls, .xlsx, .pdf" maxFileSize="3000000"
+                    (onSelect)="fileUpload($event, data.documentId, i, false)" [disabled]="
                       (isClient && data.isSignedByPs) ||
                       (isPS && !data.isSignedByClient) ||
                       data.isSignedByPs ||
                       buttonIconService.uploadIsLoading
-                    "
-                  /><p-button
-                    label="Submit"
-                    [icon]="buttonIconService.submitIcon"
-                    severity="success"
-                    (onClick)="submitDocument()"
-                    [disabled]="
+                    " /><p-button label="Submit" [icon]="buttonIconService.submitIcon" severity="success"
+                    (onClick)="submitDocument()" [disabled]="
                       !documentReqDtoFg.valid ||
                       buttonIconService.submitIsLoading
-                    "
-                  />
+                    " />
                 </div>
               </div>
 
               <div class="col-6 flex justify-content-end">
-                <p-tag
-                  *ngIf="!data.isSignedByPs && !data.isSignedByClient"
-                  severity="contrast"
-                  icon="pi pi-times"
-                  value="Pending Client Document"
-                />
-                <p-tag
-                  *ngIf="data.isSignedByClient && !data.isSignedByPs"
-                  severity="warning"
-                  icon="pi pi-hourglass"
-                  value="Pending Approval"
-                />
-                <p-tag
-                  *ngIf="data.isSignedByClient && data.isSignedByPs"
-                  severity="success"
-                  icon="pi pi-check"
-                  value="Approved"
-                />
+                <p-tag *ngIf="!data.isSignedByPs && !data.isSignedByClient" severity="contrast" icon="pi pi-times"
+                  value="Pending Client Document" />
+                <p-tag *ngIf="data.isSignedByClient && !data.isSignedByPs" severity="warning" icon="pi pi-hourglass"
+                  value="Pending Approval" />
+                <p-tag *ngIf="data.isSignedByClient && data.isSignedByPs" severity="success" icon="pi pi-check"
+                  value="Approved" />
               </div>
 
               <div class="col-12" *ngIf="data.isSignedByClient">
                 <p class="font-bold m-0 mb-3">Preview Signed Document</p>
-                <p-button
-                  label="Preview"
-                  [disabled]="buttonIconService.previewIsLoading"
-                  [icon]="buttonIconService.previewIcon"
-                  (onClick)="
+                <p-button label="Preview" [disabled]="buttonIconService.previewIsLoading"
+                  [icon]="buttonIconService.previewIcon" (onClick)="
                     previewDocument(data.documentId, data.documentName)
-                  "
-                />
+                  " />
               </div>
-              <div
-                class="col-12 flex flex-column md:flex-row justify-content-between"
-              >
+              <div class="col-12 flex flex-column md:flex-row justify-content-between">
                 <div *ngIf="data.documentDirectory">
                   <p class="font-bold m-0 mb-3">Download Signed Document</p>
                   <div>
-                    <p-button
-                      label="Download"
-                      icon="pi pi-download"
-                      severity="success"
-                      [disabled]="!data.documentDirectory"
-                      (onClick)="downloadDocument(data.documentId)"
-                    />
+                    <p-button label="Download" icon="pi pi-download" severity="success"
+                      [disabled]="!data.documentDirectory" (onClick)="downloadDocument(data.documentId)" />
                   </div>
                 </div>
                 <div class="flex align-items-end align-self-end">
-                  <p-button
-                    *ngIf="isPS"
-                    label="Ping Client"
-                    [icon]="buttonIconService.pingIcon"
-                    severity="danger"
-                    (onClick)="pingClient()"
-                    [disabled]="
+                  <p-button *ngIf="isPS" label="Ping Client" [icon]="buttonIconService.pingIcon" severity="danger"
+                    (onClick)="pingClient()" [disabled]="
                       data.isSignedByClient || buttonIconService.pingIsLoading
-                    "
-                  />
+                    " />
                 </div>
               </div>
             </div>
           </div>
           <div class="flex py-4 gap-2">
-            <p-button
-              *ngIf="i != 0"
-              label="Back"
-              severity="secondary"
-              (onClick)="prevCallback.emit()"
-            />
-            <p-button
-              label="Next"
-              [disabled]="!data.isSignedByPs"
-              (onClick)="nextCallback.emit()"
-            />
+            <p-button *ngIf="i != 0" label="Back" severity="secondary" (onClick)="prevCallback.emit()" />
+            <p-button label="Next" [disabled]="!data.isSignedByPs" (onClick)="nextCallback.emit()" />
           </div>
         </ng-template>
       </p-stepperPanel>
       <p-stepperPanel header="Download Payroll Documents">
         <p-tag severity="success" value="Success" />
 
-        <ng-template
-          pTemplate="content"
-          let-nextCallback="nextCallback"
-          let-prevCallback="prevCallback"
-          let-index="index"
-        >
-          <div
-            class="grid border-2 surface-ground surface-border border-round p-4"
-          >
+        <ng-template pTemplate="content" let-nextCallback="nextCallback" let-prevCallback="prevCallback"
+          let-index="index">
+          <div class="grid border-2 surface-ground surface-border border-round p-4">
             <div class="col-6">
-              <form
-                class="flex flex-column gap-4 order-2"
-                [formGroup]="updateCalculatedDocumentReqDtoFg"
-              >
-                <div
-                  *ngFor="
+              <form class="flex flex-column gap-4 order-2" [formGroup]="updateCalculatedDocumentReqDtoFg">
+                <div *ngFor="
                     let data of stepperDocuments.calculatedDataResDto;
                     let i = index
-                  "
-                  formArrayName="documents"
-                >
+                  " formArrayName="documents">
                   <div [formGroupName]="i">
                     <p class="font-bold text-lg m-0 mb-3">
                       {{ data.activity }}
                     </p>
                     <div class="flex flex-column md:flex-row gap-4">
-                      <p-fileUpload
-                        *ngIf="isPS"
-                        mode="basic"
-                        chooseLabel="Choose"
-                        [chooseIcon]="buttonIconService.uploadIcon"
-                        [disabled]="buttonIconService.uploadIsLoading"
-                        accept=".doc, .docx, .xls, .xlsx, .pdf"
-                        maxFileSize="3000000"
-                        (onSelect)="
+                      <p-fileUpload *ngIf="isPS" mode="basic" chooseLabel="Choose"
+                        [chooseIcon]="buttonIconService.uploadIcon" [disabled]="buttonIconService.uploadIsLoading"
+                        accept=".doc, .docx, .xls, .xlsx, .pdf" maxFileSize="3000000" (onSelect)="
                           fileUpload($event, data.documentId, i, true)
-                        "
-                      />
+                        " />
 
-                      <p-button
-                        [disabled]="!data.documentDirectory"
-                        (onClick)="downloadFinalDocument(data.documentId)"
-                        label="Download"
-                        icon="pi pi-download"
-                        severity="success"
-                      />
+                      <p-button [disabled]="!data.documentDirectory" (onClick)="downloadFinalDocument(data.documentId)"
+                        label="Download" icon="pi pi-download" severity="success" />
                     </div>
                   </div>
                 </div>
-                <p-button
-                  label="Submit"
-                  *ngIf="isPS"
-                  [icon]="buttonIconService.submitIcon"
-                  (onClick)="submitFinalDocument()"
-                  [disabled]="
+                <p-button label="Submit" *ngIf="isPS" [icon]="buttonIconService.submitIcon"
+                  (onClick)="submitFinalDocument()" [disabled]="
                     !updateCalculatedDocumentReqDtoFg.valid ||
                     buttonIconService.submitIsLoading
-                  "
-                />
+                  " />
                 <div>
                   <p class="font-bold text-lg">Payroll Documents Report</p>
-                  <p-button
-                    label="Download"
-                    icon="pi pi-download"
-                    severity="success"
-                    (onClick)="downloadReport()"
+                  <p-button label="Download" icon="pi pi-download" severity="success" (onClick)="downloadReport()"
                     [disabled]="
                       !stepperDocuments.calculatedDataResDto.at(1)
                         ?.documentDirectory
-                    "
-                  />
+                    " />
                 </div>
               </form>
             </div>
             <div class="col-6 flex justify-content-end">
-              <p-tag
-                *ngIf="
+              <p-tag *ngIf="
                   !stepperDocuments.calculatedDataResDto.at(1)
                     ?.documentDirectory
-                "
-                severity="warning"
-                icon="pi pi-times"
-                value="Pending Calculated Document"
-              />
-              <p-tag
-                *ngIf="
+                " severity="warning" icon="pi pi-times" value="Pending Calculated Document" />
+              <p-tag *ngIf="
                   stepperDocuments.calculatedDataResDto.at(1)?.documentDirectory
-                "
-                severity="success"
-                icon="pi pi-check"
-                value="Completed"
-              />
+                " severity="success" icon="pi pi-check" value="Completed" />
             </div>
           </div>
           <div class="flex py-4 gap-2">
-            <p-button
-              label="Back"
-              severity="secondary"
-              (onClick)="prevCallback.emit()"
-            />
+            <p-button label="Back" severity="secondary" (onClick)="prevCallback.emit()" />
           </div>
         </ng-template>
       </p-stepperPanel>
@@ -248,19 +168,9 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="docHeader"
-  [modal]="true"
-  [(visible)]="docVisible"
-  [style]="{ width: '50rem' }"
-  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-  id="testoa"
->
-  <div
-    *ngFor="let p of pdfPages; let i = index"
-    class="flex justify-content-center"
-    id="canvasContainer"
-  >
+<p-dialog [header]="docHeader" [modal]="true" [(visible)]="docVisible" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" id="testoa">
+  <div *ngFor="let p of pdfPages; let i = index" class="flex justify-content-center" id="canvasContainer">
     <canvas id="{{ 'pdfCanvas-' + (i + 1) }}"></canvas>
   </div>
 </p-dialog>

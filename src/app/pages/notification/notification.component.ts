@@ -9,10 +9,13 @@ import { NotificationResDto } from "../../dto/notification/notification.res.dto"
 import { NotificationService } from "../../services/notification/notification.service";
 import { SkeletonModule } from 'primeng/skeleton';
 import { ImageModule } from "primeng/image";
+import { BackButtonComponent } from "../../components/back-button/back-button.component";
 
 @Component({
     selector: 'notification-app',
     standalone: true,
+    templateUrl: 'notification.component.html',
+    styleUrl: 'notification.component.css',
     imports: [
         TableModule,
         BadgeModule,
@@ -20,9 +23,8 @@ import { ImageModule } from "primeng/image";
         ButtonModule,
         SkeletonModule,
         ImageModule,
-    ],
-    templateUrl: 'notification.component.html',
-    styleUrl: 'notification.component.css'
+        BackButtonComponent
+    ]
 })
 
 export class NotificationComponent implements OnInit {

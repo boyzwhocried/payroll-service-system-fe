@@ -10,11 +10,15 @@ import { firstValueFrom } from 'rxjs';
 import { OldDocumentResDto } from '../../../dto/document/old-document.req.dto';
 import { UpdateDocumentScheduleReqDto } from '../../../dto/document/update-document-schedule.req.dto';
 import { DocumentService } from '../../../services/document.service';
+import { BackButtonComponent } from "../../../components/back-button/back-button.component";
+import { SkeletonModule } from 'primeng/skeleton';
 
 
 @Component({
   selector: 'app-reschedule',
   standalone: true,
+  templateUrl: './reschedule.component.html',
+  styleUrl: './reschedule.component.css',
   imports: [
     CommonModule,
     TableModule,
@@ -22,17 +26,18 @@ import { DocumentService } from '../../../services/document.service';
     FormsModule,
     ReactiveFormsModule,
     InputTextModule,
-    CalendarModule
-  ],
-  templateUrl: './reschedule.component.html',
-  styleUrl: './reschedule.component.css'
+    CalendarModule,
+    BackButtonComponent,
+    SkeletonModule,
+  ]
 })
-export class RescheduleComponent implements OnInit{
-  scheduleId! : string
-  payrollDate : string = ''
-  maxDate : Date | null = null
-  reschedule: OldDocumentResDto[] =[]
+export class RescheduleComponent implements OnInit {
+  scheduleId!: string
+  payrollDate: string = ''
+  maxDate: Date | null = null
+  reschedule: OldDocumentResDto[] = []
   req: UpdateDocumentScheduleReqDto[] = []
+  isLoading = true
 
   rescheduleForm = this.fb.group({
     rescheduleReqDto: this.fb.array(this.req)
@@ -40,17 +45,26 @@ export class RescheduleComponent implements OnInit{
 
   constructor(
     private route: ActivatedRoute,
-    private fb : NonNullableFormBuilder,
+    private fb: NonNullableFormBuilder,
     private location: Location,
     private documentService: DocumentService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.scheduleId = this.route.snapshot.queryParamMap.get('id') as string
-    firstValueFrom(this.documentService.getScheduleById(this.scheduleId)).then((res) => {
-      this.reschedule = res
-      this.activityOnInit()
-    }).then(()=> {})
+
+    try {
+      this.isLoading = true
+      await firstValueFrom(this.documentService.getScheduleById(this.scheduleId)).then((res) => {
+        this.reschedule = res
+        this.activityOnInit()
+      })
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      this.isLoading = false
+    }
+
     this.payrollDate = this.route.snapshot.queryParamMap.get('payrollDate') as string
     this.maxDate = this.setMaxDate(this.payrollDate)
     this.clickInit()
@@ -60,21 +74,21 @@ export class RescheduleComponent implements OnInit{
     for (let i = 0; i < this.reschedule.length; i++) {
       const documentDeadline = this.convertToDate(this.reschedule.at(i)!.documentDeadline);
       this.rescheduleReqDto.push(this.fb.group({
-        documentId : [{value: this.reschedule.at(i)?.documentId, disabled: true}, [Validators.required]],
-        activity:[{value: this.reschedule.at(i)?.activity, disabled: true}, [Validators.required]],
+        documentId: [{ value: this.reschedule.at(i)?.documentId, disabled: true }, [Validators.required]],
+        activity: [{ value: this.reschedule.at(i)?.activity, disabled: true }, [Validators.required]],
         documentDeadline: [documentDeadline, [Validators.required]]
       }))
     }
   }
 
   clickInit() {
-    for (let i = 0; i < this.rescheduleReqDto.length; i ++) {
+    for (let i = 0; i < this.rescheduleReqDto.length; i++) {
       var documentDeadline = this.rescheduleReqDto.at(i).get('documentDeadline')?.value
       this.formatDateForSubmission(documentDeadline)
     }
   }
 
-  get rescheduleReqDto(){
+  get rescheduleReqDto() {
     return this.rescheduleForm.get('rescheduleReqDto') as FormArray
   }
 
@@ -85,27 +99,27 @@ export class RescheduleComponent implements OnInit{
     return new Date(dateString)
   }
 
-  setMaxDate(dateString : string | null) {
+  setMaxDate(dateString: string | null) {
     let maxDate = this.convertToDate(dateString)
     maxDate?.setDate(maxDate.getDate() - 2)
     return maxDate
   }
 
-  formatDate(dateString : string | null) {
+  formatDate(dateString: string | null) {
     let payrollDate = this.convertToDate(dateString)
     const day = String(payrollDate!.getUTCDate()).padStart(2, '0')
     const month = String(payrollDate!.getUTCMonth() + 1).padStart(2, '0')
     const year = payrollDate!.getUTCFullYear()
 
     return `${day}/${month}/${year}`
-}
+  }
 
-  onDateSelect(event:any, i: number) {
+  onDateSelect(event: any, i: number) {
     const selectedDate = new Date(event)
     const dateString = selectedDate.toISOString()
 
     const documentDeadline = dateString.substring(0, dateString.length - 5)
-    this.rescheduleReqDto.at(i)?.patchValue({documentDeadline: documentDeadline})
+    this.rescheduleReqDto.at(i)?.patchValue({ documentDeadline: documentDeadline })
   }
 
   convertToUTC(dateString: string): string {
@@ -128,7 +142,6 @@ export class RescheduleComponent implements OnInit{
     if (typeof dateString === 'string' && dateString.length > 11) {
       const date = new Date(dateString)
       return date.toISOString()
-
     }
 
     return dateString
@@ -140,7 +153,7 @@ export class RescheduleComponent implements OnInit{
 
   onSubmit() {
     if (this.rescheduleForm.valid) {
-      const request : UpdateDocumentScheduleReqDto[] = this.rescheduleForm.getRawValue().rescheduleReqDto
+      const request: UpdateDocumentScheduleReqDto[] = this.rescheduleForm.getRawValue().rescheduleReqDto
       for (let i = 0; i < request.length; i++) {
         const formattedDate = this.formatDateForSubmission(request[i].documentDeadline);
         request[i].documentDeadline = formattedDate as string;

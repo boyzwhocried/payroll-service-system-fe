@@ -1,10 +1,10 @@
 <div class="flex justify-content-center lg:mx-5 lg:my-5">
     <div class="surface-card p-4 shadow-2 border-round w-full">
         <div class="flex flex-row gap-2 align-items-center">
-            <button class="p-button-rounded p-button-text p-button-secondary" pButton pRipple type="button"
-                (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
+            <app-back-button/>
             <h3>Notifications</h3>
         </div>
+        <hr>
         <div class="card">
             <div class="surface-card px-3" *ngIf="isLoading">
                 <ul class="m-0 p-0 list-none">

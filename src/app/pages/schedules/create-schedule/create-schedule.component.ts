@@ -16,21 +16,23 @@ import { DocumentsReqDto } from '../../../dto/document/documents.req.dto';
 import { DocumentReqDto } from '../../../dto/document/document.req.dto';
 import { firstValueFrom } from 'rxjs';
 import { DocumentService } from '../../../services/document.service';
+import { BackButtonComponent } from "../../../components/back-button/back-button.component";
 
 @Component({
-  selector: 'app-create-schedule',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TableModule,
-    ToastModule,
-    FormsModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    CalendarModule,
-  ],
-  templateUrl: './create-schedule.component.html',
-  styleUrl: './create-schedule.component.css',
+    selector: 'app-create-schedule',
+    standalone: true,
+    templateUrl: './create-schedule.component.html',
+    styleUrl: './create-schedule.component.css',
+    imports: [
+        CommonModule,
+        TableModule,
+        ToastModule,
+        FormsModule,
+        ReactiveFormsModule,
+        InputTextModule,
+        CalendarModule,
+        BackButtonComponent
+    ]
 })
 export class CreateScheduleComponent implements OnInit {
   scheduleId!: string;
