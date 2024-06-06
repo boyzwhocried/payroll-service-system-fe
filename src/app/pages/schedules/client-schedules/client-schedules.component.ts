@@ -20,6 +20,8 @@ import { PayrollService } from '../../../services/payroll.service';
 import { ScheduleResDto } from '../../../dto/schedule/schedule.res.dto';
 import { ScheduleStatusType } from '../../../constants/schedule-request-types.constant';
 import { firstValueFrom } from 'rxjs';
+import { ImageModule } from 'primeng/image';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'client-schedules',
@@ -39,34 +41,45 @@ import { firstValueFrom } from 'rxjs';
     ToastModule,
     TableModule,
     ButtonModule,
+    ImageModule,
+    SkeletonModule,
   ],
   providers: [MessageService],
 })
 export class ClientSchedules implements OnInit {
   clientsSchedule: ScheduleResDto[] = [];
   cols!: any[];
+  isLoading = true
+  clientsScheduleSkeleton!: any[] ;
+
 
   constructor(
     private fb: NonNullableFormBuilder,
     private location: Location,
     private activeRoute: ActivatedRoute,
     private payrollService: PayrollService
-  ) {}
+  ) { }
   ngOnInit(): void {
     this.init();
   }
-  init() {
+
+  async init() {
+    this.clientsScheduleSkeleton = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+
     this.cols = [
       { field: 'payrollDate', header: 'Payroll Date' },
       { field: 'action', header: 'Action' },
     ];
-    firstValueFrom(this.activeRoute.params).then((param) => {
-      firstValueFrom(
-        this.payrollService.getSchedulesByClientId(param['id'])
-      ).then((res) => {
-        this.clientsSchedule = res;
-      });
-    });
+    try {
+      this.isLoading = true; 
+      const param = await firstValueFrom(this.activeRoute.params);
+      const res = await firstValueFrom(this.payrollService.getSchedulesByClientId(param['id']));
+      this.clientsSchedule = res;
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      this.isLoading = false; 
+    }
   }
 
   isPendingSchedule(i: number) {
