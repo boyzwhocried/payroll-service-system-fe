@@ -1,6 +1,6 @@
 export interface CompanyResDto {
     id: string,
     companyName: string,
-    companyLogoId: string
-
+    companyLogoContent: string,
+    companyLogoExtension: string,
 }
