@@ -10,6 +10,8 @@ import { NotificationService } from '../../services/notification/notification.se
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'notification-app',
@@ -21,6 +23,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     ButtonModule,
     ConfirmDialogModule,
     ToastModule,
+    SkeletonModule,
+    ImageModule,
   ],
   templateUrl: 'notification.component.html',
   styleUrl: 'notification.component.css',
@@ -30,6 +34,7 @@ export class NotificationComponent implements OnInit {
   notifications: NotificationResDto[] = [];
 
   isHovered: Boolean = false;
+  isLoading = true;
 
   constructor(
     private notificationService: NotificationService,
@@ -39,8 +44,20 @@ export class NotificationComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.init();
+    try {
+      this.isLoading = true;
+      await firstValueFrom(this.notificationService.getNotifications()).then(
+        (response) => {
+          this.notifications = response;
+        }
+      );
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   init() {

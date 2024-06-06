@@ -6,13 +6,9 @@
 
 <div class="flex justify-content-center">
   <div class="md:w-8 lg:w-6">
-    <div class="grid">
-      <button
-        pButton
-        (click)="onBack()"
-        icon="pi pi-chevron-left"
-        title="back"
-      ></button>
+    <div class="grid align-items-center">
+      <button class="p-button-rounded p-button-text p-button-secondary"  pButton pRipple type="button"
+                (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
       <h3>Payroll</h3>
     </div>
     <h1 class="text-center">Upload Required Payroll Documents</h1>

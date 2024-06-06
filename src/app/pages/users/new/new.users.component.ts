@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RoleService } from "../../../services/role/role.service";
 import { RoleType } from "../../../constants/roles.constant";
 import { CommonModule } from "@angular/common";
@@ -38,34 +38,31 @@ import { firstValueFrom } from "rxjs";
 export class UserNew implements OnInit {
   roles: RoleResDto[] = [];
   isClient: boolean = false;
+  userForm: FormGroup;
 
   constructor(
-    // private messageService: MessageService,
     private formBuilder: FormBuilder,
     private roleService: RoleService,
     private userService: UserService,
-  ) { }
-
-  userForm = this.formBuilder.group({
-    username: ['', Validators.required],
-    phoneNo: ['', Validators.required, Validators.minLength(13)],
-    email: ['', [Validators.required, Validators.email]],
-    roleId: ['', Validators.required],
-    profileContent: [''],
-    profileExtension: [''],
-    companyName: ['', Validators.required],
-    payrollDate: ['', Validators.required],
-    companyLogoContent: [''],
-    companyLogoExtension: ['']
-  });
+  ) {
+    this.userForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      phoneNo: ['', [Validators.required, Validators.pattern('(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-\s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})')]],
+      email: ['', [Validators.required, Validators.email]],
+      roleId: ['', Validators.required],
+      profileContent: [''],
+      profileExtension: [''],
+      companyName: ['', Validators.required],
+      payrollDate: ['', Validators.required],
+      companyLogoContent: [''],
+      companyLogoExtension: ['']
+    });
+  }
 
   ngOnInit(): void {
-    this.initForm();
     this.loadRoles();
     this.handlePayrollDateChanges();
   }
-
-  initForm(): void {}
 
   loadRoles(): void {
     firstValueFrom(this.roleService.getAll()).then(response => {
@@ -79,20 +76,16 @@ export class UserNew implements OnInit {
     const companyNameControl = this.userForm.get('companyName');
     const payrollDateControl = this.userForm.get('payrollDate');
 
-    if (!companyNameControl || !payrollDateControl) {
-      return;
-    }
-
     if (this.isClient) {
-      companyNameControl.setValidators([Validators.required]);
-      payrollDateControl.setValidators([Validators.required]);
+      companyNameControl?.setValidators([Validators.required]);
+      payrollDateControl?.setValidators([Validators.required]);
     } else {
-      companyNameControl.clearValidators();
-      payrollDateControl.clearValidators();
+      companyNameControl?.clearValidators();
+      payrollDateControl?.clearValidators();
     }
 
-    companyNameControl.updateValueAndValidity();
-    payrollDateControl.updateValueAndValidity();
+    companyNameControl?.updateValueAndValidity();
+    payrollDateControl?.updateValueAndValidity();
   }
 
   onProfileSelect(event: any, isCompanyLogo: boolean): void {
@@ -159,11 +152,10 @@ export class UserNew implements OnInit {
 
       this.userService.addUser(user).subscribe(
         response => {
-          // this.messageService.add({ severity: 'info', summary: 'Success', detail: 'User added successfully:' + response })
           this.userForm.reset();
         },
         error => {
-          // this.messageService.add({ severity: 'danger', summary: 'Failed', detail: 'Error adding user:' + error })
+          // Handle error
         }
       );
     }

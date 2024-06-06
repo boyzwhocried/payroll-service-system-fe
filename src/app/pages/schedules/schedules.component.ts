@@ -25,6 +25,8 @@ import { ScheduleResDto } from '../../dto/schedule/schedule.res.dto';
 import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ImageModule } from 'primeng/image';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-schedules',
@@ -45,10 +47,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     ToastModule,
     ConfirmPopupModule,
     ConfirmDialogModule,
+    ImageModule,
+    SkeletonModule,
   ],
   providers: [MessageService, ConfirmationService],
 })
-export class Schedules implements OnInit {
+export class SchedulesComponent implements OnInit {
   roleCode: boolean = true;
   status: string = 'Pending';
   dataLogin = this.authService.getLoginData();
@@ -57,6 +61,7 @@ export class Schedules implements OnInit {
   clientSchedules: ScheduleResDto[] = [];
   maxDate: Date | null = null;
   minDate: Date | null = null;
+  isLoading = true;
 
   rescheduleForm = this.fb.group({
     scheduleId: ['', Validators.required],
@@ -75,26 +80,35 @@ export class Schedules implements OnInit {
     this.init();
   }
 
-  init() {
+  private async init() {
     if (this.rolePS) {
-      firstValueFrom(this.payrollService.getAllClients()).then((res) => {
-        this.schedules = res;
-      });
+      try {
+        this.isLoading = true;
+        this.schedules = await firstValueFrom(
+          this.payrollService.getAllClients()
+        );
+      } finally {
+        this.isLoading = false;
+      }
     }
     if (this.roleClient) {
-      firstValueFrom(this.payrollService.getLoginClientSchedule()).then(
-        (res) => {
-          this.clientSchedules = res;
-        }
-      );
+      try {
+        this.isLoading = true;
+        this.clientSchedules = await firstValueFrom(
+          this.payrollService.getLoginClientSchedule()
+        );
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
   get rolePS() {
-    return this.dataLogin?.roleCode == RoleType.PS;
+    return this.dataLogin?.roleCode === RoleType.PS;
   }
+
   get roleClient() {
-    return this.dataLogin?.roleCode == RoleType.CLIENT;
+    return this.dataLogin?.roleCode === RoleType.CLIENT;
   }
 
   showDialog(schedule: ScheduleResDto) {
@@ -107,7 +121,7 @@ export class Schedules implements OnInit {
     });
   }
 
-  convertToDate(dateString: string | null) {
+  private convertToDate(dateString: string | null): Date | null {
     if (!dateString) {
       return null;
     }
@@ -152,32 +166,21 @@ export class Schedules implements OnInit {
     this.rescheduleForm.patchValue({ newDeadline: documentDeadline });
   }
 
-  isCompleted(i: number) {
-    if (
-      this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.COMPLETED
-    ) {
-      return true;
-    } else if (
-      this.clientSchedules.at(i)?.scheduleStatusCode ==
-      ScheduleStatusType.COMPLETED
-    ) {
-      return true;
-    }
-    return false;
+  isCompleted(i: number): boolean {
+    return (
+      this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED ||
+      this.clientSchedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.COMPLETED
+    );
   }
 
-  isNoSchedule(i: number) {
-    if (
-      this.schedules.at(i)?.scheduleStatusCode == ScheduleStatusType.NO_SCHEDULE
-    ) {
-      return true;
-    } else if (
-      this.clientSchedules.at(i)?.scheduleStatusCode ==
-      ScheduleStatusType.NO_SCHEDULE
-    ) {
-      return true;
-    }
-    return false;
+  isNoSchedule(i: number): boolean {
+    return (
+      this.schedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.NO_SCHEDULE ||
+      this.clientSchedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.NO_SCHEDULE
+    );
   }
 
   confirm(event: Event) {
