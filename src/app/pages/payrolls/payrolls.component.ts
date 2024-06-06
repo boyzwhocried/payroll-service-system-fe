@@ -25,24 +25,26 @@ import * as xlsx from 'xlsx';
 import { TableModule } from 'primeng/table';
 import * as pdfjs from 'pdfjs-dist';
 import { ButtonIconService } from '../../services/button-icon.service';
+import { BackButtonComponent } from "../../components/back-button/back-button.component";
 
 @Component({
-  selector: 'app-stepper',
-  standalone: true,
-  templateUrl: './payrolls.component.html',
-  styleUrl: './payrolls.component.css',
-  imports: [
-    CommonModule,
-    ButtonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    FileUploadModule,
-    StepperModule,
-    DialogModule,
-    TagModule,
-    NgxDocViewerModule,
-    TableModule,
-  ],
+    selector: 'app-stepper',
+    standalone: true,
+    templateUrl: './payrolls.component.html',
+    styleUrl: './payrolls.component.css',
+    imports: [
+        CommonModule,
+        ButtonModule,
+        ReactiveFormsModule,
+        RouterModule,
+        FileUploadModule,
+        StepperModule,
+        DialogModule,
+        TagModule,
+        NgxDocViewerModule,
+        TableModule,
+        BackButtonComponent
+    ]
 })
 export class Payrolls implements OnInit {
   date: Date | undefined;

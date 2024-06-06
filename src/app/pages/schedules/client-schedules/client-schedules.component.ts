@@ -22,29 +22,31 @@ import { ScheduleStatusType } from '../../../constants/schedule-request-types.co
 import { firstValueFrom } from 'rxjs';
 import { ImageModule } from 'primeng/image';
 import { SkeletonModule } from 'primeng/skeleton';
+import { BackButtonComponent } from "../../../components/back-button/back-button.component";
 
 @Component({
-  selector: 'client-schedules',
-  standalone: true,
-  templateUrl: './client-schedules.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    ButtonModule,
-    CalendarModule,
-    ReactiveFormsModule,
-    CardModule,
-    BadgeModule,
-    RouterModule,
-    DialogModule,
-    InputTextModule,
-    ToastModule,
-    TableModule,
-    ButtonModule,
-    ImageModule,
-    SkeletonModule,
-  ],
-  providers: [MessageService],
+    selector: 'client-schedules',
+    standalone: true,
+    templateUrl: './client-schedules.component.html',
+    providers: [MessageService],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ButtonModule,
+        CalendarModule,
+        ReactiveFormsModule,
+        CardModule,
+        BadgeModule,
+        RouterModule,
+        DialogModule,
+        InputTextModule,
+        ToastModule,
+        TableModule,
+        ButtonModule,
+        ImageModule,
+        SkeletonModule,
+        BackButtonComponent
+    ]
 })
 export class ClientSchedules implements OnInit {
   clientsSchedule: ScheduleResDto[] = [];
