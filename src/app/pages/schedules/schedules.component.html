@@ -95,6 +95,7 @@
                   size="small"
                   label="View"
                   [routerLink]="'/payrolls/' + clientSchedule.scheduleId"
+                  [disabled]="clientSchedule.scheduleStatusCode == 'SQT01'"
                   class="w-full"
                   icon="pi pi-eye"
                 ></p-button>
