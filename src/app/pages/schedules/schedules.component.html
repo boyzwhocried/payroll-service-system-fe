@@ -106,6 +106,7 @@
             <p-button
               size="small"
               label="View"
+              [disabled]="!clientSchedule.canBeRescheduled"
               routerLink="/payrolls/{{ clientSchedule.scheduleId }}"
               class="w-full"
               styleClass="w-full"
@@ -160,10 +161,11 @@
     </div>
     <div class="grid justify-content-end gap-2">
       <p-button label="Cancel" severity="secondary" (click)="visible = false" />
+      <p-confirmPopup />
       <p-button
         label="Save"
         [disabled]="rescheduleForm.invalid"
-        (click)="onSubmit(); visible = false"
+        (click)="confirm($event)"
       ></p-button>
     </div>
   </p-dialog>

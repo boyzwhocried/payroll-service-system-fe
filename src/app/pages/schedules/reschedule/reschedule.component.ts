@@ -16,6 +16,8 @@ import { firstValueFrom } from 'rxjs';
 import { OldDocumentResDto } from '../../../dto/document/old-document.req.dto';
 import { UpdateDocumentScheduleReqDto } from '../../../dto/document/update-document-schedule.req.dto';
 import { DocumentService } from '../../../services/document.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-reschedule',
@@ -28,9 +30,11 @@ import { DocumentService } from '../../../services/document.service';
     ReactiveFormsModule,
     InputTextModule,
     CalendarModule,
+    ConfirmDialogModule,
   ],
   templateUrl: './reschedule.component.html',
   styleUrl: './reschedule.component.css',
+  providers: [ConfirmationService, MessageService],
 })
 export class RescheduleComponent implements OnInit {
   scheduleId!: string;
@@ -48,7 +52,9 @@ export class RescheduleComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: NonNullableFormBuilder,
     private location: Location,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -157,7 +163,7 @@ export class RescheduleComponent implements OnInit {
     this.location.back();
   }
 
-  onSubmit() {
+  confirmReschedule() {
     if (this.rescheduleForm.valid) {
       const request: UpdateDocumentScheduleReqDto[] =
         this.rescheduleForm.getRawValue().rescheduleReqDto;
@@ -173,5 +179,23 @@ export class RescheduleComponent implements OnInit {
         this.location.back();
       });
     }
+  }
+
+  confirm() {
+    this.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Please confirm to proceed.',
+      accept: () => {
+        this.confirmReschedule();
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 2500,
+        });
+      },
+    });
   }
 }

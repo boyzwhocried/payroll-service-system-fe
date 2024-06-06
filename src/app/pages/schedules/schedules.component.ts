@@ -16,13 +16,15 @@ import { PayrollService } from '../../services/payroll.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { PayrollResDto } from '../../dto/payroll/payroll.res.dto';
 import { RoleType } from '../../constants/roles.constant';
 import { ScheduleStatusType } from '../../constants/schedule-request-types.constant';
 import { firstValueFrom } from 'rxjs';
 import { ScheduleResDto } from '../../dto/schedule/schedule.res.dto';
 import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-schedules',
@@ -41,8 +43,10 @@ import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
     DialogModule,
     InputTextModule,
     ToastModule,
+    ConfirmPopupModule,
+    ConfirmDialogModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class Schedules implements OnInit {
   roleCode: boolean = true;
@@ -62,7 +66,9 @@ export class Schedules implements OnInit {
   constructor(
     private authService: AuthService,
     private payrollService: PayrollService,
-    private fb: NonNullableFormBuilder
+    private fb: NonNullableFormBuilder,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -174,7 +180,27 @@ export class Schedules implements OnInit {
     return false;
   }
 
-  onSubmit() {
+  confirm(event: Event) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to proceed?',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.visible = false;
+        this.sendReschedule();
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 3000,
+        });
+      },
+    });
+  }
+
+  sendReschedule() {
     const request: RescheduleReqDto = this.rescheduleForm.getRawValue();
     firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(
       () => {
