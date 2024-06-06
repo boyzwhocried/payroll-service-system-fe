@@ -329,9 +329,9 @@ export class Payrolls implements OnInit {
       message: 'Please confirm to proceed.',
       accept: () => {
         if (type === 1) {
-          this.submitFinalDocument();
-        } else if (type === 2) {
           this.submitDocument();
+        } else if (type === 2) {
+          this.submitFinalDocument();
         } else if (type === 3) {
           this.pingClient();
         }
