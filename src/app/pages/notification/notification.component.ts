@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ImageModule } from 'primeng/image';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'notification-app',
@@ -32,7 +33,7 @@ import { ImageModule } from 'primeng/image';
 })
 export class NotificationComponent implements OnInit {
   notifications: NotificationResDto[] = [];
-
+  userId: string = this.authService.getLoginData().userId;
   isHovered: Boolean = false;
   isLoading = true;
 
@@ -41,7 +42,8 @@ export class NotificationComponent implements OnInit {
     private router: Router,
     private location: Location,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authService: AuthService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -88,20 +90,33 @@ export class NotificationComponent implements OnInit {
     });
   }
 
+  deleteAllNotification() {
+    const id: string = this.userId;
+    firstValueFrom(this.notificationService.deleteAllNotification(id)).then(
+      () => {
+        this.notifications = [];
+      }
+    );
+  }
+
   onBack() {
     this.location.back();
   }
 
-  confirm(id: string, index: number, isActive: boolean) {
+  confirm(id?: string, index?: number, isActive?: boolean) {
     this.confirmationService.confirm({
       header: 'Are you sure?',
       message: 'Please confirm to proceed.',
       accept: () => {
-        this.deleteNotification(id, index, isActive);
+        if (id && index && isActive) {
+          this.deleteNotification(id, index, isActive);
+        } else {
+          this.deleteAllNotification();
+        }
       },
       reject: () => {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'Rejected',
           detail: 'You have rejected',
           life: 2500,

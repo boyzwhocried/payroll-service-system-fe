@@ -7,8 +7,15 @@
 <div class="flex justify-content-center">
   <div class="md:w-8 lg:w-6">
     <div class="grid align-items-center">
-      <button class="p-button-rounded p-button-text p-button-secondary"  pButton pRipple type="button"
-                (click)="onBack()" icon="pi pi-chevron-left" title="Back"></button>
+      <button
+        class="p-button-rounded p-button-text p-button-secondary"
+        pButton
+        pRipple
+        type="button"
+        (click)="onBack()"
+        icon="pi pi-chevron-left"
+        title="Back"
+      ></button>
       <h3>Payroll</h3>
     </div>
     <h1 class="text-center">Upload Required Payroll Documents</h1>
@@ -38,10 +45,13 @@
                   <p-fileUpload
                     mode="basic"
                     chooseLabel="Choose"
+                    #fileUpload
                     [chooseIcon]="buttonIconService.uploadIcon"
                     accept=".doc, .docx, .xls, .xlsx, .pdf"
                     maxFileSize="3000000"
-                    (onSelect)="fileUpload($event, data.documentId, i, false)"
+                    (onSelect)="
+                      uploadFile($event, data.documentId, i, false, fileUpload)
+                    "
                     [disabled]="
                       (isClient && data.isSignedByPs) ||
                       (isPS && !data.isSignedByClient) ||
@@ -173,6 +183,7 @@
                     <div class="flex flex-column md:flex-row gap-4">
                       <p-fileUpload
                         *ngIf="isPS"
+                        #fileUpload
                         mode="basic"
                         chooseLabel="Choose"
                         [chooseIcon]="buttonIconService.uploadIcon"
@@ -180,7 +191,13 @@
                         accept=".doc, .docx, .xls, .xlsx, .pdf"
                         maxFileSize="3000000"
                         (onSelect)="
-                          fileUpload($event, data.documentId, i, true)
+                          uploadFile(
+                            $event,
+                            data.documentId,
+                            i,
+                            true,
+                            fileUpload
+                          )
                         "
                       />
 

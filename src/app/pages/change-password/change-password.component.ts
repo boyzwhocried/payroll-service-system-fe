@@ -66,6 +66,12 @@ export class ChangePasswordComponent {
           }
         );
       } else {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Invalid Input',
+          detail: 'New password and confirm new password must be the same!',
+          life: 2500,
+        });
         this.passwordForm.reset();
       }
     }
@@ -80,7 +86,7 @@ export class ChangePasswordComponent {
       },
       reject: () => {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'Rejected',
           detail: 'You have rejected',
           life: 2500,

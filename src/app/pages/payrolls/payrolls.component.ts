@@ -57,6 +57,7 @@ export class Payrolls implements OnInit {
   docHeader!: string;
   pdfPages: number[] = [];
   loginData = this.authService.getLoginData();
+  fileUpload!: any;
 
   documentReqDtoFg = this.fb.group({
     documentId: ['', [Validators.required]],
@@ -102,11 +103,12 @@ export class Payrolls implements OnInit {
     return fDate;
   }
 
-  fileUpload(
+  uploadFile(
     event: any,
     documentId: string,
     documentIndex: number,
-    isFinal: boolean
+    isFinal: boolean,
+    fileUpload: any
   ) {
     this.buttonIconService.toggleSubmitIcon();
     const toBase64 = (file: File) =>
@@ -157,6 +159,7 @@ export class Payrolls implements OnInit {
         })
         .then(() => {
           this.buttonIconService.toggleSubmitIcon();
+          this.fileUpload = fileUpload;
         });
     }
   }
@@ -185,6 +188,7 @@ export class Payrolls implements OnInit {
         .then(() => {
           this.documentReqDtoFg.reset();
           this.buttonIconService.toggleSubmitIcon();
+          this.fileUpload.clear();
         });
     }
   }
@@ -338,7 +342,7 @@ export class Payrolls implements OnInit {
       },
       reject: () => {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'Rejected',
           detail: 'You have rejected',
           life: 2500,

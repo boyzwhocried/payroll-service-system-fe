@@ -195,7 +195,7 @@ export class UserNew implements OnInit {
       },
       reject: () => {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'Rejected',
           detail: 'You have rejected',
           life: 2500,
