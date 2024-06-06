@@ -3,6 +3,7 @@ export interface UpdateUserReqDto {
     userName: string,
     email: string,
     phoneNumber: string,
-    profilePictureContent: string,
-    profilePictureExtension: string
+    roleId: string,
+    fileContent: string,
+    fileExtension: string
 }

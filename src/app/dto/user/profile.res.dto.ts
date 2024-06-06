@@ -4,6 +4,5 @@ export interface ProfileResDto {
     email: string,
     phoneNumber: string,
     roleName: string,
-    profilePictureContent: string
-    profilePictureExtension: string
+    profilePictureId: string
 }

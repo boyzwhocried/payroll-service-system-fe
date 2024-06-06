@@ -35,17 +35,18 @@ export class ProfileComponent implements OnInit {
 
     updateUserForm = this.formBuilder.group({
         id: ['', [Validators.required]],
-        userName: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
-        phoneNumber: ['', [Validators.required, Validators.pattern('(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-\s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})')]],
-        profilePictureContent: ['', [Validators.required]],
-        profilePictureExtension: ['', [Validators.required]]
+        userName: ['', [Validators.minLength(3)]],
+        email: ['', [Validators.email]],
+        phoneNumber: ['', [Validators.minLength(13)]],
+        roleId: [''],
+        fileContent: [''],
+        fileExtension: ['']
     })
 
     constructor(
         private formBuilder: NonNullableFormBuilder,
         private userService: UserService
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         this.init()
@@ -55,25 +56,26 @@ export class ProfileComponent implements OnInit {
         firstValueFrom(this.userService.getProfile()).then(
             response => {
                 this.profileRes = response
+                this.updateUserForm.patchValue({
+                    'id' : response.userId
+                })
             }
         )
     }
 
-    generateImage(contentData?: string | undefined, extension?: string | undefined): string {
+    generateImage(id?: string) {
+        if(id) {
+            return this.userService.getImageUrl(id)
+        }
+        return ''
+    }
+
+    generateNewImage(contentData?: string | undefined, extension?: string | undefined): string {
         return `data:image/${extension};base64,${contentData}`
     }
 
     toogleEdit() {
         this.isEditable = !this.isEditable
-        if (this.isEditable) {
-            this.updateUserForm.patchValue({
-                id : this.profileRes?.userId,
-                phoneNumber : this.profileRes?.phoneNumber,
-                ...this.profileRes
-            })
-        } else {
-            this.updateUserForm.reset()
-        }
     }
 
     onAvatarClick(): void {
@@ -83,46 +85,65 @@ export class ProfileComponent implements OnInit {
     onFileSelected(event: Event): void {
         const input = event.target as HTMLInputElement
         if (input.files && input.files[0]) {
-            const file = input.files[0]
-            const reader = new FileReader()
-
-            reader.onload = () => {
-                const base64 = (reader.result as string).split(',')[1];
-                this.updateUserForm.patchValue({
-                    profilePictureContent: base64,
-                    profilePictureExtension: file.type.split('/')[1]
-                })
-            }
-            reader.readAsDataURL(file)
+          const file = input.files[0]
+          const reader = new FileReader()
+    
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(',')[1];
+            this.updateUserForm.patchValue({
+                fileContent: base64,
+                fileExtension: file.type.split('/')[1]
+            })
+          }
+          reader.readAsDataURL(file)
         }
     }
 
     isImageInput() {
-        return (this.updateUserForm.value.profilePictureContent && this.updateUserForm.value.profilePictureExtension)
+        return (this.updateUserForm.value.fileContent && this.updateUserForm.value.fileExtension)
+    }
+
+    closeEdit() {
+        this.updateUserForm.reset()
+        this.updateUserForm.patchValue({
+            id : this.profileRes?.userId
+        })
+        this.toogleEdit()
     }
 
     isNotAvailableToSave(form: FormGroup) {
-        if ((!form.value.userName) && (!form.value.email) && (!form.value.phoneNumber) && (!form.value.fileContent)) {
+        if((!form.value.userName) && (!form.value.email) && (!form.value.phoneNumber) && (!form.value.fileContent)) {
             return true
         }
         return false
     }
 
     saveEdit() {
-        if (this.updateUserForm.valid) {
+        if(this.updateUserForm.valid) {
             const updateUserReqDto: UpdateUserReqDto = this.updateUserForm.getRawValue()
             firstValueFrom(this.userService.updateUser(updateUserReqDto)).then(
-                response => {
-                    this.profileRes!.userName = updateUserReqDto.userName as string
-                    this.profileRes!.email = updateUserReqDto.email as string
-                    this.profileRes!.phoneNumber = updateUserReqDto.phoneNumber as string
+                () => {
+                    const name = this.updateUserForm.value.userName as string
+                    if(name != '') {
+                        this.profileRes!.userName = name
+                    }
 
-                    this.profileRes!.profilePictureContent = updateUserReqDto.profilePictureContent
-                    this.profileRes!.profilePictureExtension = updateUserReqDto.profilePictureExtension
+                    const email = this.updateUserForm.value.email as string
+                    if(email != '') {
+                        this.profileRes!.email = email
+                    }
 
-                    this.toogleEdit()
-                },
-                error => {
+                    const phoneNumber = this.updateUserForm.value.phoneNumber as string
+                    if(phoneNumber != '') {
+                        this.profileRes!.phoneNumber = phoneNumber
+                    }
+
+                    this.updateUserForm.patchValue({
+                        userName : '',
+                        email : '',
+                        phoneNumber : ''
+                    })
+
                     this.toogleEdit()
                 }
             )
