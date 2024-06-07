@@ -242,6 +242,12 @@
                       />
 
                       <p-button
+                        icon="pi pi-times"
+                        [disabled]="!documentReqDtoFg.valid"
+                        (onClick)="clearFile()"
+                        severity="danger"
+                      />
+                      <p-button
                         [disabled]="!data.documentDirectory"
                         (onClick)="downloadFinalDocument(data.documentId)"
                         label="Download"
