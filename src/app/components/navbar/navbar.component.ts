@@ -157,19 +157,8 @@ export class NavbarComponent implements OnInit {
     this.saItem = [
       {
         label: 'Users',
+        routerLink: '/users',
         icon: PrimeIcons.USERS,
-        items: [
-          {
-            label: 'List',
-            routerLink: '/users',
-            icon: PrimeIcons.LIST,
-          },
-          {
-            label: 'Create',
-            routerLink: '/users/new',
-            icon: PrimeIcons.PLUS,
-          },
-        ],
       },
       {
         label: 'Companies',
