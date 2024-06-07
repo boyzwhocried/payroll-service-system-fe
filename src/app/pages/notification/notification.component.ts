@@ -37,7 +37,7 @@ export class NotificationComponent implements OnInit {
   notifications: NotificationResDto[] = [];
   userId: string = this.authService.getLoginData().userId;
   isHovered: Boolean = false;
-  isLoading = true;
+  isLoading: Boolean = true;
 
   constructor(
     private notificationService: NotificationService,
@@ -101,6 +101,17 @@ export class NotificationComponent implements OnInit {
     );
   }
 
+  readAllNotification() {
+    const id: string = this.userId;
+    firstValueFrom(this.notificationService.readAllNotification(id)).then(
+      () => {
+        this.notifications.forEach((notification) => {
+          notification.isActive = false;
+        });
+      }
+    );
+  }
+
   onBack() {
     this.location.back();
   }
@@ -110,8 +121,10 @@ export class NotificationComponent implements OnInit {
       header: 'Are you sure?',
       message: 'Please confirm to proceed.',
       accept: () => {
-        if (id && index && isActive) {
-          this.deleteNotification(id, index, isActive);
+        if (id && index) {
+          this.deleteNotification(id, index, isActive!);
+        } else if (id == 'readAll') {
+          this.readAllNotification();
         } else {
           this.deleteAllNotification();
         }

@@ -53,4 +53,10 @@ export class NotificationService {
   readNotification(id: string) {
     return this.baseService.patch<UpdateResDto>(`notifications/${id}`);
   }
+
+  readAllNotification(id: string) {
+    this.count = 0;
+    this.countObserver.next(this.count);
+    return this.baseService.patch<UpdateResDto>(`notifications/read-all/${id}`);
+  }
 }

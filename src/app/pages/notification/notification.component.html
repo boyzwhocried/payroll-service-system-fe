@@ -5,13 +5,36 @@
         <app-back-button />
         <h3>Notifications</h3>
       </div>
-      <div class="flex justify-content-right align-items-center">
+      <div class="flex gap-3 justify-content-right align-items-center">
+        <p-button
+          [disabled]="notifications.length <= 0"
+          label="Read All"
+          icon="pi pi-eye"
+          severity="secondary"
+          (onClick)="confirm('readAll')"
+          class="hidden md:inline"
+        />
         <p-button
           [disabled]="notifications.length <= 0"
           label="Clear"
           icon="pi pi-trash"
           severity="danger"
           (onClick)="confirm()"
+          class="hidden md:inline"
+        />
+        <p-button
+          [disabled]="notifications.length <= 0"
+          icon="pi pi-eye"
+          severity="secondary"
+          (onClick)="confirm('readAll')"
+          class="inline md:hidden"
+        />
+        <p-button
+          [disabled]="notifications.length <= 0"
+          icon="pi pi-trash"
+          severity="danger"
+          (onClick)="confirm()"
+          class="inline md:hidden"
         />
       </div>
     </div>
