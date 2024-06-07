@@ -12,7 +12,6 @@
       ></p-checkbox>
     </small>
     <div class="card">
-      <!-- <pre>{{ userForm.value | json }}</pre> -->
       <p-table
         [value]="users"
         dataKey="id"
@@ -62,13 +61,13 @@
                   >
                     <p-avatar
                       *ngIf="
-                        userForm.value.fileContent &&
-                        userForm.value.fileExtension
+                        userForm.value.profilePictureContent &&
+                        userForm.value.profilePictureExtension
                       "
                       [image]="
                         generateImage(
-                          userForm.value.fileContent,
-                          userForm.value.fileExtension
+                          userForm.value.profilePictureContent,
+                          userForm.value.profilePictureExtension
                         )
                       "
                       shape="circle"
@@ -83,10 +82,15 @@
                     ></p-avatar>
                     <p-avatar
                       *ngIf="
-                        !userForm.value.fileContent &&
-                        !userForm.value.fileExtension
+                        !userForm.value.profilePictureContent &&
+                        !userForm.value.profilePictureExtension
                       "
-                      [image]="getImage(user.profilePictureId)"
+                      [image]="
+                        generateImage(
+                          user.profilePictureContent,
+                          user.profilePictureExtension
+                        )
+                      "
                       shape="circle"
                       class="flex justify-content-center"
                       title="Edit Avatar"
@@ -120,7 +124,12 @@
                 </ng-template>
                 <ng-template pTemplate="output">
                   <p-avatar
-                    [image]="getImage(user.profilePictureId)"
+                    [image]="
+                      generateImage(
+                        user.profilePictureContent,
+                        user.profilePictureExtension
+                      )
+                    "
                     shape="circle"
                     class="flex justify-content-center"
                   />
@@ -147,12 +156,7 @@
             <td>
               <p-cellEditor>
                 <ng-template pTemplate="input">
-                  <p-dropdown
-                    [options]="roles"
-                    appendTo="body"
-                    formControlName="roleId"
-                  >
-                  </p-dropdown>
+                  {{ user.roleName }}
                 </ng-template>
                 <ng-template pTemplate="output">
                   {{ user.roleName }}
@@ -214,7 +218,7 @@
                   type="submit"
                   pSaveEditableRow
                   icon="pi pi-check"
-                  (click)="onRowEditSave()"
+                  (click)="onRowEditSave(ri)"
                   [disabled]="isFormUnchanged || userForm.invalid"
                   class="p-button-rounded p-button-text p-button-success mr-2"
                 ></button>
