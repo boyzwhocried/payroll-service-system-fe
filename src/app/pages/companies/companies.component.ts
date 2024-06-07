@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormGroup,
   FormsModule,
@@ -23,6 +23,8 @@ import { UpdateCompanyReqDto } from '../../dto/company/update-company.req.dto';
 import { CompanyService } from '../../services/company/company.service';
 import { CheckboxModule } from 'primeng/checkbox';
 import { firstValueFrom } from 'rxjs';
+import { ImageModule } from 'primeng/image';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-companies',
@@ -42,12 +44,14 @@ import { firstValueFrom } from 'rxjs';
     AvatarModule,
     AvatarGroupModule,
     CheckboxModule,
+    ImageModule,
+    SkeletonModule,
   ],
   templateUrl: './companies.component.html',
   styleUrl: './companies.component.css',
   providers: [MessageService],
 })
-export class CompaniesComponent {
+export class CompaniesComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   isEditing = false;
@@ -57,6 +61,9 @@ export class CompaniesComponent {
   originalFormValues: any;
   isFormUnchanged = true;
   showFilterRow = false;
+  isLoading = true
+  companiesSkeleton: string[] = [];
+
 
   companyForm = this.formBuilder.group({
     id: ['', [Validators.required]],
@@ -68,9 +75,14 @@ export class CompaniesComponent {
   constructor(
     private companyService: CompanyService,
     private formBuilder: NonNullableFormBuilder
-  ) {
-    firstValueFrom(this.companyService.getCompanies()).then((response) => {
+  ) { }
+
+  async ngOnInit(): Promise<void> {
+    this.companiesSkeleton = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    this.isLoading = true
+    await firstValueFrom(this.companyService.getCompanies()).then((response) => {
       this.companies = response;
+      this.isLoading = false
     });
   }
 
@@ -114,6 +126,10 @@ export class CompaniesComponent {
           this.companies.at(index)!.companyLogoExtension = this.companyForm
             .value.companyLogoExtension as string;
           this.companyForm.reset();
+          this.originalFormValues = this.companyForm.getRawValue();
+          firstValueFrom(this.companyForm.valueChanges).then(() => {
+            this.checkFormUnchanged();
+          });
         },
         (error) => {
           this.companyForm.reset();
@@ -127,6 +143,10 @@ export class CompaniesComponent {
     delete this.clonedCompany[company.id as string];
     this.companyForm.reset();
     this.isEditing = false;
+    this.originalFormValues = this.companyForm.getRawValue();
+    firstValueFrom(this.companyForm.valueChanges).then(() => {
+      this.checkFormUnchanged();
+    });
   }
 
   onAvatarClick(): void {
