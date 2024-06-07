@@ -19,11 +19,10 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 import { UserService } from '../../services/user/user.service';
 import { environment } from '../../../env/environment.prod';
 import { UserReqDto } from '../../dto/user/user.req.dto';
-import { RoleService } from '../../services/role/role.service';
-import { RoleResDto } from '../../dto/role/role.res.dto';
 import { UserResDto } from '../../dto/user/user.res.dto';
 import { CheckboxModule } from 'primeng/checkbox';
 import { firstValueFrom } from 'rxjs';
+import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 
 @Component({
   selector: 'app-users',
@@ -62,25 +61,25 @@ export class UsersComponent {
     id: ['', [Validators.required]],
     userName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    phoneNumber: [''],
-    roleId: ['', [Validators.required]],
-    fileContent: [''],
-    fileExtension: [''],
+    phoneNumber: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(
+          '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})'
+        ),
+      ],
+    ],
+    profilePictureContent: [''],
+    profilePictureExtension: [''],
   });
 
   constructor(
     private formBuilder: NonNullableFormBuilder,
-    private userService: UserService,
-    private roleService: RoleService
+    private userService: UserService
   ) {
     firstValueFrom(this.userService.getAll()).then((response) => {
       this.users = response;
-    });
-    firstValueFrom(this.roleService.getAll()).then((response: RoleResDto[]) => {
-      this.roles = response.map((role) => ({
-        label: role.roleName,
-        value: role.id,
-      }));
     });
   }
 
@@ -96,12 +95,10 @@ export class UsersComponent {
   }
 
   onRowEditInit(user: UserResDto) {
-    const role = this.roles?.find((r) => r.label === user.roleName);
     this.clonedUsers[user.id as string] = { ...user };
     this.isEditing = true;
     this.userForm.patchValue({
       ...user,
-      roleId: role?.value,
     });
     this.originalFormValues = this.userForm.getRawValue();
     firstValueFrom(this.userForm.valueChanges).then(() => {
@@ -115,23 +112,33 @@ export class UsersComponent {
       JSON.stringify(this.originalFormValues);
   }
 
-  onRowEditSave() {
+  onRowEditSave(index: number) {
     this.isEditing = false;
     if (this.userForm.valid) {
-      const userReqDto: UserReqDto = this.userForm.getRawValue();
-      this.userService.editUser(userReqDto).subscribe({
-        next: (response) => {
-          // this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
+      const userReqDto: UpdateUserReqDto = this.userForm.getRawValue();
+      firstValueFrom(this.userService.editUser(userReqDto)).then(
+        (next) => {
+          this.users.at(index)!.userName = this.userForm.value
+            .userName as string;
+          this.users.at(index)!.email = this.userForm.value.email as string;
+          this.users.at(index)!.phoneNumber = this.userForm.value
+            .phoneNumber as string;
+          this.users.at(index)!.profilePictureContent = this.userForm.value
+            .profilePictureContent as string;
+          this.users.at(index)!.profilePictureExtension = this.userForm.value
+            .profilePictureExtension as string;
+
           this.userForm.reset();
+
+          this.originalFormValues = this.userForm.getRawValue();
+          firstValueFrom(this.userForm.valueChanges).then(() => {
+            this.checkFormUnchanged();
+          });
         },
-        error: (error) => console.error('Update failed:', error),
-        complete: () => {
-          console.log('Update user complete');
+        (error) => {
           this.userForm.reset();
-        },
-      });
-    } else {
-      // this.messageService.add({ severity: 'warning', summary: 'Failed', detail: `Form is not valid` });
+        }
+      );
     }
   }
 
@@ -140,6 +147,10 @@ export class UsersComponent {
     delete this.clonedUsers[user.id as string];
     this.userForm.reset();
     this.isEditing = false;
+    this.originalFormValues = this.userForm.getRawValue();
+    firstValueFrom(this.userForm.valueChanges).then(() => {
+      this.checkFormUnchanged();
+    });
   }
 
   onAvatarClick(): void {
@@ -155,8 +166,8 @@ export class UsersComponent {
       reader.onload = () => {
         const base64 = (reader.result as string).split(',')[1];
         this.userForm.patchValue({
-          fileContent: base64,
-          fileExtension: file.type.split('/')[1],
+          profilePictureContent: base64,
+          profilePictureExtension: file.type.split('/')[1],
         });
       };
       reader.readAsDataURL(file);

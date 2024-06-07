@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormGroup,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
@@ -39,15 +45,15 @@ import { firstValueFrom } from 'rxjs';
   ],
   templateUrl: './companies.component.html',
   styleUrl: './companies.component.css',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class CompaniesComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   isEditing = false;
   isHovered = false;
-  clonedCompany: { [s: string]: CompanyResDto } = {}
-  companies: CompanyResDto[] = []
+  clonedCompany: { [s: string]: CompanyResDto } = {};
+  companies: CompanyResDto[] = [];
   originalFormValues: any;
   isFormUnchanged = true;
   showFilterRow = false;
@@ -63,14 +69,19 @@ export class CompaniesComponent {
     private companyService: CompanyService,
     private formBuilder: NonNullableFormBuilder
   ) {
-    firstValueFrom(this.companyService.getCompanies()).then(response => { this.companies = response })
+    firstValueFrom(this.companyService.getCompanies()).then((response) => {
+      this.companies = response;
+    });
   }
 
   generateImage(id: string) {
-    return this.companyService.getImageUrl(id)
+    return this.companyService.getImageUrl(id);
   }
 
-  generatePreviewImage(contentData: string | undefined, extension: string | undefined) {
+  generatePreviewImage(
+    contentData: string | undefined,
+    extension: string | undefined
+  ) {
     return `data:image/${extension};base64,${contentData}`;
   }
 
@@ -85,29 +96,35 @@ export class CompaniesComponent {
   }
 
   checkFormUnchanged() {
-    this.isFormUnchanged = JSON.stringify(this.companyForm.getRawValue()) === JSON.stringify(this.originalFormValues);
+    this.isFormUnchanged =
+      JSON.stringify(this.companyForm.getRawValue()) ===
+      JSON.stringify(this.originalFormValues);
   }
 
-  onRowEditSave() {
-    this.isEditing = false
+  onRowEditSave(index: number) {
+    this.isEditing = false;
     if (this.companyForm.valid) {
-      const editedCompany: UpdateCompanyReqDto = this.companyForm.getRawValue()
-      this.companyService.updateCompanyData(editedCompany).subscribe({
-        next: (response) => {
-          this.companyForm.reset()
+      const editedCompany: UpdateCompanyReqDto = this.companyForm.getRawValue();
+      firstValueFrom(this.companyService.updateCompanyData(editedCompany)).then(
+        (response) => {
+          this.companies.at(index)!.companyName = this.companyForm.value
+            .companyName as string;
+          this.companies.at(index)!.companyLogoContent = this.companyForm.value
+            .companyLogoContent as string;
+          this.companies.at(index)!.companyLogoExtension = this.companyForm
+            .value.companyLogoExtension as string;
+          this.companyForm.reset();
         },
-        error: (error) => console.error('Update failed:', error),
-        complete: () => {
-          console.log('Update company complete')
-          this.companyForm.reset()
+        (error) => {
+          this.companyForm.reset();
         }
-      })
+      );
     }
   }
 
   onRowEditCancel(company: CompanyResDto, index: number) {
-    this.companies[index] = this.clonedCompany[company.id as string]
-    delete this.clonedCompany[company.id as string]
+    this.companies[index] = this.clonedCompany[company.id as string];
+    delete this.clonedCompany[company.id as string];
     this.companyForm.reset();
     this.isEditing = false;
   }
@@ -125,11 +142,11 @@ export class CompaniesComponent {
       reader.onload = () => {
         const base64 = (reader.result as string).split(',')[1];
         this.companyForm.patchValue({
-          companyLogoContent: base64, companyLogoExtension: file.type.split('/')[1]
-        })
+          companyLogoContent: base64,
+          companyLogoExtension: file.type.split('/')[1],
+        });
       };
       reader.readAsDataURL(file);
     }
   }
-
 }

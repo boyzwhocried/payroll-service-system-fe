@@ -1,128 +1,195 @@
 <div class="md:col-6 md:col-offset-3 my-5 align-items-center">
-    <form [formGroup]="updateUserForm" class="relative p-4 mx-4 shadow-5 border-round-lg">
-        <div class="absolute top-0 right-0 p-4">
-            <div class="flex flex-column-reverse md:flex-row gap-4">
-                <p-button icon="pi pi-pencil" *ngIf="!isEditable" (onClick)="toogleEdit()"></p-button>
-                <p-button icon="pi pi-save" *ngIf="isEditable" (onClick)="saveEdit()" [disabled]="isNotAvailableToSave(updateUserForm)"></p-button>
-                <p-button icon="pi pi-times" severity="danger" *ngIf="isEditable" (onClick)="closeEdit()"></p-button>
+  <form
+    [formGroup]="updateUserForm"
+    class="relative p-4 mx-4 shadow-5 border-round-lg"
+  >
+    <div class="absolute top-0 right-0 p-4">
+      <div class="flex flex-column-reverse md:flex-row gap-4">
+        <p-button
+          icon="pi pi-pencil"
+          *ngIf="!isEditable"
+          (onClick)="toogleEdit()"
+        ></p-button>
+        <p-button
+          icon="pi pi-save"
+          *ngIf="isEditable"
+          (onClick)="saveEdit()"
+          [disabled]="isNotAvailableToSave(updateUserForm)"
+        ></p-button>
+        <p-button
+          icon="pi pi-times"
+          severity="danger"
+          *ngIf="isEditable"
+          (onClick)="toogleEdit()"
+        ></p-button>
+      </div>
+    </div>
+    <div class="flex flex-column align-items-center">
+      <h1 class="text-center">Profile</h1>
+      <div
+        class="relative"
+        (mouseover)="isHover = true"
+        (mouseout)="isHover = false"
+      >
+        <p-avatar
+          *ngIf="!isEditable"
+          [image]="
+            generateImage(
+              profileRes?.profilePictureContent,
+              profileRes?.profilePictureExtension
+            )
+          "
+          shape="circle"
+          styleClass="w-15rem h-15rem"
+          size="xlarge"
+        />
+
+        <p-avatar
+          *ngIf="isEditable && !isImageInput()"
+          [image]="
+            generateImage(
+              profileRes?.profilePictureContent,
+              updateUserForm.value.profilePictureExtension
+            )
+          "
+          shape="circle"
+          styleClass="w-15rem h-15rem"
+          [ngStyle]="{
+            cursor: 'pointer',
+            filter: isHover ? 'brightness(0.5)' : 'none'
+          }"
+          size="xlarge"
+          role="button"
+          (click)="onAvatarClick()"
+        />
+
+        <p-avatar
+          *ngIf="isEditable && isImageInput()"
+          [image]="
+            generateImage(
+              updateUserForm.value.profilePictureContent,
+              updateUserForm.value.profilePictureExtension
+            )
+          "
+          shape="circle"
+          styleClass="w-15rem h-15rem"
+          [ngStyle]="{
+            cursor: 'pointer',
+            filter: isHover ? 'brightness(0.5)' : 'none'
+          }"
+          size="xlarge"
+          role="button"
+          (click)="onAvatarClick()"
+        />
+        <i
+          *ngIf="isEditable"
+          class="pi pi-pencil absolute right-0 bottom-0"
+          style="font-size: xx-large"
+        ></i>
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          [ngStyle]="{ display: 'none' }"
+          title="File Input"
+        />
+      </div>
+      <div class="flex flex-column w-full">
+        <div class="flex flex-column md:flex-row">
+          <div class="flex flex-column md:col-6 gap-1">
+            <h3 class="my-0">Name</h3>
+            <div class="field" *ngIf="!isEditable">
+              <input
+                name="User Name"
+                pInputText
+                type="text"
+                class="w-full"
+                [disabled]="true"
+                [value]="profileRes?.userName"
+              />
             </div>
+            <div class="field" *ngIf="isEditable">
+              <input
+                name="User Name"
+                pInputText
+                id="userName"
+                formControlName="userName"
+                type="text"
+                class="w-full"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-column md:col-6 gap-1">
+            <h3 class="my-0">Email</h3>
+
+            <div class="field" *ngIf="!isEditable">
+              <input
+                name="Email"
+                pInputText
+                type="text"
+                [disabled]="true"
+                class="w-full"
+                [value]="profileRes?.email"
+              />
+            </div>
+
+            <div class="field" *ngIf="isEditable">
+              <input
+                name="Email"
+                pInputText
+                id="email"
+                formControlName="email"
+                type="email"
+                class="w-full"
+              />
+            </div>
+          </div>
         </div>
-        <div class="flex flex-column align-items-center">
-            <h1 class="text-center">Profile</h1>
-            <div class="relative" (mouseover)="isHover=true" (mouseout)="isHover=false">
 
-                <p-avatar
-                    *ngIf="!isEditable"
-                    [image]="generateImage(profileRes?.profilePictureId)"
-                    shape="circle"
-                    styleClass="w-15rem h-15rem"
-                    size="xlarge"/>
-                    
-                <p-avatar
-                    *ngIf="isEditable && !isImageInput()"
-                    [image]="generateImage(profileRes?.profilePictureId)"
-                    shape="circle"
-                    styleClass="w-15rem h-15rem"
-                    [ngStyle]="{'cursor' : 'pointer', 'filter' : isHover? 'brightness(0.5)' : 'none'}"
-                    size="xlarge" role="button"
-                    (click)="onAvatarClick()"/>
-                
-                <p-avatar
-                    *ngIf="isEditable && isImageInput()"
-                    [image]="generateNewImage(updateUserForm.value.fileContent, updateUserForm.value.fileExtension)"
-                    shape="circle"
-                    styleClass="w-15rem h-15rem"
-                    [ngStyle]="{'cursor' : 'pointer', 'filter' : isHover? 'brightness(0.5)' : 'none'}"
-                    size="xlarge" role="button"
-                    (click)="onAvatarClick()"/>
-                <i *ngIf="isEditable"
-                    class="pi pi-pencil absolute right-0 bottom-0"
-                    style="font-size: xx-large"></i>
-                <input type="file"
-                        #fileInput
-                        (change)="onFileSelected($event)"
-                        [ngStyle]="{'display': 'none'}"
-                        title="File Input" />
+        <div class="flex flex-column md:flex-row">
+          <div class="flex flex-column md:col-6 gap-1">
+            <h3 class="my-0">Phone Number</h3>
+
+            <div class="field" *ngIf="!isEditable">
+              <input
+                name="Phone Number"
+                pInputText
+                type="text"
+                [disabled]="true"
+                class="w-full"
+                [value]="profileRes?.phoneNumber"
+              />
             </div>
-            <div class="flex flex-column w-full">
 
-                <div class="flex flex-column md:flex-row">
-
-                    <div class="flex flex-column md:col-6 gap-1">
-                        <h3 class="my-0">Name</h3>
-                        <div class="field" *ngIf="!isEditable">
-                            <input
-                                name="User Name"
-                                pInputText type="text"
-                                class="w-full" [disabled]="true" [value]="profileRes?.userName" />
-                        </div>
-                        <div class="field" *ngIf="isEditable">
-                            <input
-                                name="User Name"
-                                pInputText id="userName"
-                                formControlName="userName" type="text"
-                                class="w-full" />
-                        </div>
-                    </div>
-    
-                    <div class="flex flex-column md:col-6 gap-1">
-                        <h3 class="my-0">Email</h3>
-                        
-                        <div class="field" *ngIf="!isEditable">
-                            <input
-                                name="Email"
-                                pInputText type="text" [disabled]="true"
-                                class="w-full" [value]="profileRes?.email" />
-                        </div>
-
-                        <div class="field" *ngIf="isEditable">
-                            <input
-                                name="Email"
-                                pInputText id="email"
-                                formControlName="email" type="text"
-                                class="w-full" />
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="flex flex-column md:flex-row">
-
-                    <div class="flex flex-column md:col-6 gap-1">
-                        <h3 class="my-0">Phone Number</h3>
-
-                        <div class="field" *ngIf="!isEditable">
-                            <input
-                                name="Phone Number"
-                                pInputText type="text" [disabled]="true"
-                                class="w-full" [value]="profileRes?.phoneNumber" />
-                        </div>
-                        
-                        <div class="field" *ngIf="isEditable">
-                            <p-inputMask
-                                name="Phone Number"
-                                id="phoneNumber"
-                                mask="+629999999999?9999"
-                                formControlName="phoneNumber" type="text"
-                                class="w-full"
-                                styleClass="w-full" />
-                        </div>
-                    </div>
-    
-                    <div class="flex flex-column md:col-6 gap-1">
-                        <h3 class="my-0">Role</h3>
-                        <div class="field">
-                            <input
-                                name="Role"
-                                pInputText id="role"
-                                type="text" [disabled]="true"
-                                class="w-full" [value]="profileRes?.roleName" />
-                        </div>
-                    </div>
-
-                </div>
-
+            <div class="field" *ngIf="isEditable">
+              <input
+                name="Phone Number"
+                pInputText
+                id="phoneNumber"
+                formControlName="phoneNumber"
+                type="tel"
+                class="w-full"
+              />
             </div>
+          </div>
+
+          <div class="flex flex-column md:col-6 gap-1">
+            <h3 class="my-0">Role</h3>
+            <div class="field">
+              <input
+                name="Role"
+                pInputText
+                id="role"
+                type="text"
+                [disabled]="true"
+                class="w-full"
+                [value]="profileRes?.roleName"
+              />
+            </div>
+          </div>
         </div>
-    </form>
+      </div>
+    </div>
+  </form>
 </div>
