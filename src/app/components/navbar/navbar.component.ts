@@ -131,7 +131,6 @@ export class NavbarComponent implements OnInit {
             icon: PrimeIcons.PLUS,
           },
         ],
-        styleClass: 'test',
       },
       {
         label: 'Companies',

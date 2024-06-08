@@ -1,5 +1,5 @@
-<div class="flex align-items-center justify-content-center min-h-screen">
-  <div class="surface-card p-4 shadow-2 border-round w-full md:w-8">
+<div class="flex justify-content-center my-5">
+  <div class="surface-card p-4 shadow-2 border-round w-full md:w-8 ">
     <div class="grid">
       <div class="md:col-6 col-8">
         <div class="grid align-items-center gap-2">
@@ -7,9 +7,7 @@
           <h3>Reschedule</h3>
         </div>
       </div>
-      <p class="align-self-end justify-content-end text-right md:col-6 col-4">
-        {{ payrollDate }}
-      </p>
+      <p class="align-self-end justify-content-end text-right md:col-6 col-4">{{ payrollDate }}</p>
     </div>
     <div class="card" [formGroup]="rescheduleForm">
       <div *ngIf="isLoading">
@@ -23,44 +21,25 @@
       <div *ngFor="let activity of rescheduleReqDto.controls; let i = index" formArrayName="rescheduleReqDto">
         <div class="grid" [formGroupName]="i">
           <div class="md:col-6 col-12 pb-0">
-            <label class="col-12" [ngStyle]="{ 'padding-left': '2px' }" for="activity{{ i }}">Activity
+            <label class="col-12" [ngStyle]="{'padding-left' : '2px'}" for="activity{{i}}">Activity
             </label>
             <input class="col-12" formControlName="activity" pInputText aria-label="activity" />
           </div>
-          <div class="md:col-6 col-12 align-self-end">
-            <label class="col-12" [ngStyle]="{ 'padding-left': '2px' }" for="documentDeadline{{ i }}">Document
+          <div class=" md:col-6 col-12 align-self-end">
+            <label class="col-12" [ngStyle]="{'padding-left' : '2px'}" for="documentDeadline{{i}}">Document
               Deadline</label>
-            <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]="true" inputId="icondisplay" class="w-full"
-              styleClass="w-full" [maxDate]="maxDate" [minDate]="minDate" dateFormat="dd/mm/yy"
-              [inputStyle]="{ 'padding-top': '8px', 'padding-bottom': '8px' }" formControlName="documentDeadline" />
+            <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]=" true" inputId="icondisplay"
+              class="w-full" styleClass="w-full" [maxDate]="maxDate" dateFormat="dd/mm/yy"
+              [inputStyle]="{'padding-top' : '8px', 'padding-bottom' : '8px'}" formControlName="documentDeadline" />
           </div>
         </div>
       </div>
-      <div class="grid mt-5 md:justify-content-end">
-        <div class="md:col-2 col-6">
-          <button title="Submit" pButton class="w-full" (click)="confirm()" [disabled]="rescheduleReqDto.invalid"
+      <div class="flex mt-5 justify-content-end">
+        <div class="">
+          <button pButton class="w-full" (click)="onSubmit()" [disabled]="rescheduleReqDto.invalid" title="Submit"
             label="Submit"></button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
-<p-confirmDialog #cd>
-  <ng-template pTemplate="headless" let-message>
-    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
-      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
-        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
-      </div>
-      <span class="font-bold text-2xl block mb-2 mt-4">
-        {{ message.header }}
-      </span>
-      <p class="mb-0">{{ message.message }}</p>
-      <div class="flex align-items-center gap-2 mt-4">
-        <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
-        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
-      </div>
-    </div>
-  </ng-template>
-</p-confirmDialog>

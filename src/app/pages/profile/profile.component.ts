@@ -15,9 +15,6 @@ import { UserService } from '../../services/user/user.service';
 import { firstValueFrom } from 'rxjs';
 import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 import { InputMaskModule } from 'primeng/inputmask';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'profile-app',
@@ -28,20 +25,15 @@ import { ToastModule } from 'primeng/toast';
     ButtonModule,
     ReactiveFormsModule,
     ImageModule,
-    ToastModule,
-    ConfirmDialogModule,
     InputMaskModule,
   ],
   standalone: true,
   templateUrl: './profile.component.html',
-  providers: [ConfirmationService, MessageService],
 })
 export class ProfileComponent implements OnInit {
   profileRes: ProfileResDto | undefined;
   isEditable: boolean = false;
   isHover: boolean = false;
-  isFormUnchanged = true;
-  originalFormValues: any;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -64,9 +56,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private formBuilder: NonNullableFormBuilder,
-    private userService: UserService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -93,7 +83,7 @@ export class ProfileComponent implements OnInit {
     return `data:image/${extension};base64,${contentData}`;
   }
 
-  toggleEdit() {
+  toogleEdit() {
     this.isEditable = !this.isEditable;
     if (this.isEditable) {
       this.updateUserForm.patchValue({
@@ -101,23 +91,9 @@ export class ProfileComponent implements OnInit {
         phoneNumber: this.profileRes?.phoneNumber,
         ...this.profileRes,
       });
-      this.originalFormValues = this.updateUserForm.getRawValue();
-      firstValueFrom(this.updateUserForm.valueChanges).then(() => {
-        this.checkFormUnchanged();
-      });
     } else {
-      this.originalFormValues = this.updateUserForm.getRawValue();
       this.updateUserForm.reset();
-      firstValueFrom(this.updateUserForm.valueChanges).then(() => {
-        this.checkFormUnchanged();
-      });
     }
-  }
-
-  checkFormUnchanged() {
-    this.isFormUnchanged =
-      JSON.stringify(this.updateUserForm.getRawValue()) ===
-      JSON.stringify(this.originalFormValues);
   }
 
   onAvatarClick(): void {
@@ -148,6 +124,18 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  isNotAvailableToSave(form: FormGroup) {
+    if (
+      !form.value.userName &&
+      !form.value.email &&
+      !form.value.phoneNumber &&
+      !form.value.fileContent
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   saveEdit() {
     if (this.updateUserForm.valid) {
       const updateUserReqDto: UpdateUserReqDto =
@@ -163,30 +151,12 @@ export class ProfileComponent implements OnInit {
           this.profileRes!.profilePictureExtension =
             updateUserReqDto.profilePictureExtension;
 
-          this.toggleEdit();
+          this.toogleEdit();
         },
         (error) => {
-          this.toggleEdit();
+          this.toogleEdit();
         }
       );
     }
-  }
-
-  confirm() {
-    this.confirmationService.confirm({
-      header: 'Are you sure?',
-      message: 'Please confirm to proceed.',
-      accept: () => {
-        this.saveEdit();
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Rejected',
-          detail: 'You have rejected',
-          life: 2500,
-        });
-      },
-    });
   }
 }

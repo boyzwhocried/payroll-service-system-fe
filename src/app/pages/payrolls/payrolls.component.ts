@@ -19,14 +19,13 @@ import { AuthService } from '../../services/auth/auth.service';
 import { RoleType } from '../../constants/roles.constant';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { environment } from '../../../env/environment.prod';
+import mammoth from 'mammoth';
 import { DialogModule } from 'primeng/dialog';
+import * as xlsx from 'xlsx';
 import { TableModule } from 'primeng/table';
 import * as pdfjs from 'pdfjs-dist';
 import { ButtonIconService } from '../../services/button-icon.service';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
-import { BackButtonComponent } from '../../components/back-button/back-button.component';
+import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { Skeleton, SkeletonModule } from 'primeng/skeleton';
 
 @Component({
@@ -45,12 +44,9 @@ import { Skeleton, SkeletonModule } from 'primeng/skeleton';
     TagModule,
     NgxDocViewerModule,
     TableModule,
-    ConfirmDialogModule,
-    ToastModule,
     BackButtonComponent,
     SkeletonModule,
-  ],
-  providers: [ConfirmationService, MessageService],
+  ]
 })
 export class Payrolls implements OnInit {
   date: Date | undefined;
@@ -60,10 +56,8 @@ export class Payrolls implements OnInit {
   docVisible: boolean = false;
   docHeader!: string;
   pdfPages: number[] = [];
-  isLoading = true;
+  isLoading = true
   loginData = this.authService.getLoginData();
-  fileUpload!: any;
-  finalFileUpload: any[] = [];
 
   documentReqDtoFg = this.fb.group({
     documentId: ['', [Validators.required]],
@@ -87,10 +81,8 @@ export class Payrolls implements OnInit {
     private fb: NonNullableFormBuilder,
     private authService: AuthService,
     private location: Location,
-    public buttonIconService: ButtonIconService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
-  ) {}
+    public buttonIconService: ButtonIconService
+  ) { }
 
   get isClient() {
     return this.loginData?.roleCode == RoleType.CLIENT;
@@ -109,12 +101,11 @@ export class Payrolls implements OnInit {
     return fDate;
   }
 
-  uploadFile(
+  fileUpload(
     event: any,
     documentId: string,
     documentIndex: number,
-    isFinal: boolean,
-    fileUpload: any
+    isFinal: boolean
   ) {
     this.buttonIconService.toggleSubmitIcon();
     const toBase64 = (file: File) =>
@@ -154,7 +145,6 @@ export class Payrolls implements OnInit {
               });
             }
 
-            this.fileUpload = fileUpload;
             this.documentIndex = documentIndex;
           } else {
             this.documents.at(documentIndex).patchValue({
@@ -162,7 +152,6 @@ export class Payrolls implements OnInit {
               base64: resultBase64,
               documentName: file.name,
             });
-            this.finalFileUpload.push(fileUpload);
           }
         })
         .then(() => {
@@ -195,7 +184,6 @@ export class Payrolls implements OnInit {
         .then(() => {
           this.documentReqDtoFg.reset();
           this.buttonIconService.toggleSubmitIcon();
-          this.fileUpload.clear();
         });
     }
   }
@@ -209,15 +197,7 @@ export class Payrolls implements OnInit {
       firstValueFrom(
         this.stepperService.saveFinalDocument(updateCalculatedDocumentReqDto)
       ).then(() => {
-        this.finalFileUpload.forEach((fileUpload) => {
-          fileUpload.clear();
-        });
         this.buttonIconService.toggleSubmitIcon();
-        this.updateCalculatedDocumentReqDtoFg.reset();
-        this.stepperDocuments.calculatedDataResDto[0].documentDirectory =
-          'exist';
-        this.stepperDocuments.calculatedDataResDto[1].documentDirectory =
-          'exist';
       });
     }
   }
@@ -333,43 +313,9 @@ export class Payrolls implements OnInit {
                 clientAssignmentId: this.stepperDocuments.clientAssignmentId,
               });
             }
-            this.isLoading = false;
+            this.isLoading = false
           }
         );
       });
-  }
-
-  clearFile() {
-    this.fileUpload.clear();
-    this.documentReqDtoFg.reset();
-  }
-
-  clearFinalFile() {
-    this.finalFileUpload.forEach((fileUpload) => [fileUpload.clear()]);
-    this.documents.reset();
-  }
-
-  confirm(type: number) {
-    this.confirmationService.confirm({
-      header: 'Are you sure?',
-      message: 'Please confirm to proceed.',
-      accept: () => {
-        if (type === 1) {
-          this.submitDocument();
-        } else if (type === 2) {
-          this.submitFinalDocument();
-        } else if (type === 3) {
-          this.pingClient();
-        }
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Rejected',
-          detail: 'You have rejected',
-          life: 2500,
-        });
-      },
-    });
   }
 }

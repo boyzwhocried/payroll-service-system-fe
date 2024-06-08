@@ -20,7 +20,8 @@
               <input class="mb-2" formControlName="activity" id="activity{{ i }}" pInputText />
             </div>
             <div class="flex flex-column">
-              <label class="text-overflow-ellipsis ml-1" for="documentDeadline{{ i }}">Document Deadline</label>
+              <label class="text-overflow-ellipsis ml-1" for="documentDeadline{{ i }}">Document
+                Deadline</label>
               <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]="true" inputId="icondisplay"
                 class="w-full" [maxDate]="maxDate" [minDate]="minDate" (onSelect)="onDateSelect($event, i)"
                 dateFormat="dd/mm/yy" id="documentDeadline{{ i }}" />
@@ -35,29 +36,10 @@
           <button pButton class="w-full" (click)="addActivity()" icon="pi pi-plus" label="Add" title="Add"></button>
         </div>
         <div class="flex">
-          <button pButton class="w-full" (click)="confirm()"
+          <button pButton class="w-full" (click)="onSubmit()"
             [disabled]="scheduleForm.invalid || documentsReqDto.length < 3" label="Submit" title="Submit"></button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"  />
-<p-confirmDialog #cd>
-  <ng-template pTemplate="headless" let-message>
-    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
-      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
-        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
-      </div>
-      <span class="font-bold text-2xl block mb-2 mt-4">
-        {{ message.header }}
-      </span>
-      <p class="mb-0">{{ message.message }}</p>
-      <div class="flex align-items-center gap-2 mt-4">
-        <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
-        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
-      </div>
-    </div>
-  </ng-template>
-</p-confirmDialog>

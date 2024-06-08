@@ -16,28 +16,23 @@ import { DocumentsReqDto } from '../../../dto/document/documents.req.dto';
 import { DocumentReqDto } from '../../../dto/document/document.req.dto';
 import { firstValueFrom } from 'rxjs';
 import { DocumentService } from '../../../services/document.service';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { BackButtonComponent } from '../../../components/back-button/back-button.component';
+import { BackButtonComponent } from "../../../components/back-button/back-button.component";
 
 @Component({
-  selector: 'app-create-schedule',
-  standalone: true,
-  templateUrl: './create-schedule.component.html',
-  styleUrl: './create-schedule.component.css',
-  imports: [
-    CommonModule,
-    TableModule,
-    ToastModule,
-    FormsModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    CalendarModule,
-    ToastModule,
-    ConfirmDialogModule,
-    BackButtonComponent,
-  ],
-  providers: [ConfirmationService, MessageService],
+    selector: 'app-create-schedule',
+    standalone: true,
+    templateUrl: './create-schedule.component.html',
+    styleUrl: './create-schedule.component.css',
+    imports: [
+        CommonModule,
+        TableModule,
+        ToastModule,
+        FormsModule,
+        ReactiveFormsModule,
+        InputTextModule,
+        CalendarModule,
+        BackButtonComponent
+    ]
 })
 export class CreateScheduleComponent implements OnInit {
   scheduleId!: string;
@@ -66,9 +61,7 @@ export class CreateScheduleComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: NonNullableFormBuilder,
     private location: Location,
-    private documentService: DocumentService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private documentService: DocumentService
   ) {}
 
   ngOnInit(): void {
@@ -154,8 +147,11 @@ export class CreateScheduleComponent implements OnInit {
 
   setMinDate() {
     const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const dateString = `01/${currentMonth}/2024`;
 
-    let minDate = currentDate;
+    let minDate = this.convertToDate(dateString);
+    minDate?.setDate(minDate.getDate());
     return minDate;
   }
 
@@ -191,7 +187,7 @@ export class CreateScheduleComponent implements OnInit {
     this.location.back();
   }
 
-  addSchedule() {
+  onSubmit() {
     if (this.scheduleForm.valid) {
       const documentReqDto: DocumentReqDto = this.scheduleForm.getRawValue();
       firstValueFrom(
@@ -200,23 +196,5 @@ export class CreateScheduleComponent implements OnInit {
         this.location.back();
       });
     }
-  }
-
-  confirm() {
-    this.confirmationService.confirm({
-      header: 'Are you sure?',
-      message: 'Please confirm to proceed.',
-      accept: () => {
-        this.addSchedule();
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Rejected',
-          detail: 'You have rejected',
-          life: 2500,
-        });
-      },
-    });
   }
 }
