@@ -14,7 +14,7 @@
           icon="pi pi-save"
           *ngIf="isEditable"
           (onClick)="confirm()"
-          [disabled]="isNotAvailableToSave(updateUserForm)"
+          [disabled]="isFormUnchanged || updateUserForm.invalid"
         ></p-button>
         <p-button
           icon="pi pi-times"

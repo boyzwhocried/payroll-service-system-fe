@@ -40,6 +40,8 @@ export class ProfileComponent implements OnInit {
   profileRes: ProfileResDto | undefined;
   isEditable: boolean = false;
   isHover: boolean = false;
+  isFormUnchanged = true;
+  originalFormValues: any;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -99,9 +101,23 @@ export class ProfileComponent implements OnInit {
         phoneNumber: this.profileRes?.phoneNumber,
         ...this.profileRes,
       });
+      this.originalFormValues = this.updateUserForm.getRawValue();
+      firstValueFrom(this.updateUserForm.valueChanges).then(() => {
+        this.checkFormUnchanged();
+      });
     } else {
+      this.originalFormValues = this.updateUserForm.getRawValue();
       this.updateUserForm.reset();
+      firstValueFrom(this.updateUserForm.valueChanges).then(() => {
+        this.checkFormUnchanged();
+      });
     }
+  }
+
+  checkFormUnchanged() {
+    this.isFormUnchanged =
+      JSON.stringify(this.updateUserForm.getRawValue()) ===
+      JSON.stringify(this.originalFormValues);
   }
 
   onAvatarClick(): void {
@@ -130,18 +146,6 @@ export class ProfileComponent implements OnInit {
       this.updateUserForm.value.profilePictureContent &&
       this.updateUserForm.value.profilePictureExtension
     );
-  }
-
-  isNotAvailableToSave(form: FormGroup) {
-    if (
-      !form.value.userName &&
-      !form.value.email &&
-      !form.value.phoneNumber &&
-      !form.value.fileContent
-    ) {
-      return true;
-    }
-    return false;
   }
 
   saveEdit() {

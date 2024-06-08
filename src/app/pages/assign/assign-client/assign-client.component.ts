@@ -92,7 +92,6 @@ export class AssignClientComponent implements OnInit {
       });
       firstValueFrom(this.assignService.getClientList(this.psId)).then(
         (res) => {
-          console.log(res);
           this.clientList = res;
           this.psUserName = this.clientList.psUserName;
           this.assignedClient = this.clientList.assignedClients;
@@ -148,7 +147,6 @@ export class AssignClientComponent implements OnInit {
 
     for (let i = 0; i < size; i++) {
       const currentId: string = this.clients.at(i).value;
-      console.log(currentId + ' ' + clientId);
       if (currentId == client.id) {
         this.clients.removeAt(i);
         break;
