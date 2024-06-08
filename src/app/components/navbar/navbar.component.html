@@ -55,6 +55,9 @@
         <p-avatar *ngIf="!isLoadingProfile" [image]="getProfileImage()" class="flex align-content-center"
           shape="circle" />
         <i *ngIf="isLoadingProfile" class="pi pi-spin pi-spinner flex align-content-center" style="font-size: 2rem"></i>
+        <p-avatar *ngIf="!isLoadingProfile" [image]="getProfileImage()" class="flex align-content-center"
+          shape="circle" />
+        <i *ngIf="isLoadingProfile" class="pi pi-spin pi-spinner flex align-content-center" style="font-size: 2rem"></i>
       </p-button>
     </div>
   </p-menubar>

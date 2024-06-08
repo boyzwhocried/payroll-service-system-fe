@@ -96,6 +96,14 @@ export class UserNew implements OnInit {
     return this.userForm.get('companyLogoContent')?.value != "";
   }
 
+  get profileContent() {
+    return this.userForm.get('profileContent')?.value != "";
+  }
+
+  get companyLogoContent() {
+    return this.userForm.get('companyLogoContent')?.value != "";
+  }
+
   loadRoles(): void {
     firstValueFrom(this.roleService.getAll()).then((response) => {
       this.roles = response;
@@ -125,6 +133,7 @@ export class UserNew implements OnInit {
   }
 
   onProfileSelect(event: any, isCompanyLogo: boolean, fileUpload: any): void {
+  onProfileSelect(event: any, isCompanyLogo: boolean, fileUpload: any): void {
     const file = event.files && event.files.length > 0 ? event.files[0] : null;
     if (!file) return;
 
@@ -137,11 +146,13 @@ export class UserNew implements OnInit {
         this.userForm.patchValue({
           companyLogoContent: base64,
           companyLogoExtension: extension,
+          companyLogoExtension: extension,
         });
         this.fileUploadCompany = fileUpload
       } else {
         this.userForm.patchValue({
           profileContent: base64,
+          profileExtension: extension,
           profileExtension: extension,
         });
         this.fileUploadProfile = fileUpload
@@ -155,8 +166,11 @@ export class UserNew implements OnInit {
     if (!isNaN(parsedDate.getTime())) {
 
       console.log(String(parsedDate.getDate()));
+
+      console.log(String(parsedDate.getDate()));
       return String(parsedDate.getDate());
     }
+    console.log('no shit');
     console.log('no shit');
     return '';
   }
@@ -194,6 +208,8 @@ export class UserNew implements OnInit {
 
   createUser(): void {
     if (this.userForm.valid) {
+      this.handlePayrollDateChanges();
+
       this.handlePayrollDateChanges();
 
       const formattedPayrollDate = this.userForm.value.payrollDate as string;

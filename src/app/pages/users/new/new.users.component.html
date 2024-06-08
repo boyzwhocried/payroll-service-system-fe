@@ -1,92 +1,104 @@
 <div class="xl:col-10 xl:col-offset-1 my-5 align-items-center">
   <div class="md:mx-5 p-4 shadow-5 border-round-lg">
-    <div class="grid">
-      <div class="xl:col-6 hidden xl:block">
-        <img src="../../../../assets/images/user/create-user.svg" alt="asset">
-      </div>
-      <div class="xl:col-6 col-12">
-        <p class="text-xl font-semibold text-center">Create User</p>
-        <form class="grid" [formGroup]="userForm" >
-          <div class="xl:col-6 col-12">
-            <label for="username">Username <span class="text-red-500">*</span></label>
-            <input pInputText type="text" id="username" formControlName="username" class="p-inputtext w-full">
-          </div>
-          <div class="xl:col-6 col-12">
-            <label for="phoneNo">Phone Number <span class="text-red-500">*</span></label>
-            <input pInputText type="tel" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full">
-          </div>
-          <div class="col-12">
-            <label for="email">Email <span class="text-red-500">*</span></label>
-            <input pInputText type="text" id="email" formControlName="email" class="p-inputtext w-full" />
-          </div>
-          <div class="xl:col-6 col-12">
-            <label for="phoneNo">Role <span class="text-red-500">*</span></label><br>
-            <p-dropdown formControlName="roleId" [options]="roles" formControlName="roleId" optionLabel="roleName"
-              optionValue="id" placeholder="Select Role" class="w-full" styleClass="w-full"
-              (onChange)="changeRoleOption()" />
-          </div>
-          <div class="xl:col-6 col-12">
-            <label for="profilePicture">Profile Picture </label>
-            <div class="card flex justify-content-center gap-2">
-              <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]" [disabled]="createUserLoading"
-                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000"
-                (onSelect)="onProfileSelect($event, false, fileUpload)" #fileUpload />
-              <p-button icon="pi pi-times" severity="danger" title="Remove" (onClick)="removeProfilePicture()"
-                [disabled]="!profileContent||createUserLoading" />
+    <div class="xl:col-10 xl:col-offset-1 my-5 align-items-center">
+      <div class="md:mx-5 p-4 shadow-5 border-round-lg">
+        <div class="grid">
+          <div class="xl:col-6 hidden xl:block">
+            <div class="xl:col-6 hidden xl:block">
+              <img src="../../../../assets/images/user/create-user.svg" alt="asset">
+            </div>
+            <div class="xl:col-6 col-12">
+              <div class="xl:col-6 col-12">
+                <p class="text-xl font-semibold text-center">Create User</p>
+                <form class="grid" [formGroup]="userForm">
+                  <div class="xl:col-6 col-12">
+                    <label for="username">Username <span class="text-red-500">*</span></label>
+                    <input pInputText type="text" id="username" formControlName="username" class="p-inputtext w-full">
+                  </div>
+                  <div class="xl:col-6 col-12">
+                    <div class="xl:col-6 col-12">
+                      <label for="phoneNo">Phone Number <span class="text-red-500">*</span></label>
+                      <input pInputText type="tel" id="phoneNo" formControlName="phoneNo" class="p-inputtext w-full">
+                    </div>
+                    <div class="col-12">
+                      <label for="email">Email <span class="text-red-500">*</span></label>
+                      <input pInputText type="text" id="email" formControlName="email" class="p-inputtext w-full" />
+                    </div>
+                    <div class="xl:col-6 col-12">
+                      <div class="xl:col-6 col-12">
+                        <label for="phoneNo">Role <span class="text-red-500">*</span></label><br>
+                        <p-dropdown formControlName="roleId" [options]="roles" formControlName="roleId"
+                          optionLabel="roleName" optionValue="id" placeholder="Select Role" class="w-full"
+                          styleClass="w-full" (onChange)="changeRoleOption()" />
+                      </div>
+                      <div class="xl:col-6 col-12">
+                        <div class="xl:col-6 col-12">
+                          <label for="profilePicture">Profile Picture </label>
+                          <div class="card flex justify-content-center gap-2">
+                            <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
+                              [disabled]="createUserLoading" url="https://www.primefaces.org/cdn/api/upload.php"
+                              accept="image/*" maxFileSize="1000000"
+                              (onSelect)="onProfileSelect($event, false, fileUpload)" #fileUpload />
+                            <p-button icon="pi pi-times" severity="danger" title="Remove"
+                              (onClick)="removeProfilePicture()" [disabled]="!profileContent||createUserLoading" />
+                          </div>
+                        </div>
+                        <div class="xl:col-6 col-12" *ngIf="isClient">
+                          <label for="profilePicture">Company Name <span class="text-red-500">*</span></label>
+                          <input pInputText type="text" id="profilePicture" formControlName="companyName"
+                            class="w-full" />
+                        </div>
+                        <div class="xl:col-6 col-12" *ngIf="isClient">
+                          <label for="icondisplay">Payroll Date <span class="text-red-500">*</span></label>
+                          <div class="card flex justify-content-center">
+                            <p-calendar dateFormat="dd" formControlName="payrollDate" [iconDisplay]="'input'"
+                              [showIcon]="true" inputId="icondisplay" />
+                          </div>
+                        </div>
+                        <div class="xl:col-6 col-12" *ngIf="isClient">
+                          <label for="profilePicture">Company Logo </label>
+                          <div class="card flex justify-content-center gap-2">
+                            <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]"
+                              [disabled]="createUserLoading" url="https://www.primefaces.org/cdn/api/upload.php"
+                              accept="image/*" maxFileSize="1000000"
+                              (onSelect)="onProfileSelect($event, true, fileUpload)" #fileUpload />
+                            <p-button icon="pi pi-times" severity="danger" title="Remove"
+                              (onClick)="removeCompanyLogo()" [disabled]="!companyLogoContent||createUserLoading" />
+                          </div>
+                        </div>
+                        <div class="xl:col-6 col-12 sm:col-6">
+                          <p-button severity="secondary" label="Back" class="w-full" styleClass="w-full"
+                            (onClick)="onBack()" [disabled]="createUserLoading" />
+                        </div>
+                        <div class="xl:col-6 col-12 sm:col-6">
+                          <p-button label="Create" class="w-full" styleClass="w-full"
+                            [disabled]="userForm.invalid || createUserLoading" *ngIf="!createUserLoading"
+                            (onClick)="confirm()" />
+                          <p-button class="w-full" styleClass="w-full"
+                            [disabled]="userForm.invalid || createUserLoading" *ngIf="createUserLoading"
+                            icon="pi pi-spin pi-spinner" (onClick)="confirm()" />
+                        </div>
+                </form>
+              </div>
             </div>
           </div>
-          <div class="xl:col-6 col-12" *ngIf="isClient">
-            <label for="profilePicture">Company Name <span class="text-red-500">*</span></label>
-            <input pInputText type="text" id="profilePicture" formControlName="companyName" class="w-full" />
-          </div>
-          <div class="xl:col-6 col-12" *ngIf="isClient">
-            <label for="icondisplay">Payroll Date <span class="text-red-500">*</span></label>
-            <div class="card flex justify-content-center">
-              <p-calendar dateFormat="dd" formControlName="payrollDate" [iconDisplay]="'input'" [showIcon]="true"
-                inputId="icondisplay" />
-            </div>
-          </div>
-          <div class="xl:col-6 col-12" *ngIf="isClient">
-            <label for="profilePicture">Company Logo </label>
-            <div class="card flex justify-content-center gap-2">
-              <p-fileUpload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="demo[]" [disabled]="createUserLoading"
-                url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*" maxFileSize="1000000"
-                (onSelect)="onProfileSelect($event, true, fileUpload)" #fileUpload />
-              <p-button icon="pi pi-times" severity="danger" title="Remove" (onClick)="removeCompanyLogo()"
-                [disabled]="!companyLogoContent||createUserLoading" />
-            </div>
-          </div>
-          <div class="xl:col-6 col-12 sm:col-6">
-            <p-button severity="secondary" label="Back" class="w-full" styleClass="w-full" (onClick)="onBack()" [disabled]="createUserLoading" />
-          </div>
-          <div class="xl:col-6 col-12 sm:col-6">
-            <p-button label="Create" class="w-full" styleClass="w-full"
-              [disabled]="userForm.invalid || createUserLoading" *ngIf="!createUserLoading" (onClick)="confirm()" />
-            <p-button class="w-full" styleClass="w-full"
-              [disabled]="userForm.invalid || createUserLoading" *ngIf="createUserLoading" icon="pi pi-spin pi-spinner"
-              (onClick)="confirm()" />
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
 
-<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
-<p-confirmDialog #cd>
-  <ng-template pTemplate="headless" let-message>
-    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
-      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
-        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
-      </div>
-      <span class="font-bold text-2xl block mb-2 mt-4">
-        {{ message.header }}
-      </span>
-      <p class="mb-0">{{ message.message }}</p>
-      <div class="flex align-items-center gap-2 mt-4">
-        <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
-        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
-      </div>
-    </div>
-  </ng-template>
-</p-confirmDialog>
+        <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
+        <p-confirmDialog #cd>
+          <ng-template pTemplate="headless" let-message>
+            <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+              <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
+                <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
+              </div>
+              <span class="font-bold text-2xl block mb-2 mt-4">
+                {{ message.header }}
+              </span>
+              <p class="mb-0">{{ message.message }}</p>
+              <div class="flex align-items-center gap-2 mt-4">
+                <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
+                <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
+              </div>
+            </div>
+          </ng-template>
+        </p-confirmDialog>
