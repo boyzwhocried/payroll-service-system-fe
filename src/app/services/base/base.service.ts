@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../env/environment.prod';
-import { ToastrService } from 'ngx-toastr';
-import { throwError, catchError, tap } from 'rxjs';
+import { throwError, tap } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +13,9 @@ export class BaseService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private toastr: ToastrService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private messageService: MessageService
+  ) { }
 
   private get headers() {
     return {
@@ -27,8 +27,8 @@ export class BaseService {
 
   private response<T>() {
     return tap<T>({
-      next:(response) => this.handleResponse(response),
-      error:(error) => this.handleError(error)
+      next: (response) => this.handleResponse(response),
+      error: (error) => this.handleError(error)
     })
   }
 
@@ -39,7 +39,8 @@ export class BaseService {
     } else {
       errorMessage = error.error?.message || 'Internal server error';
     }
-    this.toastr.error(errorMessage);
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMessage });
+
     if (error.status === 401) {
       localStorage.clear();
       this.router.navigateByUrl('/login');
@@ -51,7 +52,8 @@ export class BaseService {
     if (response) {
       const resTemp = response as any;
       if (resTemp['message']) {
-        this.toastr.success(resTemp['message']);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: resTemp['message'] });
+
       }
     }
     return response;

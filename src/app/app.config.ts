@@ -7,6 +7,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { DatePipe } from '@angular/common';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideToastr(),
     provideAnimations(),
     DatePipe,
+    MessageService,
   ]
 };
