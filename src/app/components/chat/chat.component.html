@@ -1,0 +1,58 @@
+<div class="flex flex-column align-items-center sm:p-4 h-screen">
+    <div class="chat-section grid justify-content-center mb-3 h-full w-full">
+        <div class="col-12 md:col-8 lg:col-6 flex flex-column chat-container surface-card border-round h-full w-full">
+            <div class="chat-header flex align-items-center justify-content-between p-2 border-bottom-1 surface-border">
+                <div class="recipient-info flex align-items-center gap-2">
+                    <app-back-button/>
+                    <ng-container *ngIf="!isLoading">
+                        <p-avatar *ngIf="recipient" [image]="getImage(recipient.profilePictureId)" shape="circle"
+                            class="flex justify-content-center" title="Avatar"></p-avatar>
+                        <div class="recipient-name text-lg font-bold">{{ recipient?.userName }} - {{ recipient?.roleName
+                            }}
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="isLoading" class="flex align-items-center gap-2">
+                        <p-skeleton width="2.5rem" height="2.5rem" shape="circle" />
+                        <p-skeleton width="10rem" />
+
+                    </ng-container>
+                </div>
+            </div>
+
+            <div *ngIf="isLoading" class="flex justify-content-center align-items-center h-full text-color-secondary">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            </div>
+
+            <div *ngIf="allMessages.length > 0; else noData" class="messages p-3 flex flex-column flex-1 overflow-auto"
+                #messagesContainer>
+                <div *ngFor="let message of allMessages"
+                    [ngClass]="{'flex mb-2': true, 'justify-content-end': message.senderId === sender?.id, 'justify-content-start': message.senderId !== sender?.id}">
+                    <div class="message-content p-2 border-round"
+                        [ngClass]="{'bg-blue-100 text-right': message.senderId === sender?.id, 'bg-green-100 text-left': message.senderId !== sender?.id, 'max-w-70': true}"
+                        style="max-width: 70%; word-wrap: break-word;">
+                        <p>{{ message.message }}</p>
+                        <small class="message-time block mb-1 text-secondary small">{{ message.timestamp |
+                            formatTimestamp }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #noData>
+                <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+                    *ngIf="!isLoading">
+                    <p-image src="../../../assets/images/chat/Conversation-amico.svg" alt="Image" width="270" />
+                    <h2 class="text-center text-color-secondary font-light">No chats yet, start a conversation!</h2>
+                </div>
+            </ng-template>
+
+            <form class="message-input flex align-items-center p-2 border-top-1 surface-border"
+                (ngSubmit)="sendMessage()">
+                <span class="p-label flex-1 mr-2">
+                    <input type="text" id="text" pInputText [(ngModel)]="text" name="text" title="Type a message"
+                        placeholder="Type a message" class="p-inputtext block w-full" />
+                </span>
+                <p-button icon="pi pi-send" class="p-button-lg" [disabled]="!text" (onClick)="sendMessage()"></p-button>
+            </form>
+        </div>
+    </div>
+</div>

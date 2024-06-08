@@ -1,15 +1,27 @@
 {
     "cSpell.words": [
+        "avatargroup",
         "Bambang",
         "Budi",
+        "confirmdialog",
         "devkit",
         "Dule",
+        "fileupload",
+        "floatlabel",
         "icondisplay",
         "inputtext",
+        "Lita",
+        "livechat",
+        "messageservice",
         "primeflex",
         "primeicons",
         "primeng",
         "roleid",
-        "toastr"
+        "scrollpanel",
+        "sockjs",
+        "stompjs",
+        "toastr",
+        "uclient",
+        "xlarge"
     ]
 }

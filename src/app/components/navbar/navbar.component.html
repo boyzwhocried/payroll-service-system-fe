@@ -1,20 +1,63 @@
 <div class="card">
-    <p-menubar [model]="SAItems">
+  <p-menubar [model]="menuItem">
+    <ng-template pTemplate="start">
+      <p-avatar
+        image="../../../assets/images/Logo.svg"
+        class="flex align-content-center"
+        size="large"
+      />
+    </ng-template>
+    <ng-template pTemplate="item" let-item>
+      <ng-container *ngIf="item.routerLink">
+        <a [routerLink]="item.routerLink" class="p-menuitem-link">
+          <span [class]="item.icon"></span>
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="!item.routerLink && item.icon">
+        <a class="p-menuitem-link">
+          <span [class]="item.icon"></span>
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </ng-template>
+    <div class="flex flex-row gap-3 align-items-center">
+      <div *ngIf="!isSuperAdmin()">
+        <i
+          *ngIf="!isUnreadNotification()"
+          class="pi pi-bell flex align-content-center"
+          style="font-size: x-large"
+          [ngStyle]="{ cursor: 'pointer', 'brightness(0.9)': 'none' }"
+          (click)="toNotificationMenu()"
+        ></i>
+        <i
+          *ngIf="isUnreadNotification()"
+          class="pi pi-bell flex align-content-center"
+          style="font-size: x-large"
+          pBadge
+          severity="danger"
+          value="{{ getNotificationValue() }}"
+          [ngStyle]="{ cursor: 'pointer', 'brightness(0.9)': 'none' }"
+          (click)="toNotificationMenu()"
+        ></i>
+      </div>
+      <p-menu #user [model]="userItem" [popup]="true">
         <ng-template pTemplate="item" let-item>
-            <ng-container *ngIf="item.route">
-                <a [routerLink]="item.route" class="p-menuitem-link">
-                    <span [class]="item.icon"></span>
-                    <span class="ml-2">{{ item.label }}</span>
-                </a>
-            </ng-container>
-            <ng-container *ngIf="!item.route && !item.url ">
-                <a class="p-menuitem-link">
-                    <span [class]="item.icon"></span>
-                    <span class="ml-2">{{ item.label }}</span>
-                </a>
-            </ng-container>
+          <ng-container>
+            <a [routerLink]="item.routerLink" class="p-menuitem-link">
+              <span class="ml-2">{{ item.label }}</span>
+            </a>
+          </ng-container>
         </ng-template>
-    </p-menubar>
+      </p-menu>
+      <p>Hi, {{ getUserName() }}!</p>
+      <p-button (click)="user.toggle($event)" [link]="true" styleClass="p-0 ">
+        <p-avatar *ngIf="!isLoadingProfile" [image]="getProfileImage()" class="flex align-content-center"
+          shape="circle" />
+        <i *ngIf="isLoadingProfile" class="pi pi-spin pi-spinner flex align-content-center" style="font-size: 2rem"></i>
+      </p-button>
+    </div>
+  </p-menubar>
 </div>
 
 <router-outlet></router-outlet>

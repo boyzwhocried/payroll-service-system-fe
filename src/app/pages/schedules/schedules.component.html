@@ -1,0 +1,171 @@
+<div class="container py-5 mx-auto justify-content-center flex">
+  <div class="flex flex-column sm:col-10">
+    <h2 class="sm:text-left text-center mb-4">Your Schedules</h2>
+    <div class="grid gap-5 mx-auto justify-content-center">
+      <ng-container *ngIf="isLoading">
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+        <p-skeleton width="16rem" height="14rem" />
+      </ng-container>
+
+      <ng-container
+        *ngIf="schedules.length > 0 || clientSchedules.length > 0; else noData"
+      >
+        <ng-container *ngFor="let schedule of schedules; let i = index">
+          <p-card
+            *ngIf="rolePS"
+            [header]="schedule.clientName"
+            [subheader]="schedule.payrollDate"
+            class="flex flex-col mx-2"
+          >
+            <ng-template pTemplate="content">
+              <div
+                [ngClass]="{
+                  'grid mx-1 align-items-center': true,
+                  'text-green': isCompleted(i),
+                  'text-orange': !isCompleted(i)
+                }"
+              >
+                <span
+                  class="status-dot border-round"
+                  [ngStyle]="{
+                    'background-color': isCompleted(i) ? 'green' : 'orange'
+                  }"
+                ></span>
+                <p class="m-0 ml-2">
+                  <small>{{ schedule.scheduleStatusName }}</small>
+                </p>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <div class="grid gap-2 col">
+                <div class="flex gap-2">
+                  <p-button
+                    [disabled]="isNoSchedule(i)"
+                    [routerLink]="'/schedules/' + schedule.clientAssignmentId"
+                    size="small"
+                    label="View"
+                    class="w-full"
+                    icon="pi pi-eye"
+                  ></p-button>
+                  <p-button
+                    [routerLink]="'/chat/' + schedule.clientId"
+                    size="small"
+                    label="Chat"
+                    class="w-full"
+                    icon="pi pi-envelope"
+                  ></p-button>
+                </div>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+        <ng-container
+          *ngFor="let clientSchedule of clientSchedules; let i = index"
+        >
+          <p-card
+            *ngIf="roleClient"
+            [header]="clientSchedule.payrollDate"
+            [style]="{ width: '20rem' }"
+            class="flex flex-col mx-2"
+          >
+            <ng-template pTemplate="content">
+              <div
+                [ngClass]="{
+                  'grid mx-1 align-items-center': true,
+                  'text-green': isCompleted(i),
+                  'text-orange': !isCompleted(i)
+                }"
+              >
+                <span
+                  class="status-dot border-round"
+                  [ngStyle]="{
+                    'background-color': isCompleted(i) ? 'green' : 'orange'
+                  }"
+                ></span>
+                <p class="m-0 ml-2">
+                  <small>{{ clientSchedule.scheduleStatusName }}</small>
+                </p>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <div class="grid gap-2 col">
+                <p-button
+                  size="small"
+                  label="View"
+                  [routerLink]="'/payrolls/' + clientSchedule.scheduleId"
+                  [disabled]="clientSchedule.scheduleStatusCode == 'SQT01'"
+                  class="w-full"
+                  icon="pi pi-eye"
+                ></p-button>
+                <p-button
+                  *ngIf="clientSchedule.canBeRescheduled"
+                  (click)="showDialog(clientSchedule)"
+                  size="small"
+                  label="Reschedule"
+                  class="w-full"
+                  icon="pi pi-history"
+                ></p-button>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #noData>
+        <div
+          class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+          *ngIf="!isLoading"
+        >
+          <p-image
+            src="../../../assets/images/empty/Empty-pana.svg"
+            alt="Image"
+            width="270"
+          />
+          <h2 class="text-center text-color-secondary font-light">
+            Quiet day, nothing on the schedule.
+          </h2>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<div class="card flex justify-content-center">
+  <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" ></p-toast>
+  <p-dialog
+    header="Reschedule"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{ width: '25rem' }"
+  >
+    <span class="p-text-secondary block mb-5"
+      >Update your Last Document Deadline.</span
+    >
+    <div class="grid align-items-center gap-3 mb-3">
+      <p-calendar
+        autofocus="false"
+        [iconDisplay]="'input'"
+        [maxDate]="maxDate"
+        [minDate]="minDate"
+        dateFormat="dd/mm/yy"
+        (onSelect)="onDateSelect($event)"
+        appendTo="body"
+        [showIcon]="true"
+        inputId="icondisplay"
+        class="w-full"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="grid justify-content-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="visible = false" />
+      <p-confirmPopup />
+      <p-button
+        label="Save"
+        [disabled]="rescheduleForm.invalid"
+        (click)="confirm($event)"
+      ></p-button>
+    </div>
+  </p-dialog>
+</div>

@@ -6,7 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { RippleModule } from 'primeng/ripple';
 import { AuthService } from '../../services/auth/auth.service';
-import { LoginReqDto } from '../../models/dto/login/login.req.dto';
+import { LoginReqDto } from '../../dto/user/login.req.dto';
+import { Router, RouterModule } from '@angular/router';
+import { RoleType } from '../../constants/roles.constant';
+import { firstValueFrom } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +22,7 @@ import { LoginReqDto } from '../../models/dto/login/login.req.dto';
     ButtonModule,
     InputTextModule,
     RippleModule,
+    RouterModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -32,22 +37,23 @@ export class LoginComponent {
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private authService: AuthService,
+    private router: Router,
+    private messageService: MessageService,
   ) { }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       const loginReqDto: LoginReqDto = this.loginForm.getRawValue()
-      this.authService.login(loginReqDto).subscribe({
-        next: (response) => this.authService.saveLoginData(response),
-        error: (error) => console.error('Login failed:', error),
-        complete: () => console.log('Login request complete')
-      });
+      firstValueFrom(this.authService.login(loginReqDto)).then(
+        next => {
+          this.authService.saveLoginData(next)
+          const roleCode: string = next.roleCode
+          this.router.navigateByUrl(roleCode == RoleType.SUPER_ADMIN ? '/users' : '/schedules')
+        },
+        error => this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error.message })
+      )
     } else {
       console.log('Form is not valid:', this.loginForm.errors);
     }
-  }
-
-  onClicks(): void {
-    alert('Click detected');
   }
 }

@@ -1,0 +1,64 @@
+<div class="md:col-8 md:col-offset-2 mt-5 p-5 shadow-5 border-round">
+  <div class="flex align-items-center gap-2">
+    <app-back-button/>
+    <p class="text-lg font-semibold">Schedules</p>
+  </div>
+  <div class="card">
+    <p-table [value]="clientsScheduleSkeleton" [tableStyle]="{ 'min-width': '50rem' }" *ngIf="isLoading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-center">No</th>
+          <th>Payroll Date</th>
+          <th>Status</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+          <td><p-skeleton /></td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <ng-container *ngIf="clientsSchedule.length > 0; else noData">
+      <p-table [value]="clientsSchedule" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="text-center">No</th>
+            <th>Payroll Date</th>
+            <th>Status</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-i="rowIndex">
+          <tr>
+            <td class="text-center">{{ i + 1 }}</td>
+            <td>{{ rowData.payrollDate }}</td>
+            <td>{{ rowData.scheduleStatusName }}</td>
+            <td class="grid text-center justify-content-center column-gap-2">
+              <button pButton *ngIf="isPendingSchedule(i)" routerLink="/schedules/create" [queryParams]="{
+                  payrollDate: rowData.payrollDate,
+                  id: rowData.scheduleId
+                }" icon="pi pi-plus" label="Schedule" title="Schedule"></button>
+              <button pButton routerLink="/schedules/reschedule" *ngIf="rowData.canBeRescheduled" [queryParams]="{
+                  id: rowData.scheduleId,
+                  payrollDate: rowData.payrollDate
+                }" icon="pi pi-history" label="Reschedule" title="Reschedule"></button>
+              <button pButton *ngIf="rowData.scheduleStatusCode != 'SQT01'" routerLink="" label="View" title="View"
+                routerLink="/payrolls/{{ rowData.scheduleId }}" icon="pi pi-eye"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-container>
+
+    <ng-template #noData>
+      <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5" *ngIf="!isLoading">
+        <p-image src="../../../assets/images/empty/Empty-pana.svg" alt="Image" width="270" />
+        <h2 class="text-center text-color-secondary font-light">Looks like you've got a free day! Enjoy the quiet.</h2>
+      </div>
+    </ng-template>
+  </div>
+</div>

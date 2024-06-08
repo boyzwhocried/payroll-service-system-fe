@@ -1,0 +1,98 @@
+<div class="flex justify-content-center lg:mx-5 lg:my-5">
+  <div class="surface-card p-4 shadow-2 border-round w-full">
+    <div class="flex justify-content-between">
+      <div class="flex flex-row gap-2 align-items-center">
+        <app-back-button />
+        <h3>Notifications</h3>
+      </div>
+      <div class="flex gap-3 justify-content-right align-items-center">
+        <p-button [disabled]="notifications.length <= 0" label="Read All" icon="pi pi-eye" severity="secondary"
+          (onClick)="confirm('readAll')" class="hidden md:inline" />
+        <p-button [disabled]="notifications.length <= 0" label="Clear" icon="pi pi-trash" severity="danger"
+          (onClick)="confirm()" class="hidden md:inline" />
+        <p-button [disabled]="notifications.length <= 0" icon="pi pi-eye" severity="secondary"
+          (onClick)="confirm('readAll')" class="inline md:hidden" />
+        <p-button [disabled]="notifications.length <= 0" icon="pi pi-trash" severity="danger" (onClick)="confirm()"
+          class="inline md:hidden" />
+      </div>
+    </div>
+    <hr />
+    <div class="card">
+      <div class="surface-card px-3" *ngIf="isLoading">
+        <ul class="m-0 p-0 list-none">
+          <li *ngFor="let dummy of [].constructor(3); let i = index" class="my-5">
+            <div class="flex align-items-center gap-5">
+              <p-skeleton shape="circle" styleClass="" width="0.5rem" height="0.5rem"></p-skeleton>
+              <div style="flex: 1">
+                <p-skeleton width="100%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+                <p-skeleton width="75%" height="1rem"></p-skeleton>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noData>
+        <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+          *ngIf="!isLoading">
+          <p-image src="../../../assets/images/notification/Empty street-rafiki.svg" alt="Image" width="270" />
+          <h2 class="text-center text-color-secondary font-light">
+            Hmm... all quiet on the notification front.
+          </h2>
+        </div>
+      </ng-template>
+
+      <div *ngIf="notifications.length > 0; else noData">
+        <p-table [value]="notifications" dataKey="id">
+          <ng-template pTemplate="body" let-notification let-editing="editing" let-ri="rowIndex">
+            <tr class="bg-white hover:surface-100">
+              <td colspan="2">
+                <div class="flex flex-row column-gap-5 cursor-pointer" (click)="onClickNotification(notification)">
+                  <div class="flex align-items-center justify-content-center w-min" style="width: 1rem">
+                    <span *ngIf="isUnread(notification.isActive)" class="status-dot border-round"></span>
+                    <span *ngIf="!isUnread(notification.isActive)" class="status-dot-empty border-round"></span>
+                  </div>
+                  <div class="flex flex-column">
+                    <h4 class="text-left my-0">
+                      {{ notification.notificationHeader }}
+                    </h4>
+                    <p class="text-left my-0">
+                      {{ notification.notificationBody }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td style="width: 1rem">
+                <button title="Delete Notification" pButton pRipple type="button" icon="pi pi-trash" (click)="
+                    confirm(
+                      notification.notificationId,
+                      ri,
+                      notification.isActive
+                    )
+                  " class="p-button-rounded p-button-text p-button-danger"></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
+<p-confirmDialog #cd>
+  <ng-template pTemplate="headless" let-message>
+    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
+        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
+      </div>
+      <span class="font-bold text-2xl block mb-2 mt-4">
+        {{ message.header }}
+      </span>
+      <p class="mb-0">{{ message.message }}</p>
+      <div class="flex align-items-center gap-2 mt-4">
+        <button title="Yes" pButton severity="danger" label="Yes" (click)="cd.accept()" class="w-8rem"></button>
+        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmDialog>
