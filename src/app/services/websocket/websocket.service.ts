@@ -33,10 +33,8 @@ export class WebSocketService {
       this.wsClient.subscribe(this.topicMessage + clientId, (message: { body: any }) => {
         const newMessage: ChatMessageDto = JSON.parse(message.body);
         newMessage.timestamp = this.formatDate(newMessage.timestamp);
-        if (!this.received.some(msg => msg.timestamp === newMessage.timestamp && msg.message === newMessage.message && msg.senderId === newMessage.senderId)) {
           this.received.push(newMessage);
           this.messageSubject.next(newMessage);
-        }
       });
       this.connectedSubject.next(true);
     });
