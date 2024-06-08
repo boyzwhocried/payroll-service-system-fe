@@ -1,23 +1,30 @@
-import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { RoleService } from "../../../services/role/role.service";
-import { RoleType } from "../../../constants/roles.constant";
-import { CommonModule } from "@angular/common";
-import { ButtonModule } from "primeng/button";
-import { CalendarModule } from "primeng/calendar";
-import { DropdownModule } from "primeng/dropdown";
-import { InputTextModule } from "primeng/inputtext";
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { RoleService } from '../../../services/role/role.service';
+import { RoleType } from '../../../constants/roles.constant';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
-import { UserService } from "../../../services/user/user.service";
-import { MessageService } from "primeng/api";
-import { ToastModule } from "primeng/toast";
-import { RoleResDto } from "../../../dto/role/role.res.dto";
-import { UserReqDto } from "../../../dto/user/user.req.dto";
-import { CompanyReqDto } from "../../../dto/company/company.req.dto";
+import { UserService } from '../../../services/user/user.service';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { RoleResDto } from '../../../dto/role/role.res.dto';
+import { UserReqDto } from '../../../dto/user/user.req.dto';
+import { CompanyReqDto } from '../../../dto/company/company.req.dto';
 import { InputMaskModule } from 'primeng/inputmask';
-import { firstValueFrom } from "rxjs";
-import { Router } from "@angular/router";
-import { ButtonIconService } from "../../../services/button-icon.service";
+import { firstValueFrom } from 'rxjs';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Router } from '@angular/router';
+import { ButtonIconService } from '../../../services/button-icon.service';
 
 @Component({
   selector: 'user-new',
@@ -33,15 +40,18 @@ import { ButtonIconService } from "../../../services/button-icon.service";
     ReactiveFormsModule,
     FileUploadModule,
     ToastModule,
-    InputMaskModule
+    InputMaskModule,
+    ConfirmDialogModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class UserNew implements OnInit {
   roles: RoleResDto[] = [];
   isClient: boolean = false;
   userForm: FormGroup;
-  fileUpload: any
+  fileUploadProfile: any
+  fileUploadCompany: any
+  createUserLoading = false
 
   constructor(
     private formBuilder: FormBuilder,
@@ -49,10 +59,20 @@ export class UserNew implements OnInit {
     private userService: UserService,
     private router: Router,
     public buttonIconService: ButtonIconService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {
     this.userForm = this.formBuilder.group({
       username: ['', Validators.required],
-      phoneNo: ['', [Validators.required, Validators.pattern('(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-\s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})')]],
+      phoneNo: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})'
+          ),
+        ],
+      ],
       email: ['', [Validators.required, Validators.email]],
       roleId: ['', Validators.required],
       profileContent: [''],
@@ -60,7 +80,7 @@ export class UserNew implements OnInit {
       companyName: ['', Validators.required],
       payrollDate: ['', Validators.required],
       companyLogoContent: [''],
-      companyLogoExtension: ['']
+      companyLogoExtension: [''],
     });
   }
 
@@ -76,14 +96,26 @@ export class UserNew implements OnInit {
     return this.userForm.get('companyLogoContent')?.value != "";
   }
 
+  get profileContent() {
+    return this.userForm.get('profileContent')?.value != "";
+  }
+
+  get companyLogoContent() {
+    return this.userForm.get('companyLogoContent')?.value != "";
+  }
+
   loadRoles(): void {
-    firstValueFrom(this.roleService.getAll()).then(response => {
+    firstValueFrom(this.roleService.getAll()).then((response) => {
       this.roles = response;
     });
   }
 
   changeRoleOption(): void {
-    this.isClient = this.roles.some(role => role.id === this.userForm.value.roleId && role.roleCode === RoleType.CLIENT);
+    this.isClient = this.roles.some(
+      (role) =>
+        role.id === this.userForm.value.roleId &&
+        role.roleCode === RoleType.CLIENT
+    );
 
     const companyNameControl = this.userForm.get('companyName');
     const payrollDateControl = this.userForm.get('payrollDate');
@@ -101,6 +133,7 @@ export class UserNew implements OnInit {
   }
 
   onProfileSelect(event: any, isCompanyLogo: boolean, fileUpload: any): void {
+  onProfileSelect(event: any, isCompanyLogo: boolean, fileUpload: any): void {
     const file = event.files && event.files.length > 0 ? event.files[0] : null;
     if (!file) return;
 
@@ -113,14 +146,16 @@ export class UserNew implements OnInit {
         this.userForm.patchValue({
           companyLogoContent: base64,
           companyLogoExtension: extension,
+          companyLogoExtension: extension,
         });
-        this.fileUpload = fileUpload
+        this.fileUploadCompany = fileUpload
       } else {
         this.userForm.patchValue({
           profileContent: base64,
           profileExtension: extension,
+          profileExtension: extension,
         });
-        this.fileUpload = fileUpload
+        this.fileUploadProfile = fileUpload
       }
     };
     reader.readAsDataURL(file);
@@ -131,8 +166,11 @@ export class UserNew implements OnInit {
     if (!isNaN(parsedDate.getTime())) {
 
       console.log(String(parsedDate.getDate()));
+
+      console.log(String(parsedDate.getDate()));
       return String(parsedDate.getDate());
     }
+    console.log('no shit');
     console.log('no shit');
     return '';
   }
@@ -152,7 +190,7 @@ export class UserNew implements OnInit {
     profileContent?.patchValue('');
     profileExtension?.patchValue('');
 
-    this.fileUpload?.clear()
+    this.fileUploadProfile?.clear()
   }
 
   removeCompanyLogo() {
@@ -161,15 +199,17 @@ export class UserNew implements OnInit {
     companyLogoContent?.patchValue('');
     companyLogoExtension?.patchValue('');
 
-    this.fileUpload?.clear()
+    this.fileUploadCompany?.clear()
   }
 
   onBack() {
     this.router.navigateByUrl(`/users`)
   }
 
-  onSubmit(): void {
+  createUser(): void {
     if (this.userForm.valid) {
+      this.handlePayrollDateChanges();
+
       this.handlePayrollDateChanges();
 
       const formattedPayrollDate = this.userForm.value.payrollDate as string;
@@ -188,18 +228,40 @@ export class UserNew implements OnInit {
         roleId: this.userForm.value.roleId as string,
         fileContent: this.userForm.value.profileContent as string,
         fileExtension: this.userForm.value.profileExtension as string,
-        companyReq: company
+        companyReq: company,
       };
 
+      this.createUserLoading = true
       this.userService.addUser(user).subscribe(
-        response => {
+        (response) => {
           this.userForm.reset();
-          this.fileUpload?.clear()
+          this.fileUploadProfile?.clear()
+          this.fileUploadCompany?.clear()
+          this.createUserLoading = false
         },
-        error => {
-          // Handle error
+        (error) => {
+          this.userForm.reset();
+          this.createUserLoading = false
         }
       );
     }
+  }
+
+  confirm() {
+    this.confirmationService.confirm({
+      header: 'Are you sure?',
+      message: 'Please confirm to proceed.',
+      accept: () => {
+        this.createUser();
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 2500,
+        });
+      },
+    });
   }
 }

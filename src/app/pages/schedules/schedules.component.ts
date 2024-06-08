@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
@@ -11,13 +16,15 @@ import { PayrollService } from '../../services/payroll.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { PayrollResDto } from '../../dto/payroll/payroll.res.dto';
 import { RoleType } from '../../constants/roles.constant';
 import { ScheduleStatusType } from '../../constants/schedule-request-types.constant';
 import { firstValueFrom } from 'rxjs';
 import { ScheduleResDto } from '../../dto/schedule/schedule.res.dto';
 import { RescheduleReqDto } from '../../dto/schedule/reschedule.req.dto';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ImageModule } from 'primeng/image';
 import { SkeletonModule } from 'primeng/skeleton';
 
@@ -38,10 +45,12 @@ import { SkeletonModule } from 'primeng/skeleton';
     DialogModule,
     InputTextModule,
     ToastModule,
+    ConfirmPopupModule,
+    ConfirmDialogModule,
     ImageModule,
     SkeletonModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
 })
 export class SchedulesComponent implements OnInit {
   roleCode: boolean = true;
@@ -51,7 +60,8 @@ export class SchedulesComponent implements OnInit {
   schedules: PayrollResDto[] = [];
   clientSchedules: ScheduleResDto[] = [];
   maxDate: Date | null = null;
-  isLoading = true
+  minDate: Date | null = null;
+  isLoading = true;
 
   rescheduleForm = this.fb.group({
     scheduleId: ['', Validators.required],
@@ -61,8 +71,10 @@ export class SchedulesComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private payrollService: PayrollService,
-    private fb: NonNullableFormBuilder
-  ) { }
+    private fb: NonNullableFormBuilder,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     this.init();
@@ -72,16 +84,19 @@ export class SchedulesComponent implements OnInit {
     if (this.rolePS) {
       try {
         this.isLoading = true;
-        this.schedules = await firstValueFrom(this.payrollService.getAllClients());
+        this.schedules = await firstValueFrom(
+          this.payrollService.getAllClients()
+        );
       } finally {
         this.isLoading = false;
       }
-
     }
     if (this.roleClient) {
       try {
         this.isLoading = true;
-        this.clientSchedules = await firstValueFrom(this.payrollService.getLoginClientSchedule());
+        this.clientSchedules = await firstValueFrom(
+          this.payrollService.getLoginClientSchedule()
+        );
       } finally {
         this.isLoading = false;
       }
@@ -99,6 +114,7 @@ export class SchedulesComponent implements OnInit {
   showDialog(schedule: ScheduleResDto) {
     this.rescheduleForm.reset();
     this.visible = true;
+    this.minDate = this.setMinDate();
     this.maxDate = this.setMaxDate(schedule.payrollDate);
     this.rescheduleForm.patchValue({
       scheduleId: schedule.scheduleId,
@@ -109,43 +125,90 @@ export class SchedulesComponent implements OnInit {
     if (!dateString) {
       return null;
     }
-    const [day, month, year] = dateString.split('/').map(part => parseInt(part, 10));
-    return new Date(year, month - 1, day);
+    const parts = dateString.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    let date = new Date(year, month, day);
+    return date;
   }
 
-  private setMaxDate(dateString: string | null): Date | null {
-    const maxDate = this.convertToDate(dateString);
+  setMinDate() {
+    const currentDate = new Date();
+
+    let minDate = currentDate;
+    return minDate;
+  }
+
+  setMaxDate(dateString: string | null) {
+    let maxDate = this.convertToDate(dateString);
     maxDate?.setDate(maxDate.getDate() - 2);
     return maxDate;
   }
 
-  private formatDate(dateString: string | null): string {
-    const payrollDate = this.convertToDate(dateString);
-    if (!payrollDate) {
-      return '';
-    }
-    const day = String(payrollDate.getUTCDate()).padStart(2, '0');
-    const month = String(payrollDate.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = payrollDate.getUTCFullYear();
-    return `${day}/${month}/${year}`;
+  onDateSelect(event: any) {
+    const selectedDate = new Date(event);
+
+    const newDate = new Date(
+      Date.UTC(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        selectedDate.getHours(),
+        selectedDate.getMinutes(),
+        selectedDate.getSeconds()
+      )
+    );
+    const dateString = newDate.toISOString();
+
+    const documentDeadline = dateString.substring(0, dateString.length - 5);
+
+    this.rescheduleForm.patchValue({ newDeadline: documentDeadline });
   }
 
   isCompleted(i: number): boolean {
-    return this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED ||
-      this.clientSchedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED;
+    return (
+      this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.COMPLETED ||
+      this.clientSchedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.COMPLETED
+    );
   }
 
   isNoSchedule(i: number): boolean {
-    return this.schedules[i]?.scheduleStatusCode === ScheduleStatusType.NO_SCHEDULE ||
-      this.clientSchedules[i]?.scheduleStatusCode === ScheduleStatusType.NO_SCHEDULE;
+    return (
+      this.schedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.NO_SCHEDULE ||
+      this.clientSchedules[i]?.scheduleStatusCode ===
+        ScheduleStatusType.NO_SCHEDULE
+    );
   }
 
-  onSubmit() {
-    const newDeadline = this.formatDate(this.rescheduleForm.getRawValue().newDeadline);
-    this.rescheduleForm.patchValue({ newDeadline });
-    const request: RescheduleReqDto = this.rescheduleForm.getRawValue();
-    firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(() => {
-      this.visible = false;
+  confirm(event: Event) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to proceed?',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.visible = false;
+        this.sendReschedule();
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 3000,
+        });
+      },
     });
+  }
+
+  sendReschedule() {
+    const request: RescheduleReqDto = this.rescheduleForm.getRawValue();
+    firstValueFrom(this.payrollService.createRescheduleRequest(request)).then(
+      () => {
+        this.visible = false;
+      }
+    );
   }
 }

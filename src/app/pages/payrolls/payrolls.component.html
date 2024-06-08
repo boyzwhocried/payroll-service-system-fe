@@ -10,7 +10,7 @@
       <app-back-button />
       <h3>Payroll</h3>
     </div>
-    <hr>
+    <hr />
     <h1 class="text-center">Upload Required Payroll Documents</h1>
     <div class="surface-card" *ngIf="isLoading">
       <div class="flex flex-row p-2">
@@ -51,19 +51,26 @@
             <div class="grid">
               <div class="col-6">
                 <p class="font-bold m-0 mb-3">Upload Signed Document</p>
-                <div class="flex gap-4 flex-column md:flex-row">
-                  <p-fileUpload mode="basic" chooseLabel="Choose" [chooseIcon]="buttonIconService.uploadIcon"
-                    accept=".doc, .docx, .xls, .xlsx, .pdf" maxFileSize="3000000"
-                    (onSelect)="fileUpload($event, data.documentId, i, false)" [disabled]="
+                <div class="flex gap-4 flex-row flex-wrap md:flex-nowrap">
+                  <p-fileUpload mode="basic" chooseLabel="Choose" #fileUpload
+                    [chooseIcon]="buttonIconService.uploadIcon" accept=".doc, .docx, .xls, .xlsx, .pdf"
+                    maxFileSize="3000000" (onSelect)="
+                      uploadFile($event, data.documentId, i, false, fileUpload)
+                    " [disabled]="
                       (isClient && data.isSignedByPs) ||
                       (isPS && !data.isSignedByClient) ||
                       data.isSignedByPs ||
                       buttonIconService.uploadIsLoading
-                    " /><p-button label="Submit" [icon]="buttonIconService.submitIcon" severity="success"
-                    (onClick)="submitDocument()" [disabled]="
+                    " />
+                  <p-button icon="pi pi-times" [disabled]="!documentReqDtoFg.valid" (onClick)="clearFile()"
+                    severity="danger" />
+                </div>
+                <div class="mt-4">
+                  <button title="Submit" pButton class="" label="Submit" [icon]="buttonIconService.submitIcon"
+                    severity="success" (click)="confirm(1)" [disabled]="
                       !documentReqDtoFg.valid ||
                       buttonIconService.submitIsLoading
-                    " />
+                    "></button>
                 </div>
               </div>
 
@@ -91,11 +98,11 @@
                       [disabled]="!data.documentDirectory" (onClick)="downloadDocument(data.documentId)" />
                   </div>
                 </div>
-                <div class="flex align-items-end align-self-end">
-                  <p-button *ngIf="isPS" label="Ping Client" [icon]="buttonIconService.pingIcon" severity="danger"
-                    (onClick)="pingClient()" [disabled]="
+                <div class="flex md:align-items-end mt-3">
+                  <button title="Ping Client" pButton *ngIf="isPS" label="Ping Client"
+                    [icon]="buttonIconService.pingIcon" severity="danger" (click)="confirm(3)" [disabled]="
                       data.isSignedByClient || buttonIconService.pingIsLoading
-                    " />
+                    "></button>
                 </div>
               </div>
             </div>
@@ -122,23 +129,43 @@
                     <p class="font-bold text-lg m-0 mb-3">
                       {{ data.activity }}
                     </p>
-                    <div class="flex flex-column md:flex-row gap-4">
-                      <p-fileUpload *ngIf="isPS" mode="basic" chooseLabel="Choose"
-                        [chooseIcon]="buttonIconService.uploadIcon" [disabled]="buttonIconService.uploadIsLoading"
-                        accept=".doc, .docx, .xls, .xlsx, .pdf" maxFileSize="3000000" (onSelect)="
-                          fileUpload($event, data.documentId, i, true)
-                        " />
+                    <div class="flex flex-column">
+                      <div *ngIf="isPS" class="flex flex-row gap-4">
+                        <p-fileUpload #fileUpload mode="basic" chooseLabel="Choose"
+                          [chooseIcon]="buttonIconService.uploadIcon" [disabled]="buttonIconService.uploadIsLoading"
+                          accept=".doc, .docx, .xls, .xlsx, .pdf" maxFileSize="3000000" (onSelect)="
+                            uploadFile(
+                              $event,
+                              data.documentId,
+                              i,
+                              true,
+                              fileUpload
+                            )
+                          " />
+                      </div>
 
-                      <p-button [disabled]="!data.documentDirectory" (onClick)="downloadFinalDocument(data.documentId)"
-                        label="Download" icon="pi pi-download" severity="success" />
+                      <div class="mt-4">
+                        <p-button [disabled]="!data.documentDirectory"
+                          (onClick)="downloadFinalDocument(data.documentId)" label="Download" icon="pi pi-download"
+                          severity="success" />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <p-button label="Submit" *ngIf="isPS" [icon]="buttonIconService.submitIcon"
-                  (onClick)="submitFinalDocument()" [disabled]="
-                    !updateCalculatedDocumentReqDtoFg.valid ||
-                    buttonIconService.submitIsLoading
-                  " />
+
+                <div>
+                  <button title="Reset" class="mr-3" pButton label="Reset" *ngIf="isPS" severity="danger" type="button"
+                    (click)="clearFinalFile()" [disabled]="
+                      !updateCalculatedDocumentReqDtoFg.valid ||
+                      buttonIconService.submitIsLoading
+                    "></button>
+
+                  <button title="Submit" pButton label="Submit" *ngIf="isPS" [icon]="buttonIconService.submitIcon" type="button"
+                    (click)="confirm(2)" [disabled]="
+                      !updateCalculatedDocumentReqDtoFg.valid ||
+                      buttonIconService.submitIsLoading
+                    "></button>
+                </div>
                 <div>
                   <p class="font-bold text-lg">Payroll Documents Report</p>
                   <p-button label="Download" icon="pi pi-download" severity="success" (onClick)="downloadReport()"
@@ -174,3 +201,22 @@
     <canvas id="{{ 'pdfCanvas-' + (i + 1) }}"></canvas>
   </div>
 </p-dialog>
+
+<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
+<p-confirmDialog #cd>
+  <ng-template pTemplate="headless" let-message>
+    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
+        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
+      </div>
+      <span class="font-bold text-2xl block mb-2 mt-4">
+        {{ message.header }}
+      </span>
+      <p class="mb-0">{{ message.message }}</p>
+      <div class="flex align-items-center gap-2 mt-4">
+        <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
+        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmDialog>
