@@ -1,0 +1,71 @@
+:host ::ng-deep .p-menubar {
+  padding: 1rem;
+  background-color: #14b8a6;
+  border-radius: 0px;
+}
+
+:host ::ng-deep .p-menuitem-link,
+p,
+.pi {
+  color: white;
+}
+
+:host ::ng-deep .p-menubar-button {
+  color: white;
+  background-color: #14b8a6;
+}
+
+:host ::ng-deep .p-submenu-list .p-menuitem-link,
+:host ::ng-deep .p-submenu-list .p-menuitem-link .pi {
+  color: black;
+}
+
+:host ::ng-deep .p-menubar-end > div:first-child > div:first-child {
+  border-radius: 50%;
+  padding: 0.5em;
+}
+
+:host ::ng-deep .p-menubar-end > div:first-child > div:first-child:hover {
+  border-radius: 50%;
+  background-color: #1cd5bf;
+  padding: 0.5em;
+}
+
+:host ::ng-deep .p-menu-list .p-menuitem-link {
+  color: black;
+}
+
+:host ::ng-deep .p-menuitem-content:hover {
+  background-color: #1cd5bf;
+}
+
+:host ::ng-deep .p-menuitem-content {
+  background-color: #14b8a6;
+}
+:host ::ng-deep .p-menu-list .p-menuitem-content,
+:host ::ng-deep .p-submenu-list .p-menuitem-link {
+  background-color: white;
+}
+
+:host ::ng-deep .p-menu-list .p-menuitem-content:hover,
+:host ::ng-deep .p-submenu-list .p-menuitem-link:hover {
+  background-color: rgb(225, 225, 225);
+}
+
+:host ::ng-deep :p-menuitem-content:active {
+  background-color: red;
+}
+
+@media only screen and (max-width: 960px) {
+  :host ::ng-deep .p-menuitem-content {
+    background-color: white;
+  }
+  :host ::ng-deep .p-menuitem-link,
+  .pi {
+    color: black;
+  }
+
+  :host ::ng-deep .p-menubar-end .pi {
+    color: white;
+  }
+}

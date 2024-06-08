@@ -1,8 +1,12 @@
 <div class="card">
-  <p-menubar
-    [model]="menuItem"
-    [style]="{ 'border-radius': '0px', padding: ' 1rem' }"
-  >
+  <p-menubar [model]="menuItem">
+    <ng-template pTemplate="start">
+      <p-avatar
+        image="../../../assets/images/Logo.svg"
+        class="flex align-content-center"
+        size="large"
+      />
+    </ng-template>
     <ng-template pTemplate="item" let-item>
       <ng-container *ngIf="item.routerLink">
         <a [routerLink]="item.routerLink" class="p-menuitem-link">
@@ -31,6 +35,7 @@
           class="pi pi-bell flex align-content-center"
           style="font-size: x-large"
           pBadge
+          severity="danger"
           value="{{ getNotificationValue() }}"
           [ngStyle]="{ cursor: 'pointer', 'brightness(0.9)': 'none' }"
           (click)="toNotificationMenu()"
