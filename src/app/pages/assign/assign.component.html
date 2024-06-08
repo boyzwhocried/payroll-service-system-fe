@@ -1,17 +1,17 @@
-<div class="flex align-items-center justify-content-center min-h-screen mx-5">
-    
+<div class="flex align-items-center my-5 mx-5">
+
     <div class="surface-card p-4 shadow-2 border-round w-full">
-        
+
         <div class="flex flex-row justify-content-between align-content-center">
             <h3>Payroll Services</h3>
         </div>
 
         <div class="card">
 
-            <p-table [value]="psList" dataKey="id" [paginator]="psList.length > 8" [rows]="8">
-                
+            <p-table [value]="psList" dataKey="id" [paginator]="psList.length > 8" [rows]="8" *ngIf="!isLoading">
+
                 <ng-template pTemplate="header">
-                    
+
                     <tr>
                         <th class="text-center">Avatar</th>
                         <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
@@ -24,7 +24,7 @@
                 </ng-template>
 
                 <ng-template pTemplate="body" let-ps let-ri="rowIndex">
-                    
+
                     <tr>
                         <td>
                             <p-cellEditor>
@@ -42,7 +42,7 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-                        
+
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="output">
@@ -50,7 +50,7 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-                        
+
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="output">
@@ -58,7 +58,7 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-                        
+
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="output">
@@ -75,6 +75,34 @@
                             </div>
                         </td>
 
+                    </tr>
+
+                </ng-template>
+
+            </p-table>
+            <p-table [value]="psListSkeleton" dataKey="id" [paginator]="psList.length > 8" [rows]="8" *ngIf="isLoading">
+
+                <ng-template pTemplate="header">
+
+                    <tr>
+                        <th class="text-center">Avatar</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }" class="text-center">Client(s)</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-ps let-ri="rowIndex">
+                    <tr>
+                        <td><p-skeleton width="2.5rem" height="2.5rem" shape="circle"
+                                class="justify-content-center flex" /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
                     </tr>
 
                 </ng-template>

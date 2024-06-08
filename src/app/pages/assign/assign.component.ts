@@ -16,6 +16,8 @@ import { Router, RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { environment } from '../../../env/environment.prod';
+import { ImageModule } from "primeng/image";
+import { SkeletonModule } from "primeng/skeleton";
 
 @Component({
     selector: 'assign-app',
@@ -33,26 +35,29 @@ import { environment } from '../../../env/environment.prod';
         RouterModule,
         ReactiveFormsModule,
         AvatarModule,
-        AvatarGroupModule
+        AvatarGroupModule,
+        ImageModule,
+        SkeletonModule,
     ]
 })
 
 export class AssignComponent implements OnInit {
     psList: PsListResDto[] = []
+    psListSkeleton: string[] = []
+    isLoading = true
 
     constructor(
         private assignService: AssignService,
         private router: Router
-    ) {}
+    ) { }
 
-    ngOnInit(): void {
-        this.init()
-    }
-    
-    init() {
-        firstValueFrom(this.assignService.getPsList()).then(
+    async ngOnInit(): Promise<void> {
+        this.psListSkeleton = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+        this.isLoading = true
+        await firstValueFrom(this.assignService.getPsList()).then(
             res => {
                 this.psList = res
+                this.isLoading = false
             }
         )
     }
@@ -60,7 +65,7 @@ export class AssignComponent implements OnInit {
     generateImage(id: string) {
         return this.assignService.getImageUrl(id)
     }
-    
+
     click(id: string) {
         this.router.navigateByUrl(`/assign/${id}`)
     }

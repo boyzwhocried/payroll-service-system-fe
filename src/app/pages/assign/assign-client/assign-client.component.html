@@ -1,43 +1,37 @@
-<pre>
-    {{clientAssignmentReq.value | json}}
-    {{assignedClient | json}}
-</pre>
-<div class="flex flex-column row-gap-5 align-items-center justify-content-center min-h-screen m-5">
-
-    <form [formGroup]="clientAssignmentReq" class="flex flex-column row-gap-5 ">
-
-        <div class="surface-card p-4 shadow-2 border-round w-full flex flex-column row-gap-5">
-        
-            <div class="flex flex-row justify-content-between align-content-center">
-                <h3>{{psUserName}}'s Clients</h3>
+<div class="flex flex-column row-gap-5 align-items-center my-5 m-5">
+    <form [formGroup]="clientAssignmentReq" class="flex flex-column">
+        <div class="surface-card p-4 shadow-2 border-round flex flex-column ">
+            <div class="flex flex-row justify-content-between align-items-center">
+                <p-skeleton *ngIf="isLoading" width="10rem" />
+                <h3 *ngIf="!isLoading">{{psUserName}}'s Clients</h3>
+                <div class="flex flex-row gap-2 align-items-center justify-content-center">
+                    <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
+                    <p-button label="Submit" [disabled]="isClientsEmpty()" (onClick)="onSubmit()" />
+                </div>
             </div>
-            <div class="div">
-                <p-scrollPanel [style]="{ width: '100%', height: '200px' }" styleClass="surface-400 p-3">
-                    <p-chip
-                        *ngFor="let assigned of assignedClient; let i=index" 
-                        label="{{assigned.fullName}}" 
-                        [image]="generateImage(assigned.profilePictureId)" 
-                        alt="preAssigned{{i}}" styleClass="mr-3" [removable]="isClientRemovable(i)" (onRemove)="removeFromForm(i, assigned)"/>
+            <div>
+                <p-skeleton *ngIf="isLoading" height="10rem" class="flex w-full p-2" />
+                <p-scrollPanel *ngIf="!isLoading" styleClass="flex surface-400 border-round p-2">
+                    <p-chip *ngFor="let assigned of assignedClient; let i = index" label="{{assigned.fullName}}"
+                        class="m-2"
+                        [image]="assigned.profilePictureId?generateImage(assigned.profilePictureId):'http://www.gravatar.com/avatar/?d=mp'"
+                        alt="preAssigned{{i}}" [removable]="isClientRemovable(i)"
+                        (onRemove)="removeFromForm(i, assigned)" />
                 </p-scrollPanel>
             </div>
-            
+
             <div class="card">
-                
-                <p-table [value]="unassignedClient" dataKey="id">
-                    
+                <p-table [value]="unassignedClient" dataKey="id" *ngIf="!isLoading">
                     <ng-template pTemplate="header">
-                        
                         <tr>
                             <th class="text-center">Avatar</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
-                            <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Name</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Email</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Phone</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </ng-template>
-    
                     <ng-template pTemplate="body" let-uclient let-ri="rowIndex">
-                        
                         <tr *ngIf="isClientSelected(uclient.id)">
                             <td>
                                 <p-cellEditor>
@@ -47,7 +41,6 @@
                                     </ng-template>
                                 </p-cellEditor>
                             </td>
-    
                             <td>
                                 <p-cellEditor>
                                     <ng-template pTemplate="output">
@@ -55,7 +48,6 @@
                                     </ng-template>
                                 </p-cellEditor>
                             </td>
-                            
                             <td>
                                 <p-cellEditor>
                                     <ng-template pTemplate="output">
@@ -63,7 +55,6 @@
                                     </ng-template>
                                 </p-cellEditor>
                             </td>
-                            
                             <td>
                                 <p-cellEditor>
                                     <ng-template pTemplate="output">
@@ -71,34 +62,49 @@
                                     </ng-template>
                                 </p-cellEditor>
                             </td>
-    
                             <td>
                                 <div class="flex align-items-center justify-content-center gap-2">
-                                    <p-button icon="pi pi-plus" label="Add" type="button" (onClick)="addToForm(uclient)" />
+                                    <p-button icon="pi pi-plus" label="Add" type="button"
+                                        (onClick)="addToForm(uclient)" />
                                 </div>
                             </td>
-    
                         </tr>
-    
                     </ng-template>
-    
                 </p-table>
-    
+                <p-table [value]="unassignedClientSkeleton" dataKey="id" *ngIf="isLoading">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="text-center">Avatar</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Name</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Email</th>
+                            <th [ngStyle]="{ 'min-width': '5rem' }">Phone</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product>
+                        <tr>
+                            <td><p-skeleton width="2.5rem" height="2.5rem" shape="circle"
+                                    class="justify-content-center flex" /></td>
+                            <td><p-skeleton /></td>
+                            <td><p-skeleton /></td>
+                            <td><p-skeleton /></td>
+                            <td><p-skeleton /></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
             </div>
 
-            <div class="card" *ngIf="isUnassignedClientsEmpty()" [ngStyle]="{ 'width' : '80rem' }">
-                <div class="text-center">
-                    No clients currently available
+            <div class="card" *ngIf="isUnassignedClientsEmpty()">
+                <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+                    *ngIf="!isLoading">
+                    <p-image src="../../../assets/images/notification/Empty street-rafiki.svg" alt="Image"
+                        width="270" />
+                    <h2 class="text-center text-color-secondary font-light">No users to assign. Try again later.</h2>
                 </div>
             </div>
-
         </div>
 
-        <div class="flex flex-row gap-5 align-items-center justify-content-center">
-            <p-button label="Cancel" severity="secondary" (onClick)="onCancel()"/>
-            <p-button label="Submit" [disabled]="isClientsEmpty()" (onClick)="onSubmit()"/>
-        </div>
+
 
     </form>
-
 </div>

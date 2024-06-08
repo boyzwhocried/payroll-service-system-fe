@@ -8,7 +8,8 @@ import { ProfileResDto } from '../../dto/user/profile.res.dto';
 import { PasswordReqDto } from '../../dto/user/password.req.dto';
 import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 import { environment } from '../../../env/environment.prod';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { DefaultPicture } from '../../constants/default-profile.constant';
 
 @Injectable({
   providedIn: 'root',
@@ -25,18 +26,21 @@ export class UserService {
     (subscriber) => (this.fileObserver = subscriber)
   );
 
-  constructor(private baseService: BaseService) {}
+  constructor(private baseService: BaseService) { }
 
   getAll() {
-    return this.baseService.get<UserResDto[]>(`users`);
+    return this.baseService.get<UserResDto[]>(`users`).pipe(map(users => users.map(user => this.setDefaultProfilePicture(user))))
   }
 
   getUsersByRole(roleCode: string) {
-    return this.baseService.get<UserResDto[]>(`users/role/${roleCode}`);
+    return this.baseService.get<UserResDto[]>(`users/role/${roleCode}`).pipe(
+      map(users => users.map(user => this.setDefaultProfilePicture(user))))
   }
 
   getUserById(id: string) {
-    return this.baseService.get<UserResDto>(`users/${id}`);
+    return this.baseService.get<UserResDto>(`users/${id}`).pipe(
+      map(user => this.setDefaultProfilePicture(user))
+    );
   }
 
   addUser(user: UserReqDto) {
@@ -48,7 +52,7 @@ export class UserService {
   }
 
   getProfile() {
-    return this.baseService.get<ProfileResDto>('users/profile');
+    return this.baseService.get<ProfileResDto>('users/profile').pipe(map(user => this.setDefaultProfilePictureProfile(user)));
   }
 
   getImageUrl(id?: string) {
@@ -67,5 +71,21 @@ export class UserService {
 
   updatePassword(data: PasswordReqDto) {
     return this.baseService.patch<UpdateResDto>('users/password', data);
+  }
+
+  private setDefaultProfilePicture(user: UserResDto): UserResDto {
+    if (!user.profilePictureContent || !user.profilePictureExtension) {
+      user.profilePictureContent = DefaultPicture.DEFAULT_PROFILE_PICTURE_CONTENT
+      user.profilePictureExtension = 'jpg';
+    }
+    return user;
+  }
+
+  private setDefaultProfilePictureProfile(user: ProfileResDto): ProfileResDto {
+    if (!user.profilePictureContent || !user.profilePictureExtension) {
+      user.profilePictureContent = DefaultPicture.DEFAULT_PROFILE_PICTURE_CONTENT
+      user.profilePictureExtension = 'jpg';
+    }
+    return user;
   }
 }

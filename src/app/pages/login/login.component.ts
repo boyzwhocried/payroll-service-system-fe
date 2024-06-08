@@ -10,7 +10,7 @@ import { LoginReqDto } from '../../dto/user/login.req.dto';
 import { Router, RouterModule } from '@angular/router';
 import { RoleType } from '../../constants/roles.constant';
 import { firstValueFrom } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -37,8 +37,8 @@ export class LoginComponent {
   constructor(
     private formBuilder: NonNullableFormBuilder,
     private authService: AuthService,
-    private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService,
   ) { }
 
   onSubmit(): void {
@@ -50,7 +50,7 @@ export class LoginComponent {
           const roleCode: string = next.roleCode
           this.router.navigateByUrl(roleCode == RoleType.SUPER_ADMIN ? '/users' : '/schedules')
         },
-        error => this.toastr.error(error.error.message)
+        error => this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error.message })
       )
     } else {
       console.log('Form is not valid:', this.loginForm.errors);
