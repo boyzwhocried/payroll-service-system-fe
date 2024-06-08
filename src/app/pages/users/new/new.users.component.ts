@@ -41,11 +41,6 @@ export class UserNew implements OnInit {
   roles: RoleResDto[] = [];
   isClient: boolean = false;
   userForm: FormGroup;
-  // removeProfilePictureButton = false
-  // uploadProfilePictureButton = true
-  // removeCompanyLogoButton = false
-  // uploadCompanyLogoButton = true
-
   fileUpload: any
 
   constructor(
@@ -143,8 +138,6 @@ export class UserNew implements OnInit {
   }
 
   handlePayrollDateChanges(): void {
-    // this.userForm.get('payrollDate')?.value.subscribe((date: string) => {
-    // });
     const date = this.userForm.get('payrollDate')?.value
     if (date) {
       console.log(date);
