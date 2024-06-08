@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -22,7 +22,11 @@ import { UserReqDto } from '../../dto/user/user.req.dto';
 import { UserResDto } from '../../dto/user/user.res.dto';
 import { CheckboxModule } from 'primeng/checkbox';
 import { firstValueFrom } from 'rxjs';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ImageModule } from 'primeng/image';
 import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
+import { RoleService } from '../../services/role/role.service';
+import { RoleResDto } from '../../dto/role/role.res.dto';
 
 @Component({
   selector: 'app-users',
@@ -41,11 +45,13 @@ import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
     AvatarModule,
     AvatarGroupModule,
     CheckboxModule,
+    SkeletonModule,
+    ImageModule,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   isEditing = false;
@@ -56,6 +62,8 @@ export class UsersComponent {
   originalFormValues: any;
   isFormUnchanged = true;
   showFilterRow = false;
+  usersSkeleton: string[] = [];
+  isLoading = true
 
   userForm = this.formBuilder.group({
     id: ['', [Validators.required]],
@@ -76,11 +84,29 @@ export class UsersComponent {
 
   constructor(
     private formBuilder: NonNullableFormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private roleService: RoleService,
   ) {
-    firstValueFrom(this.userService.getAll()).then((response) => {
-      this.users = response;
-    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.usersSkeleton = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    try {
+      this.isLoading = true;
+      await firstValueFrom(this.userService.getAll()).then((response) => {
+        this.users = response;
+      });
+      await firstValueFrom(this.roleService.getAll()).then((response: RoleResDto[]) => {
+        this.roles = response.map((role) => ({
+          label: role.roleName,
+          value: role.id,
+        }));
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   generateImage(
@@ -147,6 +173,10 @@ export class UsersComponent {
     delete this.clonedUsers[user.id as string];
     this.userForm.reset();
     this.isEditing = false;
+    this.originalFormValues = this.userForm.getRawValue();
+    firstValueFrom(this.userForm.valueChanges).then(() => {
+      this.checkFormUnchanged();
+    });
     this.originalFormValues = this.userForm.getRawValue();
     firstValueFrom(this.userForm.valueChanges).then(() => {
       this.checkFormUnchanged();

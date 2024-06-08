@@ -52,11 +52,11 @@ p,
   background-color: rgb(225, 225, 225);
 }
 
-:host ::ng-deep :p-menuitem-content:active {
-  background-color: red;
-}
-
 @media only screen and (max-width: 960px) {
+  :host ::ng-deep .p-menuitem-content:hover {
+    background-color: rgb(225, 225, 225);
+  }
+
   :host ::ng-deep .p-menuitem-content {
     background-color: white;
   }

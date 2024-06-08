@@ -93,7 +93,7 @@ export class ProfileComponent implements OnInit {
     return `data:image/${extension};base64,${contentData}`;
   }
 
-  toogleEdit() {
+  toggleEdit() {
     this.isEditable = !this.isEditable;
     if (this.isEditable) {
       this.updateUserForm.patchValue({
@@ -163,10 +163,10 @@ export class ProfileComponent implements OnInit {
           this.profileRes!.profilePictureExtension =
             updateUserReqDto.profilePictureExtension;
 
-          this.toogleEdit();
+          this.toggleEdit();
         },
         (error) => {
-          this.toogleEdit();
+          this.toggleEdit();
         }
       );
     }

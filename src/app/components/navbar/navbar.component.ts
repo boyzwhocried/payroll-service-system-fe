@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { UserService } from '../../services/user/user.service';
 import { RoleType } from '../../constants/roles.constant';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -41,6 +42,7 @@ export class NavbarComponent implements OnInit {
   notificationObservable: any;
   profileImageId: string = '';
   userData = this.authService.getLoginData();
+  isLoadingProfile = true
 
   profile = {
     userName: '',
@@ -66,12 +68,17 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.initMenuItems();
     this.initNotifications();
     this.setMenuItemsBasedOnRole();
     this.roleCode = this.authService.getLoginData().roleCode;
     this.profileImageId = this.authService.getLoginData().fileId;
+    await firstValueFrom(this.userService.getUserById(this.userData.userId)).then((user) => {
+      this.profile.fileContent = user.profilePictureContent
+      this.profile.fileExtension = user.profilePictureExtension
+      this.isLoadingProfile = false
+    })
   }
 
   private initMenuItems() {
@@ -158,19 +165,8 @@ export class NavbarComponent implements OnInit {
     this.saItem = [
       {
         label: 'Users',
+        routerLink: '/users',
         icon: PrimeIcons.USERS,
-        items: [
-          {
-            label: 'List',
-            routerLink: '/users',
-            icon: PrimeIcons.LIST,
-          },
-          {
-            label: 'Create',
-            routerLink: '/users/new',
-            icon: PrimeIcons.PLUS,
-          },
-        ],
       },
       {
         label: 'Companies',

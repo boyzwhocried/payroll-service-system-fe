@@ -9,7 +9,6 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
-import { SelectItem } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
 import {
   Validators,
@@ -24,7 +23,9 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 import { ClientResDto } from '../../../dto/user/client.res.dto';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ChipModule } from 'primeng/chip';
-import { ClientAssignmentReqDto } from '../../../dto/client-assignment/client-assignment.req.dto';
+import { ClientAssignmentReqDto } from "../../../dto/client-assignment/client-assignment.req.dto";
+import { SkeletonModule } from "primeng/skeleton";
+import { ImageModule } from "primeng/image";
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -47,29 +48,57 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     AvatarGroupModule,
     ScrollPanelModule,
     ChipModule,
+    SkeletonModule,
+    ImageModule,
     ToastModule,
     ConfirmDialogModule,
   ],
   templateUrl: 'assign-client.component.html',
-  providers: [ConfirmationService, MessageService],
+  providers: [MessageService, ConfirmationService]
 })
 export class AssignClientComponent implements OnInit {
-  clientList: ClientListResDto | undefined;
 
-  psId: string = '';
-  psUserName: string = '';
+  clientList: ClientListResDto | undefined
 
-  assignedClient: ClientResDto[] = [];
-  assignedLength: number | undefined;
+  psId: string = ''
+  psUserName: string = ''
 
-  unassignedClient: ClientResDto[] = [];
+  assignedClient: ClientResDto[] = []
+  assignedLength: number | undefined
 
-  newlyAssigned: ClientResDto[] = [];
+  unassignedClient: ClientResDto[] = []
 
+  newlyAssigned: ClientResDto[] = []
+
+  isLoading = true
+  unassignedClientSkeleton: string[] = []
   clientAssignmentReq = this.formBuilder.group({
     psId: ['', [Validators.required]],
     clients: this.formBuilder.array([]),
   });
+
+  async ngOnInit(): Promise<void> {
+    this.isLoading = true
+    this.unassignedClientSkeleton = Array.from({ length: 3 }).map((_, i) => `Item #${i}`);
+    await firstValueFrom(this.activatedRoute.params).then(
+      (param) => {
+        this.psId = param['id']
+        this.clientAssignmentReq.patchValue({
+          psId: this.psId
+        })
+        firstValueFrom(this.assignService.getClientList(this.psId)).then(
+          res => {
+            this.clientList = res
+            this.psUserName = this.clientList.psUserName
+            this.assignedClient = this.clientList.assignedClients
+            this.assignedLength = this.assignedClient.length
+            this.unassignedClient = this.clientList.unassignedClients
+            this.isLoading = false
+          }
+        )
+      }
+    )
+  }
 
   constructor(
     private assignService: AssignService,
@@ -78,29 +107,7 @@ export class AssignClientComponent implements OnInit {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
-  ) {}
-
-  ngOnInit(): void {
-    this.init();
-  }
-
-  init() {
-    firstValueFrom(this.activatedRoute.params).then((param) => {
-      this.psId = param['id'];
-      this.clientAssignmentReq.patchValue({
-        psId: this.psId,
-      });
-      firstValueFrom(this.assignService.getClientList(this.psId)).then(
-        (res) => {
-          this.clientList = res;
-          this.psUserName = this.clientList.psUserName;
-          this.assignedClient = this.clientList.assignedClients;
-          this.assignedLength = this.assignedClient.length;
-          this.unassignedClient = this.clientList.unassignedClients;
-        }
-      );
-    });
-  }
+  ) { }
 
   get clients() {
     return this.clientAssignmentReq.get('clients') as FormArray;

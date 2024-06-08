@@ -3,6 +3,7 @@
         "avatargroup",
         "Bambang",
         "Budi",
+        "confirmdialog",
         "devkit",
         "Dule",
         "fileupload",
@@ -19,6 +20,8 @@
         "scrollpanel",
         "sockjs",
         "stompjs",
-        "toastr"
+        "toastr",
+        "uclient",
+        "xlarge"
     ]
 }

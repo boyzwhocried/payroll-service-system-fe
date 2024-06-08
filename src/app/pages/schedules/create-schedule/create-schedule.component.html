@@ -12,115 +12,51 @@
       </p>
     </div>
     <div class="card" [formGroup]="scheduleForm">
-      <div
-        *ngFor="let activity of documentsReqDto.controls; let i = index"
-        formArrayName="documentsReqDto"
-      >
-        <div
-          class="flex flex-row align-items-center justify-content-center"
-          [formGroupName]="i"
-        >
-          <div
-            class="sm:flex gap-3 border border-1 border-round border-black-alpha-20 p-4 mb-3 relative"
-          >
+      <div *ngFor="let activity of documentsReqDto.controls; let i = index" formArrayName="documentsReqDto">
+        <div class="flex flex-row align-items-center justify-content-center" [formGroupName]="i">
+          <div class="sm:flex gap-3 border border-1 border-round border-black-alpha-20 p-4 mb-3 relative">
             <div class="flex flex-column">
               <label class="ml-1" for="activity{{ i }}">Activity</label>
-              <input
-                class="mb-2"
-                formControlName="activity"
-                id="activity{{ i }}"
-                pInputText
-              />
+              <input class="mb-2" formControlName="activity" id="activity{{ i }}" pInputText />
             </div>
             <div class="flex flex-column">
-              <label
-                class="text-overflow-ellipsis ml-1"
-                for="documentDeadline{{ i }}"
-                >Document Deadline</label
-              >
-              <p-calendar
-                [iconDisplay]="'input'"
-                dataType="string"
-                [showIcon]="true"
-                inputId="icondisplay"
-                class="w-full"
-                [maxDate]="maxDate"
-                [minDate]="minDate"
-                (onSelect)="onDateSelect($event, i)"
-                dateFormat="dd/mm/yy"
-                id="documentDeadline{{ i }}"
-              />
+              <label class="text-overflow-ellipsis ml-1" for="documentDeadline{{ i }}">Document Deadline</label>
+              <p-calendar [iconDisplay]="'input'" dataType="string" [showIcon]="true" inputId="icondisplay"
+                class="w-full" [maxDate]="maxDate" [minDate]="minDate" (onSelect)="onDateSelect($event, i)"
+                dateFormat="dd/mm/yy" id="documentDeadline{{ i }}" />
             </div>
-            <button
-              class="p-button-rounded p-button-text p-button-secondary top-0 right-0 absolute"
-              severity="danger"
-              pButton
-              pRipple
-              type="button"
-              (click)="removeActivity(i)"
-              icon="pi pi-times"
-              title="Remove"
-            ></button>
+            <button class="p-button-rounded p-button-text p-button-secondary top-0 right-0 absolute" severity="danger"
+              pButton pRipple type="button" (click)="removeActivity(i)" icon="pi pi-times" title="Remove"></button>
           </div>
         </div>
       </div>
       <div class="flex mt-5 md:justify-content-end gap-2">
         <div class="flex">
-          <button
-            pButton
-            class="w-full"
-            (click)="addActivity()"
-            icon="pi pi-plus"
-            label="Add"
-            title="Add"
-          ></button>
+          <button pButton class="w-full" (click)="addActivity()" icon="pi pi-plus" label="Add" title="Add"></button>
         </div>
         <div class="flex">
-          <button
-            pButton
-            class="w-full"
-            (click)="confirm()"
-            [disabled]="scheduleForm.invalid || documentsReqDto.length < 3"
-            label="Submit"
-            title="Submit"
-          ></button>
+          <button pButton class="w-full" (click)="confirm()"
+            [disabled]="scheduleForm.invalid || documentsReqDto.length < 3" label="Submit" title="Submit"></button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<p-toast />
+<p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"  />
 <p-confirmDialog #cd>
   <ng-template pTemplate="headless" let-message>
-    <div
-      class="flex flex-column align-items-center p-5 surface-overlay border-round"
-    >
-      <div
-        class="inline-flex justify-content-center align-items-center h-15rem w-15rem"
-      >
-        <img
-          src="../../../assets/images/confirmation/Yes or no-amico.svg"
-          alt=""
-        />
+    <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+      <div class="inline-flex justify-content-center align-items-center h-15rem w-15rem">
+        <img src="../../../assets/images/confirmation/Yes or no-amico.svg" alt="" />
       </div>
       <span class="font-bold text-2xl block mb-2 mt-4">
         {{ message.header }}
       </span>
       <p class="mb-0">{{ message.message }}</p>
       <div class="flex align-items-center gap-2 mt-4">
-        <button
-          pButton
-          label="Yes"
-          (click)="cd.accept()"
-          class="w-8rem"
-        ></button>
-        <button
-          pButton
-          label="No"
-          (click)="cd.reject()"
-          class="p-button-outlined w-8rem"
-        ></button>
+        <button title="Yes" pButton label="Yes" (click)="cd.accept()" class="w-8rem"></button>
+        <button title="No" pButton label="No" (click)="cd.reject()" class="p-button-outlined w-8rem"></button>
       </div>
     </div>
   </ng-template>

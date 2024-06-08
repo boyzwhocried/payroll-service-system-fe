@@ -1,243 +1,164 @@
-<div class="flex align-items-center justify-content-center min-h-screen mx-5">
-  <div class="surface-card p-4 shadow-2 border-round w-full">
-    <div class="flex flex-row justify-content-between align-content-center">
-      <h3>Users</h3>
-      <p-button icon="pi pi-plus" label="Create" [routerLink]="'new'" />
+<div class="flex align-items-center my-5 mx-5">
+    <div class="surface-card p-4 shadow-2 border-round w-full">
+        <div class="flex flex-row justify-content-between align-content-center">
+            <h3>Users</h3>
+            <p-button icon="pi pi-plus" label="Create" [routerLink]="'new'" />
+        </div>
+        <small class="flex align-content-center m-2">
+            <p-checkbox *ngIf="users.length > 0 && !isLoading" binary="true" [(ngModel)]="showFilterRow"
+                label="Show Filters"></p-checkbox>
+        </small>
+        <div class="card">
+            <!-- <pre>{{ userForm.value | json }}</pre> -->
+            <p-table [value]="usersSkeleton" *ngIf="isLoading">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="text-center">Avatar</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Role</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+                        <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td><p-skeleton width="2.5rem" height="2.5rem" shape="circle"
+                                class="justify-content-center flex" /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                        <td><p-skeleton /></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <ng-container *ngIf="users.length > 0 && !isLoading; else noData">
+                <p-table [value]="users" dataKey="id" editMode="row" [paginator]="users.length > 7" [rows]="7"
+                    [globalFilterFields]="['avatar', 'userName', 'roleName', 'email', 'phoneNumber']">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="text-center">Avatar</th>
+                            <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
+                            <th [ngStyle]="{ 'min-width': '16rem' }">Role</th>
+                            <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
+                            <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        <tr *ngIf="showFilterRow">
+                            <th></th>
+                            <th><p-columnFilter type="text" field="userName" /></th>
+                            <th><p-columnFilter type="text" field="roleName" /></th>
+                            <th><p-columnFilter type="text" field="email" /></th>
+                            <th><p-columnFilter type="text" field="phoneNumber" /></th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-user let-editing="editing" let-ri="rowIndex">
+                        <tr [pEditableRow]="user" [formGroup]="userForm">
+                            <td class="text-center">
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <div class="avatar-container" (mouseover)="isHovered = true"
+                                            (mouseout)="isHovered = false">
+                                            <p-avatar *ngIf="userForm.value.profilePictureContent && userForm.value.profilePictureExtension"
+                                                [image]="generateImage(userForm.value.profilePictureContent, userForm.value.profilePictureExtension)"
+                                                shape="circle" class="flex justify-content-center" title="Edit Avatar"
+                                                role="button" (click)="onAvatarClick()"
+                                                [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
+                                            <p-avatar
+                                                *ngIf="!userForm.value.profilePictureContent && !userForm.value.profilePictureExtension"
+                                                [image]="getImage(user.profilePictureId)" shape="circle"
+                                                class="flex justify-content-center" title="Edit Avatar" role="button"
+                                                (click)="onAvatarClick()"
+                                                [ngStyle]="{'cursor': 'pointer','filter': isHovered ? 'brightness(0.9)' : 'none'}"></p-avatar>
+                                            <p-badge
+                                                [ngStyle]="{ 'position': 'absolute', 'bottom': '0', 'right': '0', 'transform': 'translate(50%, 50%)' }"
+                                                value="" styleClass="badge-icon">
+                                                <i class="pi pi-pencil"></i>
+                                            </p-badge>
+                                            <input type="file" #fileInput (change)="onFileSelected($event)"
+                                                [ngStyle]="{'display': 'none'}" title="File Input" />
+                                        </div>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        <p-avatar [image]="generateImage(user.profilePictureContent, user.profilePictureExtension)" shape="circle"
+                                            class="flex justify-content-center" />
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input title="Name" pInputText type="text" class="p-inputtext w-full" required
+                                            formControlName="userName" />
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{user.userName}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        {{user.roleName}}
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{user.roleName}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input title="Email" pInputText type="email" class="p-inputtext w-full" required
+                                            formControlName="email" />
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{user.email}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input title="Phone" pInputText type="tel" class="p-inputtext w-full"
+                                            formControlName="phoneNumber" />
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{user.phoneNumber}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <div class="flex align-items-center justify-content-center gap-2">
+                                    <button title="Edit Init" *ngIf="!editing" pButton pRipple type="button"
+                                        pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(user)"
+                                        class="p-button-rounded p-button-text" [disabled]="isEditing">
+                                    </button>
+                                    <button title="Edit Save" *ngIf="editing" pButton pRipple type="submit"
+                                        pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(ri)"
+                                        [disabled]="isFormUnchanged || userForm.invalid"
+                                        class="p-button-rounded p-button-text p-button-success mr-2">
+                                    </button>
+                                    <button title="Edit Cancel" *ngIf="editing" pButton pRipple type="button"
+                                        pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(user, ri)"
+                                        class="p-button-rounded p-button-text p-button-danger">
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-container>
+
+            <ng-template #noData>
+                <div class="flex flex-column flex justify-content-center align-items-center h-full mx-3 py-5"
+                    *ngIf="!isLoading">
+                    <p-image src="../../../assets/images/notification/Empty street-rafiki.svg" alt="Image" width="270" />
+                    <h2 class="text-center text-color-secondary font-light">No users in sight. Feels a bit lonely here.</h2>
+                </div>
+            </ng-template>
+        </div>
     </div>
-    <small class="flex align-content-center m-2">
-      <p-checkbox
-        binary="true"
-        [(ngModel)]="showFilterRow"
-        label="Show Filters"
-      ></p-checkbox>
-    </small>
-    <div class="card">
-      <p-table
-        [value]="users"
-        dataKey="id"
-        editMode="row"
-        [paginator]="users.length > 5"
-        [rows]="5"
-        [globalFilterFields]="[
-          'avatar',
-          'userName',
-          'roleName',
-          'email',
-          'phoneNumber'
-        ]"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="text-center">Avatar</th>
-            <th [ngStyle]="{ 'min-width': '16rem' }">Name</th>
-            <th [ngStyle]="{ 'min-width': '16rem' }">Role</th>
-            <th [ngStyle]="{ 'min-width': '16rem' }">Email</th>
-            <th [ngStyle]="{ 'min-width': '16rem' }">Phone</th>
-            <th class="text-center">Actions</th>
-          </tr>
-          <tr *ngIf="showFilterRow">
-            <th></th>
-            <th><p-columnFilter type="text" field="userName" /></th>
-            <th><p-columnFilter type="text" field="roleName" /></th>
-            <th><p-columnFilter type="text" field="email" /></th>
-            <th><p-columnFilter type="text" field="phoneNumber" /></th>
-            <th></th>
-          </tr>
-        </ng-template>
-        <ng-template
-          pTemplate="body"
-          let-user
-          let-editing="editing"
-          let-ri="rowIndex"
-        >
-          <tr [pEditableRow]="user" [formGroup]="userForm">
-            <td class="text-center">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <div
-                    class="avatar-container"
-                    (mouseover)="isHovered = true"
-                    (mouseout)="isHovered = false"
-                  >
-                    <p-avatar
-                      *ngIf="
-                        userForm.value.profilePictureContent &&
-                        userForm.value.profilePictureExtension
-                      "
-                      [image]="
-                        generateImage(
-                          userForm.value.profilePictureContent,
-                          userForm.value.profilePictureExtension
-                        )
-                      "
-                      shape="circle"
-                      class="flex justify-content-center"
-                      title="Edit Avatar"
-                      role="button"
-                      (click)="onAvatarClick()"
-                      [ngStyle]="{
-                        cursor: 'pointer',
-                        filter: isHovered ? 'brightness(0.9)' : 'none'
-                      }"
-                    ></p-avatar>
-                    <p-avatar
-                      *ngIf="
-                        !userForm.value.profilePictureContent &&
-                        !userForm.value.profilePictureExtension
-                      "
-                      [image]="
-                        generateImage(
-                          user.profilePictureContent,
-                          user.profilePictureExtension
-                        )
-                      "
-                      shape="circle"
-                      class="flex justify-content-center"
-                      title="Edit Avatar"
-                      role="button"
-                      (click)="onAvatarClick()"
-                      [ngStyle]="{
-                        cursor: 'pointer',
-                        filter: isHovered ? 'brightness(0.9)' : 'none'
-                      }"
-                    ></p-avatar>
-                    <p-badge
-                      [ngStyle]="{
-                        position: 'absolute',
-                        bottom: '0',
-                        right: '0',
-                        transform: 'translate(50%, 50%)'
-                      }"
-                      value=""
-                      styleClass="badge-icon"
-                    >
-                      <i class="pi pi-pencil"></i>
-                    </p-badge>
-                    <input
-                      type="file"
-                      #fileInput
-                      (change)="onFileSelected($event)"
-                      [ngStyle]="{ display: 'none' }"
-                      title="File Input"
-                    />
-                  </div>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  <p-avatar
-                    [image]="
-                      generateImage(
-                        user.profilePictureContent,
-                        user.profilePictureExtension
-                      )
-                    "
-                    shape="circle"
-                    class="flex justify-content-center"
-                  />
-                </ng-template>
-              </p-cellEditor>
-            </td>
-            <td>
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <input
-                    title="Name"
-                    pInputText
-                    type="text"
-                    class="p-inputtext w-full"
-                    required
-                    formControlName="userName"
-                  />
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ user.userName }}
-                </ng-template>
-              </p-cellEditor>
-            </td>
-            <td>
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  {{ user.roleName }}
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ user.roleName }}
-                </ng-template>
-              </p-cellEditor>
-            </td>
-            <td>
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <input
-                    title="Email"
-                    pInputText
-                    type="email"
-                    class="p-inputtext w-full"
-                    required
-                    formControlName="email"
-                  />
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ user.email }}
-                </ng-template>
-              </p-cellEditor>
-            </td>
-            <td>
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <input
-                    title="Phone"
-                    pInputText
-                    type="tel"
-                    class="p-inputtext w-full"
-                    formControlName="phoneNumber"
-                  />
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ user.phoneNumber }}
-                </ng-template>
-              </p-cellEditor>
-            </td>
-            <td>
-              <div class="flex align-items-center justify-content-center gap-2">
-                <button
-                  title="Edit Init"
-                  *ngIf="!editing"
-                  pButton
-                  pRipple
-                  type="button"
-                  pInitEditableRow
-                  icon="pi pi-pencil"
-                  (click)="onRowEditInit(user)"
-                  class="p-button-rounded p-button-text"
-                  [disabled]="isEditing"
-                ></button>
-                <button
-                  title="Edit Save"
-                  *ngIf="editing"
-                  pButton
-                  pRipple
-                  type="submit"
-                  pSaveEditableRow
-                  icon="pi pi-check"
-                  (click)="onRowEditSave(ri)"
-                  [disabled]="isFormUnchanged || userForm.invalid"
-                  class="p-button-rounded p-button-text p-button-success mr-2"
-                ></button>
-                <button
-                  title="Edit Cancel"
-                  *ngIf="editing"
-                  pButton
-                  pRipple
-                  type="button"
-                  pCancelEditableRow
-                  icon="pi pi-times"
-                  (click)="onRowEditCancel(user, ri)"
-                  class="p-button-rounded p-button-text p-button-danger"
-                ></button>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
 </div>

@@ -23,6 +23,8 @@ import { CompanyReqDto } from '../../../dto/company/company.req.dto';
 import { InputMaskModule } from 'primeng/inputmask';
 import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Router } from '@angular/router';
+import { ButtonIconService } from '../../../services/button-icon.service';
 
 @Component({
   selector: 'user-new',
@@ -47,11 +49,16 @@ export class UserNew implements OnInit {
   roles: RoleResDto[] = [];
   isClient: boolean = false;
   userForm: FormGroup;
+  fileUploadProfile: any
+  fileUploadCompany: any
+  createUserLoading = false
 
   constructor(
     private formBuilder: FormBuilder,
     private roleService: RoleService,
     private userService: UserService,
+    private router: Router,
+    public buttonIconService: ButtonIconService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {
@@ -79,7 +86,14 @@ export class UserNew implements OnInit {
 
   ngOnInit(): void {
     this.loadRoles();
-    this.handlePayrollDateChanges();
+  }
+
+  get profileContent() {
+    return this.userForm.get('profileContent')?.value != "";
+  }
+
+  get companyLogoContent() {
+    return this.userForm.get('companyLogoContent')?.value != "";
   }
 
   loadRoles(): void {
@@ -110,7 +124,7 @@ export class UserNew implements OnInit {
     payrollDateControl?.updateValueAndValidity();
   }
 
-  onProfileSelect(event: any, isCompanyLogo: boolean): void {
+  onProfileSelect(event: any, isCompanyLogo: boolean, fileUpload: any): void {
     const file = event.files && event.files.length > 0 ? event.files[0] : null;
     if (!file) return;
 
@@ -124,11 +138,13 @@ export class UserNew implements OnInit {
           companyLogoContent: base64,
           companyLogoExtension: extension,
         });
+        this.fileUploadCompany = fileUpload
       } else {
         this.userForm.patchValue({
           profileContent: base64,
           profileExtension: extension,
         });
+        this.fileUploadProfile = fileUpload
       }
     };
     reader.readAsDataURL(file);
@@ -137,25 +153,49 @@ export class UserNew implements OnInit {
   formatPayrollDate(date: string): string {
     const parsedDate = new Date(date);
     if (!isNaN(parsedDate.getTime())) {
+
+      console.log(String(parsedDate.getDate()));
       return String(parsedDate.getDate());
     }
+    console.log('no shit');
     return '';
   }
 
   handlePayrollDateChanges(): void {
-    this.userForm.get('payrollDate')?.valueChanges.subscribe((date) => {
-      if (date) {
-        const formattedDate = this.formatPayrollDate(date);
-        this.userForm.patchValue(
-          { payrollDate: formattedDate },
-          { emitEvent: false }
-        );
-      }
-    });
+    const date = this.userForm.get('payrollDate')?.value
+    if (date) {
+      console.log(date);
+      const formattedDate = this.formatPayrollDate(date);
+      this.userForm.patchValue({ payrollDate: formattedDate }, { emitEvent: false });
+    }
+  }
+
+  removeProfilePicture() {
+    const profileContent = this.userForm.get('profileContent');
+    const profileExtension = this.userForm.get('profileExtension');
+    profileContent?.patchValue('');
+    profileExtension?.patchValue('');
+
+    this.fileUploadProfile?.clear()
+  }
+
+  removeCompanyLogo() {
+    const companyLogoContent = this.userForm.get('companyLogoContent');
+    const companyLogoExtension = this.userForm.get('companyLogoExtension');
+    companyLogoContent?.patchValue('');
+    companyLogoExtension?.patchValue('');
+
+    this.fileUploadCompany?.clear()
+  }
+
+  onBack() {
+    this.router.navigateByUrl(`/users`)
   }
 
   createUser(): void {
     if (this.userForm.valid) {
+      this.handlePayrollDateChanges();
+
       const formattedPayrollDate = this.userForm.value.payrollDate as string;
 
       const company: CompanyReqDto = {
@@ -175,12 +215,17 @@ export class UserNew implements OnInit {
         companyReq: company,
       };
 
+      this.createUserLoading = true
       this.userService.addUser(user).subscribe(
         (response) => {
           this.userForm.reset();
+          this.fileUploadProfile?.clear()
+          this.fileUploadCompany?.clear()
+          this.createUserLoading = false
         },
         (error) => {
           this.userForm.reset();
+          this.createUserLoading = false
         }
       );
     }
