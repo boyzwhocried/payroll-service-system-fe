@@ -220,45 +220,55 @@
                     <p class="font-bold text-lg m-0 mb-3">
                       {{ data.activity }}
                     </p>
-                    <div class="flex flex-column md:flex-row gap-4">
-                      <p-fileUpload
-                        *ngIf="isPS"
-                        #fileUpload
-                        mode="basic"
-                        chooseLabel="Choose"
-                        [chooseIcon]="buttonIconService.uploadIcon"
-                        [disabled]="buttonIconService.uploadIsLoading"
-                        accept=".doc, .docx, .xls, .xlsx, .pdf"
-                        maxFileSize="3000000"
-                        (onSelect)="
-                          uploadFile(
-                            $event,
-                            data.documentId,
-                            i,
-                            true,
-                            fileUpload
-                          )
-                        "
-                      />
+                    <div class="flex flex-column">
+                      <div *ngIf="isPS" class="flex flex-row gap-4">
+                        <p-fileUpload
+                          #fileUpload
+                          mode="basic"
+                          chooseLabel="Choose"
+                          [chooseIcon]="buttonIconService.uploadIcon"
+                          [disabled]="buttonIconService.uploadIsLoading"
+                          accept=".doc, .docx, .xls, .xlsx, .pdf"
+                          maxFileSize="3000000"
+                          (onSelect)="
+                            uploadFile(
+                              $event,
+                              data.documentId,
+                              i,
+                              true,
+                              fileUpload
+                            )
+                          "
+                        />
+                      </div>
 
-                      <p-button
-                        icon="pi pi-times"
-                        [disabled]="!documentReqDtoFg.valid"
-                        (onClick)="clearFile()"
-                        severity="danger"
-                      />
-                      <p-button
-                        [disabled]="!data.documentDirectory"
-                        (onClick)="downloadFinalDocument(data.documentId)"
-                        label="Download"
-                        icon="pi pi-download"
-                        severity="success"
-                      />
+                      <div class="mt-4">
+                        <p-button
+                          [disabled]="!data.documentDirectory"
+                          (onClick)="downloadFinalDocument(data.documentId)"
+                          label="Download"
+                          icon="pi pi-download"
+                          severity="success"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div>
+                  <button
+                    class="mr-3"
+                    pButton
+                    label="Reset"
+                    *ngIf="isPS"
+                    severity="danger"
+                    (click)="clearFinalFile()"
+                    [disabled]="
+                      !updateCalculatedDocumentReqDtoFg.valid ||
+                      buttonIconService.submitIsLoading
+                    "
+                  ></button>
+
                   <button
                     pButton
                     label="Submit"

@@ -16,8 +16,8 @@ import { firstValueFrom } from 'rxjs';
 import { UpdateUserReqDto } from '../../dto/user/update-user.req.dto';
 import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'profile-app',
@@ -28,9 +28,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     ButtonModule,
     ReactiveFormsModule,
     ImageModule,
-    InputMaskModule,
-    ConfirmDialogModule,
     ToastModule,
+    ConfirmDialogModule,
+    InputMaskModule,
   ],
   standalone: true,
   templateUrl: './profile.component.html',
@@ -47,10 +47,17 @@ export class ProfileComponent implements OnInit {
     id: ['', [Validators.required]],
     userName: ['', [Validators.minLength(3)]],
     email: ['', [Validators.email]],
-    phoneNumber: ['', [Validators.minLength(13)]],
-    roleId: [''],
-    fileContent: [''],
-    fileExtension: [''],
+    phoneNumber: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(
+          '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\\s*[)]?[-\\s\\.]?[(]?[0-9]{1,3}[)]?([-s\\.]?[0-9]{3})([-\\s\\.]?[0-9]{3,4})'
+        ),
+      ],
+    ],
+    profilePictureContent: ['', [Validators.required]],
+    profilePictureExtension: ['', [Validators.required]],
   });
 
   constructor(
@@ -67,17 +74,14 @@ export class ProfileComponent implements OnInit {
   init() {
     firstValueFrom(this.userService.getProfile()).then((response) => {
       this.profileRes = response;
-      this.updateUserForm.patchValue({
-        id: response.userId,
-      });
     });
   }
 
-  generateImage(id?: string) {
-    if (id) {
-      return this.userService.getImageUrl(id);
-    }
-    return '';
+  generateImage(
+    contentData?: string | undefined,
+    extension?: string | undefined
+  ): string {
+    return `data:image/${extension};base64,${contentData}`;
   }
 
   generateNewImage(
@@ -89,6 +93,15 @@ export class ProfileComponent implements OnInit {
 
   toogleEdit() {
     this.isEditable = !this.isEditable;
+    if (this.isEditable) {
+      this.updateUserForm.patchValue({
+        id: this.profileRes?.userId,
+        phoneNumber: this.profileRes?.phoneNumber,
+        ...this.profileRes,
+      });
+    } else {
+      this.updateUserForm.reset();
+    }
   }
 
   onAvatarClick(): void {
@@ -104,8 +117,8 @@ export class ProfileComponent implements OnInit {
       reader.onload = () => {
         const base64 = (reader.result as string).split(',')[1];
         this.updateUserForm.patchValue({
-          fileContent: base64,
-          fileExtension: file.type.split('/')[1],
+          profilePictureContent: base64,
+          profilePictureExtension: file.type.split('/')[1],
         });
       };
       reader.readAsDataURL(file);
@@ -114,17 +127,9 @@ export class ProfileComponent implements OnInit {
 
   isImageInput() {
     return (
-      this.updateUserForm.value.fileContent &&
-      this.updateUserForm.value.fileExtension
+      this.updateUserForm.value.profilePictureContent &&
+      this.updateUserForm.value.profilePictureExtension
     );
-  }
-
-  closeEdit() {
-    this.updateUserForm.reset();
-    this.updateUserForm.patchValue({
-      id: this.profileRes?.userId,
-    });
-    this.toogleEdit();
   }
 
   isNotAvailableToSave(form: FormGroup) {
@@ -143,30 +148,23 @@ export class ProfileComponent implements OnInit {
     if (this.updateUserForm.valid) {
       const updateUserReqDto: UpdateUserReqDto =
         this.updateUserForm.getRawValue();
-      firstValueFrom(this.userService.updateUser(updateUserReqDto)).then(() => {
-        const name = this.updateUserForm.value.userName as string;
-        if (name != '') {
-          this.profileRes!.userName = name;
+      firstValueFrom(this.userService.updateUser(updateUserReqDto)).then(
+        (response) => {
+          this.profileRes!.userName = updateUserReqDto.userName as string;
+          this.profileRes!.email = updateUserReqDto.email as string;
+          this.profileRes!.phoneNumber = updateUserReqDto.phoneNumber as string;
+
+          this.profileRes!.profilePictureContent =
+            updateUserReqDto.profilePictureContent;
+          this.profileRes!.profilePictureExtension =
+            updateUserReqDto.profilePictureExtension;
+
+          this.toogleEdit();
+        },
+        (error) => {
+          this.toogleEdit();
         }
-
-        const email = this.updateUserForm.value.email as string;
-        if (email != '') {
-          this.profileRes!.email = email;
-        }
-
-        const phoneNumber = this.updateUserForm.value.phoneNumber as string;
-        if (phoneNumber != '') {
-          this.profileRes!.phoneNumber = phoneNumber;
-        }
-
-        this.updateUserForm.patchValue({
-          userName: '',
-          email: '',
-          phoneNumber: '',
-        });
-
-        this.toogleEdit();
-      });
+      );
     }
   }
 

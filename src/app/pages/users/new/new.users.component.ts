@@ -180,7 +180,7 @@ export class UserNew implements OnInit {
           this.userForm.reset();
         },
         (error) => {
-          // Handle error
+          this.userForm.reset();
         }
       );
     }

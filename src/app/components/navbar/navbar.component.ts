@@ -29,20 +29,21 @@ import { RoleType } from '../../constants/roles.constant';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
-  allItem: MenuItem[] | undefined
-  saItem: MenuItem[] | undefined
-  clientItem: MenuItem[] | undefined
-  psItem: MenuItem[] | undefined
-  notificationItem: MenuItem[] | undefined
-  userItem: MenuItem[] | undefined
-  menuItem: MenuItem[] | undefined
-  roleCode: string = ''
-  notificationCount: number = 0
-  notificationObservable: any
-  profileImageId: string = ''
-  userData = this.authService.getLoginData()
+  allItem: MenuItem[] | undefined;
+  saItem: MenuItem[] | undefined;
+  clientItem: MenuItem[] | undefined;
+  psItem: MenuItem[] | undefined;
+  notificationItem: MenuItem[] | undefined;
+  userItem: MenuItem[] | undefined;
+  menuItem: MenuItem[] | undefined;
+  roleCode: string = '';
+  notificationCount: number = 0;
+  notificationObservable: any;
+  profileImageId: string = '';
+  userData = this.authService.getLoginData();
 
-  file = {
+  profile = {
+    userName: '',
     fileContent: '',
     fileExtension: '',
   };
@@ -61,7 +62,7 @@ export class NavbarComponent implements OnInit {
       );
 
     this.fileObservable = this.userService.fileObservable.subscribe((next) => {
-      this.file = next as any;
+      this.profile = next as any;
     });
   }
 
@@ -69,8 +70,8 @@ export class NavbarComponent implements OnInit {
     this.initMenuItems();
     this.initNotifications();
     this.setMenuItemsBasedOnRole();
-    this.roleCode = this.authService.getLoginData().roleCode
-    this.profileImageId = this.authService.getLoginData().fileId
+    this.roleCode = this.authService.getLoginData().roleCode;
+    this.profileImageId = this.authService.getLoginData().fileId;
   }
 
   private initMenuItems() {
@@ -92,10 +93,10 @@ export class NavbarComponent implements OnInit {
         label: 'Logout',
         icon: PrimeIcons.SIGN_OUT,
         command: () => {
-          this.notificationObservable.unsubscribe()
-          this.fileObservable.unsubscribe()
-          localStorage.clear()
-          this.router.navigateByUrl('/login')
+          this.notificationObservable.unsubscribe();
+          this.fileObservable.unsubscribe();
+          localStorage.clear();
+          this.router.navigateByUrl('/login');
         },
       },
     ];
@@ -173,7 +174,7 @@ export class NavbarComponent implements OnInit {
       {
         label: 'Companies',
         routerLink: '/companies',
-        icon: PrimeIcons.BUILDING
+        icon: PrimeIcons.BUILDING,
       },
       {
         label: 'Assign',
@@ -230,18 +231,30 @@ export class NavbarComponent implements OnInit {
   }
 
   isSuperAdmin() {
-    return RoleType.SUPER_ADMIN == this.roleCode
+    return RoleType.SUPER_ADMIN == this.roleCode;
+  }
+
+  isNameUpdated() {
+    return this.profile.userName;
   }
 
   isAvatarUpdated() {
-    return this.file.fileContent && this.file.fileExtension;
+    return this.profile.fileContent && this.profile.fileExtension;
+  }
+
+  getUserName() {
+    if (this.isNameUpdated()) {
+      return this.profile.userName;
+    } else {
+      return this.getFirstName();
+    }
   }
 
   getProfileImage() {
     if (this.isAvatarUpdated()) {
-      return `data:image/${this.file.fileExtension};base64,${this.file.fileContent}`;
+      return `data:image/${this.profile.fileExtension};base64,${this.profile.fileContent}`;
     } else {
-      return `${environment.backEndBaseUrl}:${environment.port}/files/${this.profileImageId}`
+      return `${environment.backEndBaseUrl}:${environment.port}/files/${this.profileImageId}`;
     }
   }
 
